@@ -1,0 +1,222 @@
+
+==============================================================================
+BƯỚC 1: ĐỌC DỮ LIỆU & XỬ LÝ DÒNG TRÙNG LẶP
+==============================================================================
+Kích thước dữ liệu gốc: 1025 dòng x 14 cột
+Số dòng trùng lặp phát hiện được: 723
+Sau khi loại 723 dòng trùng lặp: 302 dòng còn lại
+
+Kiểm tra missing values:
+age         0
+sex         0
+cp          0
+trestbps    0
+chol        0
+fbs         0
+restecg     0
+thalach     0
+exang       0
+oldpeak     0
+slope       0
+ca          0
+thal        0
+target      0
+
+Giá trị lạ ở các cột phân loại đặc biệt (ca, thal):
+  ca   value_counts:
+ca
+0    175
+1     65
+2     38
+3     20
+4      4
+  thal value_counts:
+thal
+0      2
+1     18
+2    165
+3    117
+  -> Ghi chú: theo bộ mã UCI gốc, ca hợp lệ trong {0,1,2,3} và thal hợp lệ trong {1,2,3}. Các giá trị ca=4 hoặc thal=0 là mã 'thiếu dữ liệu/không xác định' do lỗi nhập liệu lịch sử của bộ dữ liệu. Ta vẫn giữ lại và coi như một hạng mục riêng khi one-hot (an toàn hơn xoá dòng vì bộ dữ liệu vốn đã nhỏ), nhưng cần nêu rõ giới hạn này trong báo cáo.
+
+Phân bố nhãn target (0 = không bệnh, 1 = có bệnh):
+target
+1    164
+0    138
+Tỉ lệ lớp dương (bệnh): 54.3%
+
+==============================================================================
+BƯỚC 3: PHÂN TÍCH KHÁM PHÁ DỮ LIỆU (EDA)
+==============================================================================
+Tỉ lệ mắc bệnh theo loại đau ngực (cp):
+cp
+0    0.272727
+1    0.820000
+2    0.790698
+3    0.695652
+  Diễn giải: cp=0 (đau thắt ngực điển hình) có tỉ lệ mắc bệnh thấp nhất trong khi các dạng đau không điển hình (cp=1,2,3) lại có tỉ lệ cao hơn - đây là điểm hay gây nhầm lẫn lâm sàng và là lý do bác sĩ cần model hỗ trợ.
+
+Tỉ lệ mắc bệnh theo nhóm tuổi:
+age_group
+<40      0.666667
+40-50    0.697368
+50-60    0.496124
+60+      0.443038
+
+Đã lưu hình EDA: reports\eda_overview.png
+
+==============================================================================
+BƯỚC 2 & 4: CHIA TRAIN/TEST + XÂY PIPELINE TIỀN XỬ LÝ
+==============================================================================
+Train: 241 dòng | Test: 61 dòng
+Tỉ lệ lớp dương - train: 54.4% | test: 54.1%
+
+Số đặc trưng sau one-hot + scaling: 22
+Danh sách: ['age', 'trestbps', 'chol', 'thalach', 'oldpeak', 'cp_1', 'cp_2', 'cp_3', 'restecg_1', 'restecg_2', 'slope_1', 'slope_2', 'ca_1', 'ca_2', 'ca_3', 'ca_4', 'thal_1', 'thal_2', 'thal_3', 'sex', 'fbs', 'exang']
+
+==============================================================================
+BƯỚC 5: BASELINE (DummyClassifier)
+==============================================================================
+DummyClassifier (luôn đoán lớp đông nhất) — accuracy trên test: 0.541
+  -> Đây là 'sàn' tối thiểu. Bất kỳ model thật nào cũng PHẢI vượt qua con số này rõ rệt (và quan trọng hơn, phải có recall/AUC tốt vì accuracy dễ bị đánh lừa khi 2 lớp gần cân bằng nhưng chi phí sai sót không đối xứng trong y tế).
+
+==============================================================================
+BƯỚC 6-7: HUẤN LUYỆN + BẢNG ODDS RATIO + SO SÁNH L1 vs L2
+==============================================================================
+
+--- Regularization: L2 ---
+C tốt nhất tìm được qua CV: 2.7826
+Test ROC-AUC = 0.904 | Recall = 0.848 | Precision = 0.824
+Số hệ số bị đưa CHÍNH XÁC về 0 (bị loại bỏ khỏi model): 0
+
+Bảng Odds Ratio (top 8, sắp theo mức độ ảnh hưởng):
+dac_trung  he_so_w  odds_ratio
+     cp_3    2.083       8.026
+     cp_2    1.860       6.423
+   thal_1    0.926       2.524
+  thalach    0.919       2.508
+     cp_1    0.764       2.146
+     ca_4    0.748       2.112
+  slope_2    0.532       1.702
+   thal_2    0.478       1.613
+
+--- Regularization: L1 ---
+C tốt nhất tìm được qua CV: 2.7826
+Test ROC-AUC = 0.900 | Recall = 0.848 | Precision = 0.848
+Số hệ số bị đưa CHÍNH XÁC về 0 (bị loại bỏ khỏi model): 2
+Các biến bị L1 loại bỏ: ['thal_3', 'restecg_2']
+
+Bảng Odds Ratio (top 8, sắp theo mức độ ảnh hưởng):
+dac_trung  he_so_w  odds_ratio
+     cp_3    2.500      12.181
+     cp_2    2.092       8.097
+   thal_1    1.844       6.320
+   thal_2    1.213       3.365
+  thalach    0.980       2.664
+  slope_2    0.979       2.661
+     cp_1    0.885       2.422
+     ca_4    0.602       1.826
+
+>>> KẾT LUẬN L1 vs L2:
+    L2: AUC=0.904, giữ lại toàn bộ 22 biến, hệ số co về gần 0 nhưng không loại hẳn biến nào -> phù hợp khi ta tin rằng mọi biến lâm sàng đều có ít nhiều giá trị chẩn đoán.
+    L1: AUC=0.900, có xu hướng loại bỏ hẳn một số biến ít quan trọng -> model đơn giản hơn, dễ giải thích hơn với bác sĩ vì chỉ còn 'các yếu tố nguy cơ thực sự quan trọng', đánh đổi lại có thể mất một phần thông tin nếu C bị phạt quá mạnh.
+
+==============================================================================
+BƯỚC 8-9: ĐƯỜNG ROC/PR & CHỌN NGƯỠNG THEO YÊU CẦU LÂM SÀNG
+==============================================================================
+Test ROC-AUC = 0.904
+Test Average Precision (AP) = 0.918
+Mục tiêu lâm sàng: recall >= 90%
+-> Ngưỡng được chọn = 0.237 (so với mặc định 0.5)
+   Tại ngưỡng này: recall = 0.909, precision = 0.811
+
+So sánh 2 ngưỡng:
+  Ngưỡng 0.50 (mặc định): recall=0.848, precision=0.824
+  Ngưỡng 0.237 (theo yêu cầu bác sĩ): recall=0.909, precision=0.811
+  -> Đánh đổi: để không bỏ sót ca bệnh nào (recall cao), ta chấp nhận nhiều báo động giả hơn (precision giảm). Đây là lựa chọn ĐÚNG về mặt y khoa vì chi phí bỏ sót 1 ca bệnh tim >> chi phí 1 lần xét nghiệm kiểm tra thêm.
+
+Ma trận nhầm lẫn tại ngưỡng đã chọn:
+[[21  7]
+ [ 3 30]]
+(hàng=thực tế [0,1], cột=dự đoán [0,1])
+
+Đã lưu hình: reports\roc_pr_curve.png
+
+==============================================================================
+BƯỚC 10: KIỂM TRA ĐA CỘNG TUYẾN (VIF)
+==============================================================================
+VIF (Variance Inflation Factor) đo mức độ 1 biến độc lập có thể được GIẢI THÍCH bởi các biến độc lập còn lại. VIF cao nghĩa là biến đó mang thông tin trùng lặp với các biến khác -> hệ số hồi quy trở nên không ổn định (dấu/độ lớn có thể đảo lộn chỉ vì thêm/bớt 1 biến khác), khiến việc DIỄN GIẢI odds ratio từng biến riêng lẻ trở nên thiếu tin cậy.
+Quy ước thường dùng: VIF > 10 là dấu hiệu đa cộng tuyến nghiêm trọng, VIF > 5 đã đáng chú ý.
+
+Bảng VIF (sắp giảm dần):
+     bien   VIF
+   thal_2 31.74
+   thal_3 31.20
+   thal_1  7.40
+  slope_2  6.44
+  slope_1  5.50
+  oldpeak  1.99
+  thalach  1.75
+     cp_2  1.68
+      age  1.54
+    exang  1.54
+     cp_1  1.53
+      sex  1.42
+     ca_2  1.39
+     ca_3  1.32
+     cp_3  1.29
+     ca_1  1.27
+ trestbps  1.21
+     chol  1.16
+restecg_1  1.16
+      fbs  1.13
+restecg_2  1.11
+     ca_4  1.06
+
+-> Biến có VIF > 10 (đa cộng tuyến nghiêm trọng): ['thal_2', 'thal_3']
+Đã lưu: reports\vif_table.csv
+
+==============================================================================
+BƯỚC 11: SO SÁNH LOGISTIC REGRESSION vs SVM vs RANDOM FOREST
+==============================================================================
+Mục đích so sánh KHÔNG phải để tìm model 'AUC cao nhất bằng mọi giá', mà để trả lời câu hỏi: Logistic Regression có phải đánh đổi quá nhiều hiệu năng để đổi lấy khả năng giải thích được (odds ratio) hay không?
+
+Bảng so sánh (CV-AUC trên train, 5-fold; test-AUC trên tập test giữ lại):
+                   model  cv_auc_mean  cv_auc_std  test_auc  recall_at_chosen_thr  precision_at_chosen_thr co_giai_thich_duoc_truc_tiep
+Logistic Regression (L2)        0.925       0.036     0.903                 0.909                    0.789              Có (odds ratio)
+        SVM (RBF kernel)        0.897       0.048     0.878                 0.939                    0.660                        Không
+           Random Forest        0.899       0.058     0.894                 0.970                    0.653                        Không
+
+Đã lưu: reports\model_comparison.csv
+
+>>> KẾT LUẬN: Nếu Random Forest / SVM chỉ nhỉnh hơn Logistic Regression một chút về AUC (vài phần trăm, nằm trong khoảng độ lệch chuẩn CV), thì trong bối cảnh LÂM SÀNG, Logistic Regression vẫn là lựa chọn hợp lý hơn vì bác sĩ có thể tự tay kiểm chứng lý do model đưa ra quyết định (qua odds ratio), điều RF/SVM 'hộp đen' không làm được trực tiếp.
+
+==============================================================================
+BƯỚC 12: DIỄN GIẢI KẾT QUẢ CHO 1 CA BỆNH CỤ THỂ
+==============================================================================
+Bệnh nhân mẫu (index gốc trong dữ liệu = 264):
+ age  sex  cp  trestbps  chol  fbs  restecg  thalach  exang  oldpeak  slope  ca  thal
+  41    1   2       130   214    0        0      168      0      2.0      1   0     2
+
+Xác suất model dự đoán mắc bệnh: 82.6%
+Ngưỡng quyết định đang dùng: 0.24 -> Kết luận model: CÓ nguy cơ cao, cần tầm soát thêm
+Nhãn thực tế trong dữ liệu: có bệnh
+
+--- ĐOẠN GIẢI THÍCH BẰNG NGÔN NGỮ Y KHOA (mẫu, dùng cho bước 12) ---
+Dựa trên các chỉ số đo được, mô hình ước tính bệnh nhân này có 83% khả năng mắc bệnh tim, cao hơn ngưỡng cảnh báo 24% mà khoa đang áp dụng để đảm bảo không bỏ sót ca bệnh. Ba yếu tố có ảnh hưởng làm TĂNG nguy cơ mạnh nhất trên toàn bộ tập dữ liệu (theo bảng odds ratio) là: cp_3, cp_2, thal_1. Ngược lại, các yếu tố có xu hướng làm GIẢM nguy cơ (bảo vệ) là: ca_2, ca_1, sex. Đây CHỈ LÀ công cụ hỗ trợ sàng lọc ban đầu dựa trên thống kê nhóm, không thay thế chẩn đoán lâm sàng trực tiếp của bác sĩ; bác sĩ cần đối chiếu thêm với bệnh sử, triệu chứng thực tế và các xét nghiệm chuyên sâu trước khi kết luận.
+
+==============================================================================
+KIỂM TRA ĐẠO ĐỨC: MODEL CÓ ĐỐI XỬ KHÁC NHAU GIỮA NAM/NỮ KHÔNG?
+==============================================================================
+gioi_tinh  so_luong  recall  precision
+      Nam        43   0.900      0.783
+       Nữ        18   0.923      0.857
+
+Ghi chú đạo đức bắt buộc: bộ dữ liệu Cleveland thu thập từ thập niên 1980 tại Mỹ, cỡ mẫu nhỏ và không đại diện cho dân số Việt Nam hiện nay (khác biệt về chế độ ăn, gen, môi trường sống, tiêu chuẩn chẩn đoán). Chênh lệch recall/precision giữa 2 giới ở đây (nếu có) một phần đến từ cỡ mẫu nhỏ của tập test, KHÔNG nên vội kết luận model 'thiên vị' mà cần kiểm định lại trên bộ dữ liệu lớn hơn trước khi triển khai thực tế.
+
+==============================================================================
+LƯU MODEL & BÁO CÁO
+==============================================================================
+Đã lưu model: models\logreg_pipeline.joblib
+Đã lưu bảng odds ratio: reports\odds_ratio.csv
+Đã lưu hình odds ratio: reports\odds_ratio.png
+Đã lưu summary.json: {'n_samples_after_dedup': 302, 'n_features': 22, 'test_auc_l2': 0.9036796536796537, 'test_auc_l1': 0.9004329004329005, 'chosen_threshold': 0.23729582908893845, 'test_auc': 0.9036796536796537, 'test_average_precision': 0.9176865765188654}
