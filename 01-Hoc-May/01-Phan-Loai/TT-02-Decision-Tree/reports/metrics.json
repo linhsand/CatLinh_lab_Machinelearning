@@ -1,0 +1,38 @@
+{
+  "n_samples": 1470,
+  "attrition_rate": 0.16122448979591836,
+  "dropped_columns": [
+    "EmployeeNumber",
+    "EmployeeCount",
+    "StandardHours",
+    "Over18"
+  ],
+  "baseline": {
+    "accuracy": 0.8401360544217688,
+    "f1": 0.0
+  },
+  "overfit_full_tree": {
+    "depth": 18,
+    "n_leaves": 138,
+    "train_accuracy": 1.0,
+    "test_accuracy": 0.7721088435374149
+  },
+  "overfit_start_depth": 6,
+  "best_params": {
+    "clf__criterion": "gini",
+    "clf__max_depth": 5,
+    "clf__min_samples_leaf": 50
+  },
+  "best_model": {
+    "accuracy": 0.717687074829932,
+    "f1": 0.4195804195804196,
+    "cv_f1": 0.4226271663613219
+  },
+  "random_forest": {
+    "accuracy": 0.8435374149659864,
+    "f1": 0.17857142857142858
+  },
+  "sensitive_features_used_as_split": [],
+  "stability_unique_root_features": 1,
+  "stability_unique_level2_combos": 1
+}

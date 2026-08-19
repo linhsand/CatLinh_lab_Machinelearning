@@ -1,0 +1,63 @@
+{
+  "missing_pct": {
+    "Glucose": 0.7,
+    "BloodPressure": 4.6,
+    "SkinThickness": 29.6,
+    "Insulin": 48.7,
+    "BMI": 1.4
+  },
+  "baseline": {
+    "recall": 0.0,
+    "accuracy": 0.6493506493506493
+  },
+  "knn_k5_scaled": {
+    "recall": 0.6111111111111112,
+    "accuracy": 0.7532467532467533
+  },
+  "knn_k5_unscaled": {
+    "recall": 0.5,
+    "accuracy": 0.6753246753246753
+  },
+  "gridsearch_best_params": {
+    "knn__metric": "euclidean",
+    "knn__n_neighbors": 13,
+    "knn__weights": "uniform"
+  },
+  "gridsearch_best_cv_recall": 0.6032115171650055,
+  "test_best_model": {
+    "recall": 0.5185185185185185,
+    "precision": 0.6086956521739131,
+    "f1": 0.56,
+    "accuracy": 0.7142857142857143,
+    "confusion_matrix": [
+      [
+        82,
+        18
+      ],
+      [
+        26,
+        28
+      ]
+    ],
+    "params": {
+      "knn__metric": "euclidean",
+      "knn__n_neighbors": 13,
+      "knn__weights": "uniform"
+    }
+  },
+  "k1_train_accuracy_sanity_check": 1.0,
+  "knn_vs_logreg": {
+    "KNN (tối ưu)": {
+      "Recall": 0.519,
+      "Precision": 0.609,
+      "F1": 0.56,
+      "Accuracy": 0.714
+    },
+    "Logistic Regression": {
+      "Recall": 0.704,
+      "Precision": 0.603,
+      "F1": 0.65,
+      "Accuracy": 0.734
+    }
+  }
+}

@@ -1,0 +1,13 @@
+Đặc trưng ở NÚT GỐC qua 10 random_state khác nhau:
+['TotalWorkingYears', 'TotalWorkingYears', 'TotalWorkingYears', 'TotalWorkingYears', 'TotalWorkingYears', 'TotalWorkingYears', 'TotalWorkingYears', 'TotalWorkingYears', 'TotalWorkingYears', 'TotalWorkingYears']
+Số đặc trưng gốc khác nhau: 1 / 10
+
+Đặc trưng ở tầng 2 (2 nút con của gốc) qua 10 random_state:
+[('OverTime_Yes',), ('OverTime_Yes',), ('OverTime_Yes',), ('OverTime_Yes',), ('OverTime_Yes',), ('OverTime_Yes',), ('OverTime_Yes',), ('OverTime_Yes',), ('OverTime_Yes',), ('OverTime_Yes',)]
+Số tổ hợp tầng-2 khác nhau: 1 / 10
+
+F1 dao động: min=0.3972  max=0.4196  mean=0.4061  std=0.0110
+
+=> Kết luận thực nghiệm trên dữ liệu này: nút GỐC khá ổn định (luôn là TotalWorkingYears), nhưng cấu trúc các tầng SÂU HƠN đã bắt đầu đổi theo seed, và F1 dao động ~2.2 điểm % — cho thấy một cây đơn vẫn nhạy với
+   cách chia train/test và khởi tạo ngẫu nhiên. Đây là lý do KHÔNG nên tin tuyệt đối
+   vào một cây đơn khi diễn giải nguyên nhân — và là động lực cho Random Forest (TT-03).

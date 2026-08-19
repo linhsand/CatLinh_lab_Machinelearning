@@ -1,0 +1,5 @@
+,KNN (tối ưu),Logistic Regression
+Recall,0.519,0.704
+Precision,0.609,0.603
+F1,0.56,0.65
+Accuracy,0.714,0.734
