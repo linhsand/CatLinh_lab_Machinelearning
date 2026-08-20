@@ -1,204 +1,79 @@
-# TT-01 — KNN CLASSIFIER
-## Sàng lọc nguy cơ tiểu đường tại phòng khám
+# Báo cáo kết quả — TT-01 KNN Classifier: Sàng lọc nguy cơ tiểu đường
 
-| | |
+## 1. Dữ liệu và xử lý thiếu
+Bộ dữ liệu Pima Indians Diabetes có 5 cột không thể mang giá trị 0 về mặt y sinh
+(`Glucose`, `BloodPressure`, `SkinThickness`, `Insulin`, `BMI`). Các giá trị 0 này
+được coi là dữ liệu thiếu, thay bằng `NaN` rồi impute bằng median trong Pipeline
+(để tránh rò rỉ thông tin từ tập test vào tập train). Tỷ lệ thiếu đáng chú ý:
+
+| Cột | % thiếu |
 |---|---|
-| 🎓 **Khoá** | HỌC MÁY · [Buổi 1](https://github.com/TruongTanNghia/Training-Machine-learning/tree/main/Buoi-01-Gioi-thieu-ML) |
-| 🧠 **Nhóm** | Phân loại có giám sát |
-| 🔧 **Thuật toán** | K-Nearest Neighbors (KNN) |
-| 🏭 **Lĩnh vực** | Y tế · Sàng lọc cộng đồng |
-| ⏱ **Thời lượng** | 4–6 giờ |
-| 📈 **Độ khó** | ⭐ |
+| Insulin | 48,7% |
+| SkinThickness | 29,6% |
 
----
+Đây là mức thiếu lớn, vì vậy lựa chọn median-impute (ổn định hơn mean trước outlier)
+là hợp lý, nhưng cần lưu ý sai số impute ở Insulin có thể ảnh hưởng đáng kể tới mô hình.
 
-## 1. THUẬT TOÁN NÀY LÀ GÌ
+## 2. Vai trò của chuẩn hoá dữ liệu
+So sánh KNN K=5 có và không chuẩn hoá (`reports/comparison_scale_vs_noscale.csv`):
 
-```
-   "Cho tôi biết bạn giống ai, tôi nói bạn là ai."
+| | Recall | Accuracy |
+|---|---|---|
+| Baseline (Dummy) | 0,000 | 0,649 |
+| KNN K=5 — không chuẩn hoá | 0,500 | — |
+| KNN K=5 — có chuẩn hoá | 0,611 | — |
 
-   Điểm mới ❓ → tính khoảng cách tới TẤT CẢ điểm đã biết
-                → lấy K điểm gần nhất → bỏ phiếu đa số
+Recall tăng từ 0,5 lên 0,611 khi chuẩn hoá, vì KNN dựa trên khoảng cách Euclid/Manhattan:
+các đặc trưng có thang đo lớn (ví dụ Insulin, Glucose) sẽ lấn át các đặc trưng thang đo nhỏ
+nếu không scale, làm méo khoảng cách và chọn sai láng giềng.
 
-        🔵 🔵          K = 5:  4 điểm 🔵, 1 điểm 🔴
-       🔵 ❓ 🔴         → kết luận ❓ thuộc nhóm 🔵
-        🔵 🔵
-```
+## 3. Chọn tham số bằng GridSearchCV
+`GridSearchCV` dò K ∈ {1,3,...,31}, `weights` ∈ {uniform, distance},
+`metric` ∈ {euclidean, manhattan}, với `scoring="recall"` (không dùng accuracy vì bài
+toán y tế cần ưu tiên phát hiện ca dương tính, chi phí bỏ sót bệnh nhân cao hơn chi phí
+báo động giả). Pipeline (impute + scale + KNN) được đặt **bên trong** `GridSearchCV` với
+`StratifiedKFold(5, shuffle=True, random_state=42)` để impute/scale được fit lại đúng
+trên từng fold train, chống rò rỉ dữ liệu.
 
-**Đặc điểm cần nhớ:** KNN là thuật toán **"lười"** — `.fit()` chỉ ghi nhớ dữ liệu,
-mọi tính toán dồn vào lúc `.predict()`. Không có "model" nào được học cả.
+## 4. Sanity check K=1
+Với K=1, accuracy trên chính tập train đạt 1,0 — dự đoán như kỳ vọng vì mỗi điểm train
+là láng giềng gần nhất của chính nó. Đây không phải là dấu hiệu mô hình tốt, mà là minh
+chứng cho overfitting; kết quả này không phản ánh khả năng tổng quát hoá và không được
+dùng để chọn mô hình cuối cùng (mô hình cuối chọn qua CV trên tập train, không dùng train
+accuracy).
 
----
-
-## 2. BÀI TOÁN THỰC TẾ
-
-```
-   Phòng khám tuyến huyện có 3 bác sĩ, mỗi ngày 200 bệnh nhân.
-   Xét nghiệm tiểu đường đầy đủ tốn 350.000đ và mất 2 ngày chờ kết quả.
-
-   → Cần công cụ SÀNG LỌC NHANH từ các chỉ số đo được ngay tại chỗ
-     (huyết áp, BMI, tuổi, tiền sử gia đình) để quyết định
-     AI CẦN làm xét nghiệm chuyên sâu, ai chưa cần.
-
-   ⚠️ Bỏ sót người bệnh (FN) NGUY HIỂM hơn nhiều so với
-      chỉ định xét nghiệm thừa (FP) → ưu tiên RECALL.
-```
-
----
-
-## 3. BỘ DỮ LIỆU
-
-| | |
-|---|---|
-| **Tên** | Pima Indians Diabetes |
-| **Link** | https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database |
-| **Kích thước** | 768 dòng × 9 cột |
-| **Nhãn** | `Outcome` (0/1) — khoảng **35% dương tính** |
-
-**Các cột:** `Pregnancies`, `Glucose`, `BloodPressure`, `SkinThickness`, `Insulin`,
-`BMI`, `DiabetesPedigreeFunction`, `Age`, `Outcome`
-
-### ⚠️ Bẫy có sẵn: giá trị 0 giả danh dữ liệu thiếu
+## 5. Đánh giá trên tập test (chạm 1 lần duy nhất)
+Ma trận nhầm lẫn trên tập test với mô hình tốt nhất và ngưỡng phân loại được tối ưu qua
+CV trên train (`reports/confusion_matrix.png`, `reports/results_log.json`):
 
 ```
-   Glucose = 0        → không thể có người sống với đường huyết 0
-   BloodPressure = 0  → vô lý
-   BMI = 0            → vô lý
-   SkinThickness = 0  → thiếu ~30% dòng
-   Insulin = 0        → thiếu ~49% dòng  ← nặng nhất
-
-   → Đây là DỮ LIỆU THIẾU được mã hoá bằng số 0, không phải giá trị thật.
-   → Phải chuyển thành NaN rồi điền median, KHÔNG để nguyên.
+            Dự đoán 0   Dự đoán 1
+Thực 0         82           18
+Thực 1         26           28
 ```
 
----
+- Recall = 28 / (28+26) ≈ 0,519 → mô hình bỏ sót khoảng 48% bệnh nhân thực sự mắc tiểu đường.
+- Recall test (0,519) **thấp hơn** khoảng tham chiếu 0,65–0,75 yêu cầu trong đề bài.
 
-## 4. HƯỚNG ĐI ĐÚNG
+### Hạn chế và hướng khắc phục chưa thực hiện đầy đủ
+Recall test chưa đạt mức tham chiếu. Các hướng cải thiện có thể thử thêm nhưng chưa được
+đánh giá trong lần chạy này:
+- Hạ ngưỡng phân loại (`threshold`) sâu hơn nữa, đánh đổi lấy precision thấp hơn.
+- Feature engineering (ví dụ tạo biến tương tác Glucose×BMI) hoặc thử impute bằng KNNImputer
+  thay vì median, đặc biệt với Insulin (48,7% thiếu).
+- Thử oversampling (SMOTE) trên tập train thay vì chỉ điều chỉnh ngưỡng.
+- KNN không hỗ trợ `class_weight`; có thể thử `weights="distance"` kết hợp ngưỡng thấp hơn,
+  hoặc chuyển hẳn sang mô hình hỗ trợ trọng số lớp (Logistic Regression, xem mục 6).
 
-### 4.1. Vì sao bài này bắt buộc chuẩn hoá
+## 6. So sánh KNN tối ưu với Logistic Regression
+So sánh bằng 5-fold CV trên tập train (không chạm test), kết quả trong
+`reports/comparison_knn_vs_logreg.csv`. Logistic Regression dùng `class_weight="balanced"`
+nên thường cho recall cao hơn KNN nhưng đổi lại precision thấp hơn — đây là một baseline
+tham khảo hợp lý nếu recall vẫn là ưu tiên hàng đầu và cần một mô hình dễ diễn giải hơn.
 
-```
-   Insulin: 0 – 846        (biên độ ~846)
-   BMI:     18 – 67        (biên độ ~49)
-
-   Khoảng cách Euclid: √( (ΔInsulin)² + (ΔBMI)² )
-   → Insulin ÁP ĐẢO hoàn toàn, BMI gần như bị bỏ qua.
-   → KHÔNG chuẩn hoá = KNN chỉ nhìn đúng 1 cột.
-```
-
-### 4.2. Pipeline chuẩn
-
-```python
-import numpy as np
-from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import KNeighborsClassifier
-
-COT_KHONG_THE_BANG_0 = ['Glucose','BloodPressure','SkinThickness','Insulin','BMI']
-X[COT_KHONG_THE_BANG_0] = X[COT_KHONG_THE_BANG_0].replace(0, np.nan)
-
-pipe = Pipeline([
-    ('imp',   SimpleImputer(strategy='median')),
-    ('scale', StandardScaler()),                    # ⭐ BẮT BUỘC với KNN
-    ('knn',   KNeighborsClassifier(n_neighbors=5)),
-])
-```
-
-### 4.3. Dò K bằng cross-validation
-
-```python
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
-
-grid = {'knn__n_neighbors': list(range(1, 32, 2)),   # K LẺ để tránh hoà phiếu
-        'knn__weights': ['uniform', 'distance'],
-        'knn__metric':  ['euclidean', 'manhattan']}
-
-gs = GridSearchCV(pipe, grid, cv=StratifiedKFold(5, shuffle=True, random_state=42),
-                  scoring='recall', n_jobs=-1)      # ⭐ tối ưu RECALL, không phải accuracy
-gs.fit(X_train, y_train)
-```
-
-### 4.4. Metric
-
-```
-   Chính : RECALL (không bỏ sót người bệnh)
-   Phụ   : Precision, F1, PR-AUC, ma trận nhầm lẫn
-   ❌ KHÔNG dùng accuracy làm metric chính (65% người âm tính)
-```
-
----
-
-## 5. CÁC BƯỚC THỰC HIỆN
-
-```
-   ☐ 1. Nạp dữ liệu, in describe() → PHÁT HIỆN các cột có min = 0 phi lý
-   ☐ 2. Thay 0 → NaN ở 5 cột y sinh, đếm % thiếu mỗi cột
-   ☐ 3. EDA: histogram Glucose theo nhóm Outcome (kỳ vọng tách rõ)
-   ☐ 4. Chia train/test stratify, random_state=42
-   ☐ 5. Baseline: DummyClassifier(strategy='most_frequent')
-   ☐ 6. KNN với K=5 mặc định → ghi lại điểm
-   ☐ 7. ⚠️ CHẠY THỬ KNN KHÔNG chuẩn hoá → so sánh, chứng minh chuẩn hoá quan trọng
-   ☐ 8. GridSearchCV dò K, weights, metric
-   ☐ 9. Vẽ đường Recall & Accuracy theo K → giải thích hình dạng
-   ☐ 10. Chạm tập TEST 1 lần, báo cáo ma trận nhầm lẫn
-   ☐ 11. So sánh KNN với Logistic Regression → cái nào hợp bài này hơn?
-```
-
----
-
-## 6. TIÊU CHÍ HOÀN THÀNH
-
-```
-   ☐ Đã phát hiện và xử lý đúng bẫy "0 = thiếu dữ liệu"
-   ☐ Có bảng so sánh CÓ vs KHÔNG chuẩn hoá (chứng minh bằng số)
-   ☐ Có biểu đồ Recall/Accuracy theo K, K được chọn có lý do
-   ☐ Recall trên tập test > baseline rõ rệt
-   ☐ Giải thích được vì sao K=1 cho accuracy 100% trên tập TRAIN
-   ☐ Nêu được hạn chế: KNN chậm khi dữ liệu lớn, không giải thích được cá nhân
-```
-
-**Mức tham chiếu:** Recall thường đạt ~0,65–0,75 với bộ này. Đây là bộ dữ liệu **khó**,
-đừng kỳ vọng 0,9+.
-
----
-
-## 7. CẠM BẪY
-
-| Cạm bẫy | Hậu quả |
-|---------|---------|
-| Không chuẩn hoá | Insulin áp đảo, model gần như vô dụng |
-| Để nguyên giá trị 0 | Model học "đường huyết 0 là bình thường" |
-| Chọn K chẵn | Hoà phiếu, kết quả phụ thuộc thứ tự dữ liệu |
-| Dùng accuracy làm metric | Bỏ sót người bệnh mà vẫn thấy điểm cao |
-| Scale trước khi chia train/test | Rò rỉ dữ liệu |
-
----
-
-## 8. SẢN PHẨM NỘP
-
-```
-TT-01-KNN-<HoTen>/
-├── README.md              ← có bảng so sánh có/không chuẩn hoá
-├── notebooks/knn_diabetes.ipynb
-├── src/train.py
-├── models/knn_pipeline.joblib
-├── reports/{recall_theo_K.png, confusion_matrix.png}
-└── requirements.txt
-```
-
-> ⚖️ **Lưu ý đạo đức:** ghi rõ trong báo cáo rằng đây là công cụ **hỗ trợ sàng lọc**,
-> không thay thế chẩn đoán của bác sĩ. Bộ dữ liệu chỉ thu thập trên phụ nữ Pima
-> từ 21 tuổi → **không tổng quát hoá** được cho dân số Việt Nam.
-
----
-
-## 9. MỞ RỘNG
-
-```
-   1. Thử KNN Regressor dự đoán chỉ số Glucose (xem TT-21)
-   2. Dùng KNNImputer thay SimpleImputer — điền thiếu bằng chính hàng xóm
-   3. Đo thời gian predict khi nhân dữ liệu lên 100× → thấy điểm yếu của KNN
-```
-
-**Tham khảo:** [Lý thuyết KNN — Buổi 1](https://github.com/TruongTanNghia/Training-Machine-learning/tree/main/Buoi-01-Gioi-thieu-ML/Tai-Lieu/ly_thuyet_chi_tiet_buoi_01.md)
+## 7. Kết luận
+Pipeline chống rò rỉ dữ liệu đúng chuẩn (impute + scale nằm trong CV/GridSearchCV), chọn
+đúng metric tối ưu (recall) cho bài toán y tế, và có thực nghiệm định lượng chứng minh vai
+trò của chuẩn hoá. Tuy nhiên recall trên tập test (0,519) chưa đạt khoảng tham chiếu của đề
+bài (0,65–0,75); đây là hạn chế chính cần cải thiện ở vòng lặp tiếp theo, theo các hướng đã
+nêu ở mục 5.
