@@ -1,0 +1,85 @@
+{
+  "no_scale": {
+    "Accuracy": 0.9298245614035088,
+    "Precision_Malignant": 0.9473684210526315,
+    "Recall_Malignant": 0.8571428571428571,
+    "F1_Malignant": 0.9
+  },
+  "scaled": {
+    "Accuracy": 0.9824561403508771,
+    "Precision_Malignant": 0.9761904761904762,
+    "Recall_Malignant": 0.9761904761904762,
+    "F1_Malignant": 0.9761904761904762
+  },
+  "kernel_comparison": [
+    {
+      "Kernel": "linear",
+      "Accuracy": 0.9736842105263158,
+      "Precision_Malignant": 0.9534883720930233,
+      "Recall_Malignant": 0.9761904761904762,
+      "F1_Malignant": 0.9647058823529412
+    },
+    {
+      "Kernel": "rbf",
+      "Accuracy": 0.9824561403508771,
+      "Precision_Malignant": 0.9761904761904762,
+      "Recall_Malignant": 0.9761904761904762,
+      "F1_Malignant": 0.9761904761904762
+    },
+    {
+      "Kernel": "poly",
+      "Accuracy": 0.9122807017543859,
+      "Precision_Malignant": 1.0,
+      "Recall_Malignant": 0.7619047619047619,
+      "F1_Malignant": 0.8648648648648649
+    }
+  ],
+  "grid_search_best_params": {
+    "svm__C": 1,
+    "svm__gamma": "scale",
+    "svm__kernel": "rbf"
+  },
+  "grid_search_best_cv_f2": 0.9694239061472123,
+  "best_model_test_metrics": {
+    "Accuracy": 0.9649122807017544,
+    "Precision_Malignant": 0.9318181818181818,
+    "Recall_Malignant": 0.9761904761904762,
+    "F1_Malignant": 0.9534883720930233
+  },
+  "best_model_roc_auc": 0.9940476190476191,
+  "best_model_confusion_counts": {
+    "tp": 41,
+    "fn": 1,
+    "fp": 3,
+    "tn": 69
+  },
+  "support_vectors": {
+    "malignant_sv": 49,
+    "benign_sv": 59,
+    "total_sv": 108,
+    "total_train": 455,
+    "pct": 23.736263736263734
+  },
+  "selected_threshold": 0.4000000000000001,
+  "threshold_test_metrics": {
+    "Accuracy": 0.9473684210526315,
+    "Precision_Malignant": 0.8913043478260869,
+    "Recall_Malignant": 0.9761904761904762,
+    "F1_Malignant": 0.9318181818181818
+  },
+  "threshold_confusion_counts": {
+    "tp": 41,
+    "fn": 1,
+    "fp": 5,
+    "tn": 67
+  },
+  "logreg_test_metrics": {
+    "Accuracy": 0.956140350877193,
+    "Precision_Malignant": 0.9111111111111111,
+    "Recall_Malignant": 0.9761904761904762,
+    "F1_Malignant": 0.9425287356321839
+  },
+  "recall_target": 0.98,
+  "recall_target_met_default_threshold": false,
+  "recall_target_met_selected_threshold": false
+}
