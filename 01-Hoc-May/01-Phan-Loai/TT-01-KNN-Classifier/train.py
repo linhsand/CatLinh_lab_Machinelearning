@@ -254,38 +254,67 @@ def plot_recall_accuracy_vs_k(X_train, y_train, gs):
 
 # ============================================================
 # Dò ngưỡng phân loại (threshold) bằng CV trên TRAIN, ưu tiên Recall
-# với ràng buộc Precision >= 0.50 (nếu không đạt thì chọn F1 cao nhất)
+# với ràng buộc Precision >= MIN_PRECISION (nếu không đạt thì chọn F1 cao nhất)
+#
+# GIẢ ĐỊNH NGHIỆP VỤ (cần phòng khám xác nhận lại): bỏ sót một ca dương tính
+# thật (FN) tốn kém hơn nhiều so với một báo động giả (FP, chỉ tốn thêm một
+# lượt xét nghiệm khẳng định) -> ưu tiên recall. Nhưng nếu precision quá thấp,
+# số ca phải gọi lại xét nghiệm sẽ vượt quá năng lực vận hành của phòng khám
+# -> đặt sàn precision tối thiểu để giữ số báo động giả trong tầm kiểm soát.
+# MIN_PRECISION = 0.50 là giả định làm việc (mỗi 2 ca cảnh báo có tối đa 1 ca
+# âm tính thật), KHÔNG dựa trên số liệu thực tế của phòng khám nào.
+#
+# Về lưới threshold: model là KNN với weights="uniform" nên predict_proba chỉ
+# nhận các giá trị rời rạc dạng k/n_neighbors (k = 0..n_neighbors). Quét một
+# lưới liên tục bước 0.01 sẽ tạo ảo giác về độ mịn: rất nhiều threshold liền
+# kề cho ra cùng một tập dự đoán. Thay vào đó, các threshold ứng viên được
+# suy ra trực tiếp từ các giá trị xác suất thực sự xuất hiện trên các fold
+# validation (điểm giữa hai giá trị xác suất liền kề khác nhau) -> mỗi ứng
+# viên đại diện cho một hành vi phân loại thực sự khác nhau. Cách này cũng
+# tổng quát cho mọi mô hình (kể cả Logistic Regression với proba liên tục).
 # ============================================================
-def find_best_threshold(model, X_train, y_train):
-    thresholds = np.arange(0.10, 0.61, 0.01)
+def find_best_threshold(model, X_train, y_train, min_precision=0.50):
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
-    threshold_results = []
 
+    fold_data = []
+    all_probs = []
+    for train_idx, val_idx in cv.split(X_train, y_train):
+        fold_model = clone(model)
+        fold_model.fit(X_train.iloc[train_idx], y_train.iloc[train_idx])
+        y_prob = fold_model.predict_proba(X_train.iloc[val_idx])[:, 1]
+        y_true = y_train.iloc[val_idx].to_numpy()
+        fold_data.append((y_prob, y_true))
+        all_probs.append(y_prob)
+
+    unique_probs = np.unique(np.concatenate(all_probs))
+    if len(unique_probs) > 1:
+        midpoints = (unique_probs[:-1] + unique_probs[1:]) / 2
+    else:
+        midpoints = unique_probs
+    # Thêm 0.0 và 1.0 để bao trọn hai đầu (toàn bộ dương tính / toàn bộ âm tính)
+    thresholds = np.unique(np.concatenate([[0.0], midpoints, [1.0]]))
+
+    threshold_results = []
     for threshold in thresholds:
         fold_recalls, fold_precisions = [], []
-        for train_idx, val_idx in cv.split(X_train, y_train):
-            fold_model = clone(model)
-            fold_model.fit(X_train.iloc[train_idx], y_train.iloc[train_idx])
-            y_prob = fold_model.predict_proba(X_train.iloc[val_idx])[:, 1]
+        for y_prob, y_true in fold_data:
             y_pred = (y_prob >= threshold).astype(int)
-            fold_recalls.append(recall_score(y_train.iloc[val_idx], y_pred))
-            fold_precisions.append(
-                precision_score(y_train.iloc[val_idx], y_pred, zero_division=0)
-            )
+            fold_recalls.append(recall_score(y_true, y_pred))
+            fold_precisions.append(precision_score(y_true, y_pred, zero_division=0))
         threshold_results.append({
-            "threshold": threshold,
-            "recall": np.mean(fold_recalls),
-            "precision": np.mean(fold_precisions),
+            "threshold": float(threshold),
+            "recall": float(np.mean(fold_recalls)),
+            "precision": float(np.mean(fold_precisions)),
         })
 
     threshold_df = pd.DataFrame(threshold_results)
-    valid = threshold_df[threshold_df["precision"] >= 0.50]
+    valid = threshold_df[threshold_df["precision"] >= min_precision]
 
     if valid.empty:
         threshold_df["f1"] = (
             2 * threshold_df["precision"] * threshold_df["recall"]
-            / (threshold_df["precision"] + threshold_df["recall"])
-        )
+            / (threshold_df["precision"] + threshold_df["recall"]).replace(0, np.nan)
+        ).fillna(0.0)
         best_row = threshold_df.loc[threshold_df["f1"].idxmax()]
     else:
         best_row = valid.loc[valid["recall"].idxmax()]
@@ -294,6 +323,7 @@ def find_best_threshold(model, X_train, y_train):
         float(best_row["threshold"]),
         float(best_row["recall"]),
         float(best_row["precision"]),
+        threshold_df,
     )
 
 
@@ -306,12 +336,13 @@ def evaluate_on_test(gs, X_train, y_train, X_test, y_test, results_log):
     print("=" * 70)
     best_model = gs.best_estimator_
 
-    best_threshold, threshold_cv_recall, threshold_cv_precision = find_best_threshold(
-        best_model, X_train, y_train
+    best_threshold, threshold_cv_recall, threshold_cv_precision, threshold_df = (
+        find_best_threshold(best_model, X_train, y_train)
     )
     print(f"Best threshold = {best_threshold:.2f}")
     print(f"CV Recall tại threshold = {threshold_cv_recall:.3f}")
     print(f"CV Precision tại threshold = {threshold_cv_precision:.3f}")
+    print(f"Số điểm vận hành (threshold) thực sự khác nhau đã xét: {len(threshold_df)}")
 
     y_prob_best = best_model.predict_proba(X_test)[:, 1]
     y_pred_best = (y_prob_best >= best_threshold).astype(int)
@@ -348,6 +379,10 @@ def evaluate_on_test(gs, X_train, y_train, X_test, y_test, results_log):
     results_log["threshold_tuning"] = {
         "best_threshold": float(best_threshold),
         "cv_recall": float(threshold_cv_recall),
+        "cv_precision": float(threshold_cv_precision),
+        "min_precision_constraint": 0.50,
+        "n_candidate_thresholds": int(len(threshold_df)),
+        "candidates": threshold_df.round(4).to_dict(orient="records"),
     }
 
     fig, ax = plt.subplots(figsize=(5.5, 5))
