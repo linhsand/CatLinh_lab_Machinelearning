@@ -212,3 +212,53 @@ TT-03-RandomForest-<HoTen>/
 ```
 
 **Tham khảo:** [Buổi 3 — Tree & Random Forest](https://github.com/TruongTanNghia/Training-Machine-learning/tree/main/Buoi-03-Feature-Eng-Tree/Tai-Lieu) · [Buổi 6 — Ensemble](https://github.com/TruongTanNghia/Training-Machine-learning/tree/main/Buoi-06-Ensemble-EndToEnd/Tai-Lieu)
+
+---
+
+## 10. BÀI HỌC VỀ RÒ RỈ DỮ LIỆU (kết quả thực nghiệm của bài nộp này)
+
+Chạy hàm `quick_auc()` trong `src/train.py` với hai phiên bản feature set — số liệu lấy
+từ `reports/metrics.json` sau khi chạy `python src/train.py`:
+
+| Phiên bản      | ROC-AUC (test) |
+|----------------|----------------|
+| KHÔNG `duration` | **0,7844** |
+| CÓ `duration`    | **0,9488** |
+
+**Vì sao chênh lệch lớn như vậy:** `duration` là thời lượng cuộc gọi, chỉ được ghi nhận
+**sau khi** cuộc gọi kết thúc. Một cuộc gọi kéo dài gần như đồng nghĩa khách đã đồng ý mở
+sổ, nên `duration` gần như "biết trước đáp án". Nếu giữ cột này, model đạt AUC rất cao
+trên tập test lịch sử, nhưng vô dụng khi triển khai thật: tại thời điểm cần **xếp hạng
+ai để gọi**, ta chưa hề gọi cho họ nên không thể có `duration`.
+
+Vì vậy toàn bộ pipeline chính thức (Random Forest dùng để tạo `danh_sach_goi_top5000.csv`
+và mọi báo cáo từ mục 4 trở đi) **loại bỏ hoàn toàn `duration`** khỏi tập đặc trưng, đúng
+khuyến nghị của UCI ("should be discarded for a realistic predictive model"). Con số
+AUC ~0,79 (không có `duration`) mới là con số phản ánh đúng khả năng thật của model khi
+dùng để chọn danh sách gọi trước khi thực hiện cuộc gọi.
+
+> Lưu ý quy mô nghiệp vụ: `PRECISION@5000` và `LIFT@5000` được tính bằng cách quy đổi
+> `k` theo đúng tỉ lệ 5.000/41.188 khách (~12%) sang tập test (8.238 dòng) → `k_test = 1000`,
+> thay vì lấy nguyên 5.000 trên tập test (tương đương gọi ~61% danh sách, làm loãng ý
+> nghĩa của "top") — xem chi tiết trong `src/train.py`, phần "Bước 10".
+
+### Kết quả cuối cùng (từ `reports/metrics.json`, chạy trên `bank-additional-full.csv`)
+
+| Model | ROC-AUC (test) |
+|---|---|
+| Dummy (baseline ngẫu nhiên) | 0,5051 |
+| Decision Tree đơn (TT-02) | 0,7787 |
+| **Random Forest** | **0,8071** |
+
+- **OOB score** (Random Forest, 400 cây): **0,8655** — sát với test AUC, cho thấy OOB
+  là ước lượng đáng tin cậy, không cần tách thêm validation set.
+- Đường OOB theo `n_estimators` (10→500) bão hoà rõ sau khoảng **150 cây** (0,8277 → 0,8637 → 0,8658), xác nhận
+  300–500 cây là đủ, tăng thêm gần như không cải thiện gì thêm.
+- **PRECISION@1000 (tương đương top 5.000/41.188 thật) = 0,5100** — nghĩa là trong top ~12% khách
+  model chấm điểm cao nhất, hơn một nửa thực sự đồng ý mở sổ.
+- **LIFT@1000 = 4,53x** — gọi theo danh sách xếp hạng của model hiệu quả gấp **4,53 lần**
+  so với gọi ngẫu nhiên cùng số lượng cuộc gọi.
+- **Gini importance vs permutation importance khác nhau rõ:** Gini xếp `age` (biến liên tục)
+  vào top 3, nhưng permutation importance (đáng tin hơn) không xếp `age` vào top 10 — thay
+  vào đó `contact` (biến phân loại) mới thực sự quan trọng theo permutation dù Gini xếp thấp.
+  Đây đúng là hiện tượng thiên lệch của Gini importance với biến liên tục mà đề đã cảnh báo.

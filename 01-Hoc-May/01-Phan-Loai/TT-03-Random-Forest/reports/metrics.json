@@ -1,0 +1,55 @@
+{
+  "auc_no_duration": 0.7844091260200953,
+  "auc_with_duration": 0.9488455381150055,
+  "unknown_counts": {
+    "job": 330,
+    "education": 1731,
+    "housing": 990,
+    "loan": 990,
+    "default": 8597
+  },
+  "dummy_auc": 0.5050864722392566,
+  "tree_auc": 0.7787243796877211,
+  "rf_oob_score": 0.8654931714719272,
+  "rf_test_auc": 0.807133222675598,
+  "oob_by_n_estimators": {
+    "10": 0.8277086494688922,
+    "25": 0.8550227617602428,
+    "50": 0.8612139605462823,
+    "75": 0.8623975720789074,
+    "100": 0.8630652503793627,
+    "150": 0.8637329286798179,
+    "200": 0.8642488619119879,
+    "300": 0.8649468892261002,
+    "400": 0.8654931714719272,
+    "500": 0.8657966616084978
+  },
+  "top10_gini_importance": {
+    "num__euribor3m": 0.1496,
+    "num__nr.employed": 0.1042,
+    "num__age": 0.0897,
+    "num__emp.var.rate": 0.0721,
+    "num__campaign": 0.0482,
+    "num__cons.conf.idx": 0.0452,
+    "num__cons.price.idx": 0.0358,
+    "num__pdays": 0.0261,
+    "num__never_contacted": 0.025,
+    "cat__poutcome_success": 0.0199
+  },
+  "top10_permutation_importance": {
+    "nr.employed": 0.0299,
+    "euribor3m": 0.0258,
+    "emp.var.rate": 0.0239,
+    "contact": 0.0222,
+    "never_contacted": 0.0181,
+    "pdays": 0.0171,
+    "poutcome": 0.0162,
+    "campaign": 0.0084,
+    "month": 0.0078,
+    "day_of_week": 0.0061
+  },
+  "k_business": 5000,
+  "k_test_equivalent": 1000,
+  "precision_at_k_test": 0.51,
+  "lift_at_k_test": 4.527349137931035
+}
