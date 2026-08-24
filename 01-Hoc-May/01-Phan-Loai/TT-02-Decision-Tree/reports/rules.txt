@@ -6,18 +6,12 @@
 |   |   |   |--- YearsWithCurrManager <= 0.50
 |   |   |   |   |--- class: 0
 |   |   |   |--- YearsWithCurrManager >  0.50
-|   |   |   |   |--- MonthlyIncome <= 2742.00
-|   |   |   |   |   |--- class: 0
-|   |   |   |   |--- MonthlyIncome >  2742.00
-|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- class: 0  (gộp — cả 2 nhánh đều dự đoán như nhau)
 |   |   |--- NumCompaniesWorked >  4.50
 |   |   |   |--- Age <= 37.50
 |   |   |   |   |--- class: 1
 |   |   |   |--- Age >  37.50
-|   |   |   |   |--- HourlyRate <= 71.00
-|   |   |   |   |   |--- class: 0
-|   |   |   |   |--- HourlyRate >  71.00
-|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- class: 0  (gộp — cả 2 nhánh đều dự đoán như nhau)
 |   |--- OverTime_Yes >  0.50
 |   |   |--- JobLevel <= 1.50
 |   |   |   |--- class: 1
@@ -25,7 +19,4 @@
 |   |   |   |--- StockOptionLevel <= 0.50
 |   |   |   |   |--- class: 1
 |   |   |   |--- StockOptionLevel >  0.50
-|   |   |   |   |--- DailyRate <= 766.50
-|   |   |   |   |   |--- class: 0
-|   |   |   |   |--- DailyRate >  766.50
-|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- class: 0  (gộp — cả 2 nhánh đều dự đoán như nhau)

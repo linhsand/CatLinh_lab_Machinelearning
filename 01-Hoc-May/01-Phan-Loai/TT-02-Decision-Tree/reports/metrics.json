@@ -2,9 +2,9 @@
   "n_samples": 1470,
   "attrition_rate": 0.16122448979591836,
   "dropped_columns": [
-    "EmployeeNumber",
     "EmployeeCount",
     "StandardHours",
+    "EmployeeNumber",
     "Over18"
   ],
   "baseline": {
