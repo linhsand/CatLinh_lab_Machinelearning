@@ -188,7 +188,96 @@ kèm độ lệch chuẩn qua cross-validation).
 
 ---
 
-## 8. SẢN PHẨM NỘP
+## 8. KẾT QUẢ CHẠY THỰC TẾ
+
+> Số liệu dưới đây lấy từ lần chạy `python src/train.py` gần nhất, đã sửa
+> theo feedback (xem cảnh báo về ngưỡng lâm sàng ở cuối mục này). Chi tiết
+> đầy đủ nằm trong `reports/run_log.txt`; các bảng/số nguyên gốc trong
+> `reports/*.csv` và `reports/summary.json`.
+
+**Dữ liệu:** 1025 dòng gốc (bản Kaggle) → loại 723 dòng trùng lặp (dữ liệu
+1025 dòng thực chất là 302 dòng gốc bị nhân bản) → còn **302 dòng** hợp lệ,
+tỉ lệ lớp dương 54,3%. Chia train/test 241/61 dòng, giữ nguyên tỉ lệ lớp
+bằng `stratify=y`.
+
+**Hiệu năng model (Logistic Regression, L2, C chọn qua CV = 2,78):**
+
+| Chỉ số | Giá trị (trên tập test, 61 dòng) |
+|---|---|
+| ROC-AUC | 0,904 |
+| Average Precision (AP) | 0,918 |
+| CV-AUC (5-fold, train) | 0,925 ± 0,036 |
+| Recall / Precision tại ngưỡng đã chọn | 0,848 / 0,824 |
+| Ngưỡng quyết định | 0,427 |
+
+**Bảng Odds Ratio (top 8 yếu tố ảnh hưởng mạnh nhất):**
+
+| Đặc trưng | Hệ số w | Odds Ratio | Diễn giải |
+|---|---|---|---|
+| `cp_3` | 2,083 | **8,03** | Đau ngực dạng không điển hình loại 3 → tăng mạnh nguy cơ (đây cũng là điểm gây nhầm lẫn lâm sàng thấy ở EDA) |
+| `cp_2` | 1,860 | **6,42** | Tương tự, dạng đau ngực loại 2 |
+| `thal_1` | 0,926 | 2,52 | Kết quả xét nghiệm thalassemia loại 1 |
+| `thalach` | 0,919 | 2,51 | Nhịp tim tối đa cao hơn 1 độ lệch chuẩn |
+| `cp_1` | 0,764 | 2,15 | Đau ngực loại 1 |
+| `ca_4` | 0,748 | 2,11 | `ca=4` (mã thiếu dữ liệu lịch sử — xem lưu ý ở mục 3) |
+| `slope_2` | 0,532 | 1,70 | Độ dốc đoạn ST loại 2 |
+| `thal_2` | 0,478 | 1,61 | ⚠️ VIF=31,7 — xem cảnh báo VIF bên dưới, hệ số này KHÔNG ổn định |
+
+Ba yếu tố làm **giảm** nguy cơ (bảo vệ) rõ nhất: `ca_2` (OR=0,05), `ca_1`
+(OR=0,14), `sex` (OR=0,16 — nam giới trong bộ dữ liệu này có odds mắc bệnh
+thấp hơn nữ, ngược trực giác thông thường vì đây chỉ là 1 bộ dữ liệu nhỏ,
+không nên suy diễn nhân quả).
+
+**Đa cộng tuyến (VIF):** `thal_2` (VIF=31,7) và `thal_3` (VIF=31,2) vượt xa
+ngưỡng cảnh báo 10 → hệ số riêng lẻ của 2 biến này (và một phần `thal_1`,
+VIF=7,4) không nên diễn giải tách rời, dù tổng ảnh hưởng của nhóm `thal` lên
+model vẫn đáng tin.
+
+**So sánh model (CV-AUC trên train, 5-fold ± độ lệch chuẩn):**
+
+| Model | CV-AUC | Test-AUC | Giải thích được trực tiếp? |
+|---|---|---|---|
+| Logistic Regression (L2) | 0,925 ± 0,036 | 0,903 | Có (odds ratio) |
+| Random Forest | 0,899 ± 0,058 | 0,894 | Không |
+| SVM (RBF) | 0,897 ± 0,048 | 0,878 | Không |
+
+Chênh lệch AUC giữa 3 model nằm trong khoảng độ lệch chuẩn CV → Logistic
+Regression không đánh đổi hiệu năng đáng kể để đổi lấy khả năng giải thích.
+
+**Kiểm tra công bằng theo giới tính** (tại ngưỡng đã chọn): Nam (n=43)
+recall 0,800 / precision 0,762; Nữ (n=18) recall 0,923 / precision 0,923. Cỡ
+mẫu test theo từng giới quá nhỏ để kết luận model thiên vị — cần kiểm định
+lại trên bộ dữ liệu lớn hơn trước khi triển khai.
+
+**Diễn giải 1 ca bệnh cụ thể:** bệnh nhân nam 41 tuổi, `cp=2`, `thalach=168`
+→ model dự đoán 82,6% khả năng mắc bệnh (ngưỡng cảnh báo đang dùng: 42,7%)
+→ kết luận CÓ nguy cơ cao, cần tầm soát thêm; nhãn thực tế trong dữ liệu là
+có bệnh. Ba yếu tố đẩy nguy cơ lên cao nhất với bệnh nhân này: `cp_3`,
+`cp_2`, `thal_1` (theo bảng odds ratio tổng thể).
+
+> ⚖️ Đây là công cụ **hỗ trợ**, không thay thế chẩn đoán của bác sĩ. Bộ dữ
+> liệu Cleveland từ thập niên 1980 tại Mỹ, cỡ mẫu nhỏ, không đại diện cho
+> bệnh nhân Việt Nam hiện nay.
+
+### ⚠️ Về cách chọn ngưỡng lâm sàng (recall ≥ 0,90) — điểm hay sai nhất bài này
+
+Cách làm **SAI** (rất dễ mắc, kể cả khi mọi thứ khác đều đúng): dùng
+`precision_recall_curve(y_test, y_proba_test)` để **tìm** ngưỡng đạt
+recall≥0,90, rồi lại **báo cáo** recall/precision cũng trên chính tập test
+đó. Ngưỡng khi đó đã "nhìn thấy" nhãn test trước khi đánh giá trên chính nó
+→ số liệu bị lạc quan giả tạo (ví dụ đã từng ra 0,909/0,811 chỉ vì ngưỡng
+được chọn để vừa khít 61 dòng test).
+
+Cách làm **ĐÚNG**: chọn ngưỡng bằng cross-validation (out-of-fold) **trên
+tập train**, tập test chỉ dùng **đúng một lần** để đánh giá cuối cùng. Với
+cách này, recall trên test thực tế đo được là **0,848** (thấp hơn mục tiêu
+0,90 vì test chỉ có 61 dòng nên có dao động tự nhiên) — con số này ĐÁNG TIN
+hơn 0,909 của cách làm sai, dù nhìn "kém" hơn. Xem hàm `pick_threshold_via_cv()`
+trong `src/train.py` để biết chi tiết triển khai.
+
+---
+
+## 9. SẢN PHẨM NỘP
 
 ```
 TT-04-LogisticRegression-<HoTen>/
@@ -206,7 +295,7 @@ TT-04-LogisticRegression-<HoTen>/
 
 ---
 
-## 9. MỞ RỘNG
+## 10. MỞ RỘNG
 
 ```
    1. Tính khoảng tin cậy 95% cho odds ratio (dùng statsmodels.Logit)

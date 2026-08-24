@@ -21,7 +21,6 @@ Toàn bộ output số liệu được in ra màn hình VÀ ghi vào reports/run
 để tiện đọc lại và đưa vào README / báo cáo.
 """
 
-import sys
 import json
 import warnings
 from pathlib import Path
@@ -34,7 +33,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
 
-from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
+from sklearn.model_selection import (
+    train_test_split, StratifiedKFold, cross_val_score, cross_val_predict,
+)
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -49,7 +50,28 @@ from sklearn.metrics import (
 )
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-warnings.filterwarnings("ignore")
+# Lưu ý: KHÔNG dùng warnings.filterwarnings("ignore") toàn cục ở đây nữa.
+# Bản trước che luôn cả các cảnh báo hữu ích (vd ConvergenceWarning của
+# liblinear khi C rất lớn) — những cảnh báo này có giá trị chẩn đoán, không
+# nên bị nuốt âm thầm.
+# Chỉ lọc CHÍNH XÁC 1 cảnh báo vô hại và lặp lại rất nhiều lần (mỗi fold CV
+# một lần) gây nhiễu log: FutureWarning về việc sklearn >=1.8 sẽ đổi cách
+# truyền tham số penalty=. Đây là API sẽ đổi ở phiên bản tương lai, không
+# phải lỗi hay rủi ro của chính model, nên an toàn để lọc RIÊNG cảnh báo này.
+warnings.filterwarnings(
+    "ignore", category=FutureWarning, message=".*'penalty' was deprecated.*"
+)
+# Hai cảnh báo dưới đây cũng bị lọc RIÊNG vì lý do tương tự: chúng đến từ nội
+# bộ LogisticRegressionCV (mặc định l1_ratios, và cách sklearn sẽ đơn giản
+# hoá thuộc tính fit_ trong bản 1.10), lặp lại mỗi fold CV -> rất nhiều dòng
+# giống hệt nhau, không nói lên điều gì về chất lượng model hay dữ liệu của
+# BÀI TẬP NÀY. Các cảnh báo có ý nghĩa thực sự (hội tụ, dữ liệu...) vẫn hiện.
+warnings.filterwarnings(
+    "ignore", category=FutureWarning, message=".*l1_ratios will change.*"
+)
+warnings.filterwarnings(
+    "ignore", category=FutureWarning, message=".*fitted attributes of LogisticRegressionCV.*"
+)
 
 # ---------------------------------------------------------------------------
 # Đường dẫn dự án
@@ -345,7 +367,77 @@ def compare_l1_l2(X_train, y_train, X_test, y_test, preprocessor, feature_names)
 # ===========================================================================
 # BƯỚC 8-9: ROC/PR + CHỌN NGƯỠNG THEO RECALL >= 0.90
 # ===========================================================================
-def plot_roc_pr_and_pick_threshold(pipe, X_test, y_test, target_recall=0.90):
+def pick_threshold_via_cv(X_train, y_train, preprocessor, penalty="l2",
+                           target_recall=0.90, n_splits=5):
+    """
+    Chọn ngưỡng quyết định BẰNG CROSS-VALIDATION TRÊN TẬP TRAIN — không dò
+    trên tập test như bản trước.
+
+    ⚠️ Vì sao bản trước sai (feedback đã chỉ ra và bị trừ điểm 'method'):
+    Bản cũ gọi precision_recall_curve() trực tiếp trên (y_test, y_proba_test)
+    để TÌM ngưỡng thoả recall>=0.90, rồi lại BÁO CÁO recall/precision cũng
+    trên chính 61 dòng test đó. Ngưỡng vì vậy đã được "tối ưu hoá" để khớp
+    đúng đặc điểm ngẫu nhiên của tập test này -> con số 0.909/0.811 là ước
+    lượng LẠC QUAN (optimistic bias), không phản ánh đúng hiệu năng khi model
+    gặp bệnh nhân hoàn toàn mới. Đây là một dạng rò rỉ nhãn qua bước chọn
+    ngưỡng, tinh vi hơn rò rỉ dữ liệu ở bước 1 nhưng bản chất tương tự: dùng
+    thông tin của tập đánh giá để đưa ra một quyết định (ở đây là ngưỡng cắt)
+    rồi lại đánh giá trên chính tập đó.
+
+    Cách làm đúng: tập TEST chỉ được dùng ĐÚNG MỘT LẦN, ở bước đánh giá cuối
+    cùng, sau khi mọi lựa chọn (C, ngưỡng, biến...) đã chốt xong bằng dữ liệu
+    train. Ở đây ta dùng cross_val_predict trên tập TRAIN để lấy xác suất
+    OOF (out-of-fold) — với mỗi dòng train, xác suất dự đoán đến từ 1 model
+    KHÔNG được huấn luyện trên chính dòng đó — rồi dò ngưỡng trên các xác
+    suất OOF này. Ngưỡng tìm được sau đó mới được áp dụng đúng 1 lần lên tập
+    test để có số liệu cuối cùng, không thiên lệch.
+    """
+    solver = "liblinear" if penalty == "l1" else "lbfgs"
+    cv_inner = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=RANDOM_STATE)
+    model = LogisticRegressionCV(
+        Cs=10, cv=cv_inner, penalty=penalty, solver=solver,
+        scoring="roc_auc", max_iter=5000, random_state=RANDOM_STATE,
+    )
+    pipe = Pipeline(steps=[("prep", preprocessor), ("clf", model)])
+
+    cv_outer = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=RANDOM_STATE)
+    y_oof_proba = cross_val_predict(
+        pipe, X_train, y_train, cv=cv_outer, method="predict_proba"
+    )[:, 1]
+
+    precision, recall, pr_thresh = precision_recall_curve(y_train, y_oof_proba)
+    valid = recall[:-1] >= target_recall
+    if valid.any():
+        candidate_idx = np.where(valid)[0]
+        best_idx = candidate_idx[np.argmax(pr_thresh[candidate_idx])]
+        chosen_threshold = pr_thresh[best_idx]
+        oof_precision, oof_recall = precision[best_idx], recall[best_idx]
+    else:
+        chosen_threshold = 0.5
+        oof_precision, oof_recall = precision[0], recall[0]
+
+    log(
+        f"Đã chạy cross_val_predict ({n_splits}-fold, OOF) trên {len(y_train)} "
+        f"dòng train để lấy xác suất KHÔNG rò rỉ.\n"
+        f"-> Ngưỡng được chọn (trên OOF-train) = {chosen_threshold:.3f}\n"
+        f"   Tại ngưỡng này trên OOF-train: recall = {oof_recall:.3f}, "
+        f"precision = {oof_precision:.3f}\n"
+        f"   (Đây CHỈ để chọn ngưỡng — số liệu báo cáo chính thức sẽ tính "
+        f"lại trên tập TEST hoàn toàn chưa dùng tới, ở bước tiếp theo.)"
+    )
+    return chosen_threshold
+
+
+def plot_roc_pr(pipe, X_test, y_test, chosen_threshold, target_recall=0.90):
+    """
+    Vẽ đường ROC/Precision-Recall và báo cáo hiệu năng THỰC SỰ trên tập test.
+
+    QUAN TRỌNG: chosen_threshold được truyền vào từ pick_threshold_via_cv(),
+    đã chọn xong TRƯỚC KHI hàm này chạm vào y_test. Tập test ở đây chỉ đóng
+    vai trò "giám khảo" — đánh giá đúng 1 lần, không tham gia vào việc chọn
+    ngưỡng -> recall/precision báo cáo dưới đây là ước lượng không thiên lệch
+    (unbiased) cho hiệu năng khi triển khai trên bệnh nhân mới.
+    """
     section("BƯỚC 8-9: ĐƯỜNG ROC/PR & CHỌN NGƯỠNG THEO YÊU CẦU LÂM SÀNG")
 
     y_proba = pipe.predict_proba(X_test)[:, 1]
@@ -356,52 +448,37 @@ def plot_roc_pr_and_pick_threshold(pipe, X_test, y_test, target_recall=0.90):
     precision, recall, pr_thresh = precision_recall_curve(y_test, y_proba)
     ap = average_precision_score(y_test, y_proba)
 
-    # Ngưỡng mặc định 0.5 không phù hợp cho sàng lọc y tế vì bỏ sót 1 ca bệnh
-    # tim (false negative) nguy hiểm hơn nhiều so với 1 lần báo động giả (false
-    # positive, chỉ tốn thêm 1 lần xét nghiệm kiểm tra lại).
-    # -> Ta tìm NGƯỠNG THẤP NHẤT trong các ngưỡng đạt recall >= target_recall,
-    #    vì ngưỡng càng thấp thì recall càng cao nhưng precision càng giảm -
-    #    ta muốn "vừa đủ" để không hi sinh precision quá nhiều.
-    valid = recall[:-1] >= target_recall  # bỏ điểm cuối (recall=0, không có threshold)
-    if valid.any():
-        # pr_thresh tương ứng precision[:-1], recall[:-1]; tìm ngưỡng CAO NHẤT
-        # trong các ngưỡng thoả recall>=target (để precision cao nhất có thể)
-        candidate_idx = np.where(valid)[0]
-        best_idx = candidate_idx[np.argmax(pr_thresh[candidate_idx])]
-        chosen_threshold = pr_thresh[best_idx]
-        chosen_precision = precision[best_idx]
-        chosen_recall = recall[best_idx]
-    else:
-        chosen_threshold = 0.5
-        chosen_precision, chosen_recall = precision[0], recall[0]
-
+    log(
+        "Ngưỡng lâm sàng KHÔNG được dò trên tập test này — nó đã được chọn "
+        "trước đó bằng cross-validation trên tập train (xem log phía trên). "
+        "Ở đây tập test chỉ dùng để ĐO hiệu năng tại ngưỡng đã chốt."
+    )
     log(f"Test ROC-AUC = {auc:.3f}")
     log(f"Test Average Precision (AP) = {ap:.3f}")
     log(f"Mục tiêu lâm sàng: recall >= {target_recall:.0%}")
-    log(
-        f"-> Ngưỡng được chọn = {chosen_threshold:.3f} "
-        f"(so với mặc định 0.5)\n"
-        f"   Tại ngưỡng này: recall = {chosen_recall:.3f}, precision = {chosen_precision:.3f}"
-    )
+    log(f"Ngưỡng đang dùng (chọn từ CV trên train) = {chosen_threshold:.3f}")
 
     # Đối chiếu với ngưỡng mặc định 0.5 để thấy rõ cái giá phải trả
     y_pred_default = (y_proba >= 0.5).astype(int)
     y_pred_chosen = (y_proba >= chosen_threshold).astype(int)
-    log("\nSo sánh 2 ngưỡng:")
+    chosen_recall = recall_score(y_test, y_pred_chosen)
+    chosen_precision = precision_score(y_test, y_pred_chosen)
+    log("\nSo sánh 2 ngưỡng (đo trên tập TEST, ngưỡng đều đã chốt từ trước):")
     log(
         f"  Ngưỡng 0.50 (mặc định): recall={recall_score(y_test, y_pred_default):.3f}, "
         f"precision={precision_score(y_test, y_pred_default):.3f}"
     )
     log(
-        f"  Ngưỡng {chosen_threshold:.3f} (theo yêu cầu bác sĩ): "
-        f"recall={recall_score(y_test, y_pred_chosen):.3f}, "
-        f"precision={precision_score(y_test, y_pred_chosen):.3f}"
+        f"  Ngưỡng {chosen_threshold:.3f} (theo yêu cầu bác sĩ, chọn từ CV-train): "
+        f"recall={chosen_recall:.3f}, precision={chosen_precision:.3f}"
     )
     log(
         "  -> Đánh đổi: để không bỏ sót ca bệnh nào (recall cao), ta chấp nhận "
         "nhiều báo động giả hơn (precision giảm). Đây là lựa chọn ĐÚNG về mặt "
         "y khoa vì chi phí bỏ sót 1 ca bệnh tim >> chi phí 1 lần xét nghiệm "
-        "kiểm tra thêm."
+        "kiểm tra thêm. Nếu recall trên test không chạm đúng 90% như mục tiêu "
+        "CV-train, đó là dao động tự nhiên do test chỉ có ~60 dòng — hãy nhìn "
+        "khoảng dao động CV ở Bước 11 thay vì tin tuyệt đối vào 1 con số lẻ."
     )
 
     cm = confusion_matrix(y_test, y_pred_chosen)
@@ -415,16 +492,16 @@ def plot_roc_pr_and_pick_threshold(pipe, X_test, y_test, target_recall=0.90):
     axes[0].plot([0, 1], [0, 1], "k--", lw=1, label="Random")
     axes[0].set_xlabel("False Positive Rate")
     axes[0].set_ylabel("True Positive Rate (Recall)")
-    axes[0].set_title("Đường ROC")
+    axes[0].set_title("Đường ROC (test)")
     axes[0].legend()
 
     axes[1].plot(recall, precision, color="#2980b9", lw=2, label=f"PR (AP={ap:.3f})")
     axes[1].axvline(target_recall, color="gray", ls="--", lw=1, label=f"Recall mục tiêu={target_recall:.0%}")
     axes[1].scatter([chosen_recall], [chosen_precision], color="green", zorder=5,
-                     label=f"Ngưỡng đã chọn={chosen_threshold:.2f}")
+                     label=f"Ngưỡng {chosen_threshold:.2f} (chọn từ CV-train)")
     axes[1].set_xlabel("Recall")
     axes[1].set_ylabel("Precision")
-    axes[1].set_title("Đường Precision-Recall")
+    axes[1].set_title("Đường Precision-Recall (test)")
     axes[1].legend()
 
     plt.tight_layout()
@@ -433,7 +510,7 @@ def plot_roc_pr_and_pick_threshold(pipe, X_test, y_test, target_recall=0.90):
     plt.close()
     log(f"\nĐã lưu hình: {fig_path.relative_to(ROOT)}")
 
-    return chosen_threshold, auc, ap
+    return auc, ap
 
 
 # ===========================================================================
@@ -675,9 +752,13 @@ def main():
     main_pipe = l1_l2_results["l2"]["pipe"]
     main_table = l1_l2_results["l2"]["table"]
 
-    chosen_threshold, auc, ap = plot_roc_pr_and_pick_threshold(
-        main_pipe, X_test, y_test, target_recall=0.90
+    # Chọn ngưỡng lâm sàng bằng CV trên tập TRAIN (không đụng tới y_test) —
+    # xem docstring pick_threshold_via_cv() để hiểu vì sao đây là điểm sửa
+    # quan trọng nhất so với bản trước.
+    chosen_threshold = pick_threshold_via_cv(
+        X_train, y_train, preprocessor, penalty="l2", target_recall=0.90
     )
+    auc, ap = plot_roc_pr(main_pipe, X_test, y_test, chosen_threshold, target_recall=0.90)
 
     check_vif(X_train, preprocessor, feature_names)
 

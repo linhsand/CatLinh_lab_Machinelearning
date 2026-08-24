@@ -3,7 +3,7 @@
   "n_features": 22,
   "test_auc_l2": 0.9036796536796537,
   "test_auc_l1": 0.9004329004329005,
-  "chosen_threshold": 0.23729582908893845,
+  "chosen_threshold": 0.42720697384644074,
   "test_auc": 0.9036796536796537,
   "test_average_precision": 0.9176865765188654
 }

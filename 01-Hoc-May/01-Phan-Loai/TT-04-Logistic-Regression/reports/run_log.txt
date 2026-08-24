@@ -119,24 +119,28 @@ dac_trung  he_so_w  odds_ratio
 >>> KẾT LUẬN L1 vs L2:
     L2: AUC=0.904, giữ lại toàn bộ 22 biến, hệ số co về gần 0 nhưng không loại hẳn biến nào -> phù hợp khi ta tin rằng mọi biến lâm sàng đều có ít nhiều giá trị chẩn đoán.
     L1: AUC=0.900, có xu hướng loại bỏ hẳn một số biến ít quan trọng -> model đơn giản hơn, dễ giải thích hơn với bác sĩ vì chỉ còn 'các yếu tố nguy cơ thực sự quan trọng', đánh đổi lại có thể mất một phần thông tin nếu C bị phạt quá mạnh.
+Đã chạy cross_val_predict (5-fold, OOF) trên 241 dòng train để lấy xác suất KHÔNG rò rỉ.
+-> Ngưỡng được chọn (trên OOF-train) = 0.427
+   Tại ngưỡng này trên OOF-train: recall = 0.901, precision = 0.837
+   (Đây CHỈ để chọn ngưỡng — số liệu báo cáo chính thức sẽ tính lại trên tập TEST hoàn toàn chưa dùng tới, ở bước tiếp theo.)
 
 ==============================================================================
 BƯỚC 8-9: ĐƯỜNG ROC/PR & CHỌN NGƯỠNG THEO YÊU CẦU LÂM SÀNG
 ==============================================================================
+Ngưỡng lâm sàng KHÔNG được dò trên tập test này — nó đã được chọn trước đó bằng cross-validation trên tập train (xem log phía trên). Ở đây tập test chỉ dùng để ĐO hiệu năng tại ngưỡng đã chốt.
 Test ROC-AUC = 0.904
 Test Average Precision (AP) = 0.918
 Mục tiêu lâm sàng: recall >= 90%
--> Ngưỡng được chọn = 0.237 (so với mặc định 0.5)
-   Tại ngưỡng này: recall = 0.909, precision = 0.811
+Ngưỡng đang dùng (chọn từ CV trên train) = 0.427
 
-So sánh 2 ngưỡng:
+So sánh 2 ngưỡng (đo trên tập TEST, ngưỡng đều đã chốt từ trước):
   Ngưỡng 0.50 (mặc định): recall=0.848, precision=0.824
-  Ngưỡng 0.237 (theo yêu cầu bác sĩ): recall=0.909, precision=0.811
-  -> Đánh đổi: để không bỏ sót ca bệnh nào (recall cao), ta chấp nhận nhiều báo động giả hơn (precision giảm). Đây là lựa chọn ĐÚNG về mặt y khoa vì chi phí bỏ sót 1 ca bệnh tim >> chi phí 1 lần xét nghiệm kiểm tra thêm.
+  Ngưỡng 0.427 (theo yêu cầu bác sĩ, chọn từ CV-train): recall=0.848, precision=0.824
+  -> Đánh đổi: để không bỏ sót ca bệnh nào (recall cao), ta chấp nhận nhiều báo động giả hơn (precision giảm). Đây là lựa chọn ĐÚNG về mặt y khoa vì chi phí bỏ sót 1 ca bệnh tim >> chi phí 1 lần xét nghiệm kiểm tra thêm. Nếu recall trên test không chạm đúng 90% như mục tiêu CV-train, đó là dao động tự nhiên do test chỉ có ~60 dòng — hãy nhìn khoảng dao động CV ở Bước 11 thay vì tin tuyệt đối vào 1 con số lẻ.
 
 Ma trận nhầm lẫn tại ngưỡng đã chọn:
-[[21  7]
- [ 3 30]]
+[[22  6]
+ [ 5 28]]
 (hàng=thực tế [0,1], cột=dự đoán [0,1])
 
 Đã lưu hình: reports\roc_pr_curve.png
@@ -182,9 +186,9 @@ Mục đích so sánh KHÔNG phải để tìm model 'AUC cao nhất bằng mọ
 
 Bảng so sánh (CV-AUC trên train, 5-fold; test-AUC trên tập test giữ lại):
                    model  cv_auc_mean  cv_auc_std  test_auc  recall_at_chosen_thr  precision_at_chosen_thr co_giai_thich_duoc_truc_tiep
-Logistic Regression (L2)        0.925       0.036     0.903                 0.909                    0.789              Có (odds ratio)
-        SVM (RBF kernel)        0.897       0.048     0.878                 0.939                    0.660                        Không
-           Random Forest        0.899       0.058     0.894                 0.970                    0.653                        Không
+Logistic Regression (L2)        0.925       0.036     0.903                 0.848                    0.848              Có (odds ratio)
+        SVM (RBF kernel)        0.897       0.048     0.878                 0.818                    0.844                        Không
+           Random Forest        0.899       0.058     0.894                 0.848                    0.800                        Không
 
 Đã lưu: reports\model_comparison.csv
 
@@ -198,18 +202,18 @@ Bệnh nhân mẫu (index gốc trong dữ liệu = 264):
   41    1   2       130   214    0        0      168      0      2.0      1   0     2
 
 Xác suất model dự đoán mắc bệnh: 82.6%
-Ngưỡng quyết định đang dùng: 0.24 -> Kết luận model: CÓ nguy cơ cao, cần tầm soát thêm
+Ngưỡng quyết định đang dùng: 0.43 -> Kết luận model: CÓ nguy cơ cao, cần tầm soát thêm
 Nhãn thực tế trong dữ liệu: có bệnh
 
 --- ĐOẠN GIẢI THÍCH BẰNG NGÔN NGỮ Y KHOA (mẫu, dùng cho bước 12) ---
-Dựa trên các chỉ số đo được, mô hình ước tính bệnh nhân này có 83% khả năng mắc bệnh tim, cao hơn ngưỡng cảnh báo 24% mà khoa đang áp dụng để đảm bảo không bỏ sót ca bệnh. Ba yếu tố có ảnh hưởng làm TĂNG nguy cơ mạnh nhất trên toàn bộ tập dữ liệu (theo bảng odds ratio) là: cp_3, cp_2, thal_1. Ngược lại, các yếu tố có xu hướng làm GIẢM nguy cơ (bảo vệ) là: ca_2, ca_1, sex. Đây CHỈ LÀ công cụ hỗ trợ sàng lọc ban đầu dựa trên thống kê nhóm, không thay thế chẩn đoán lâm sàng trực tiếp của bác sĩ; bác sĩ cần đối chiếu thêm với bệnh sử, triệu chứng thực tế và các xét nghiệm chuyên sâu trước khi kết luận.
+Dựa trên các chỉ số đo được, mô hình ước tính bệnh nhân này có 83% khả năng mắc bệnh tim, cao hơn ngưỡng cảnh báo 43% mà khoa đang áp dụng để đảm bảo không bỏ sót ca bệnh. Ba yếu tố có ảnh hưởng làm TĂNG nguy cơ mạnh nhất trên toàn bộ tập dữ liệu (theo bảng odds ratio) là: cp_3, cp_2, thal_1. Ngược lại, các yếu tố có xu hướng làm GIẢM nguy cơ (bảo vệ) là: ca_2, ca_1, sex. Đây CHỈ LÀ công cụ hỗ trợ sàng lọc ban đầu dựa trên thống kê nhóm, không thay thế chẩn đoán lâm sàng trực tiếp của bác sĩ; bác sĩ cần đối chiếu thêm với bệnh sử, triệu chứng thực tế và các xét nghiệm chuyên sâu trước khi kết luận.
 
 ==============================================================================
 KIỂM TRA ĐẠO ĐỨC: MODEL CÓ ĐỐI XỬ KHÁC NHAU GIỮA NAM/NỮ KHÔNG?
 ==============================================================================
 gioi_tinh  so_luong  recall  precision
-      Nam        43   0.900      0.783
-       Nữ        18   0.923      0.857
+      Nam        43   0.800      0.762
+       Nữ        18   0.923      0.923
 
 Ghi chú đạo đức bắt buộc: bộ dữ liệu Cleveland thu thập từ thập niên 1980 tại Mỹ, cỡ mẫu nhỏ và không đại diện cho dân số Việt Nam hiện nay (khác biệt về chế độ ăn, gen, môi trường sống, tiêu chuẩn chẩn đoán). Chênh lệch recall/precision giữa 2 giới ở đây (nếu có) một phần đến từ cỡ mẫu nhỏ của tập test, KHÔNG nên vội kết luận model 'thiên vị' mà cần kiểm định lại trên bộ dữ liệu lớn hơn trước khi triển khai thực tế.
 
@@ -219,4 +223,4 @@ LƯU MODEL & BÁO CÁO
 Đã lưu model: models\logreg_pipeline.joblib
 Đã lưu bảng odds ratio: reports\odds_ratio.csv
 Đã lưu hình odds ratio: reports\odds_ratio.png
-Đã lưu summary.json: {'n_samples_after_dedup': 302, 'n_features': 22, 'test_auc_l2': 0.9036796536796537, 'test_auc_l1': 0.9004329004329005, 'chosen_threshold': 0.23729582908893845, 'test_auc': 0.9036796536796537, 'test_average_precision': 0.9176865765188654}
+Đã lưu summary.json: {'n_samples_after_dedup': 302, 'n_features': 22, 'test_auc_l2': 0.9036796536796537, 'test_auc_l1': 0.9004329004329005, 'chosen_threshold': 0.42720697384644074, 'test_auc': 0.9036796536796537, 'test_average_precision': 0.9176865765188654}
