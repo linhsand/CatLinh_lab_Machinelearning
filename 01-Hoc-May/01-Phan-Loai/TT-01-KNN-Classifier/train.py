@@ -31,6 +31,11 @@ from sklearn.metrics import (
     average_precision_score,
 )
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "data", "pima-indians-diabetes.csv")
+REPORTS_DIR = os.path.join(BASE_DIR, "reports")
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+
 RANDOM_STATE = 42
 COLS = [
     "Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin",
@@ -47,7 +52,7 @@ def load_and_clean_data(results_log):
     print("=" * 70)
     print("BƯỚC 1: NẠP DỮ LIỆU")
     print("=" * 70)
-    df = pd.read_csv("data/pima-indians-diabetes.csv", header=None, names=COLS)
+    df = pd.read_csv(DATA_PATH, header=None, names=COLS)
     print(f"Kích thước: {df.shape}")
     print(df.describe().T[["min", "max", "mean"]])
 
@@ -85,7 +90,7 @@ def eda_glucose_histogram(df_clean):
     ax.set_title("Phân bố Glucose theo nhóm Outcome")
     ax.legend()
     fig.tight_layout()
-    fig.savefig("reports/glucose_histogram.png", dpi=130)
+    fig.savefig(os.path.join(REPORTS_DIR, "glucose_histogram.png"), dpi=130)
     plt.close(fig)
     print("Đã lưu reports/glucose_histogram.png — Glucose tách nhóm khá rõ theo Outcome.")
 
@@ -167,7 +172,7 @@ def run_knn_scaled_vs_unscaled(
     }, index=["Recall", "Accuracy"]).round(3)
     print("\nBẢNG SO SÁNH:")
     print(comparison_table.to_string())
-    comparison_table.to_csv("reports/comparison_scale_vs_noscale.csv")
+    comparison_table.to_csv(os.path.join(REPORTS_DIR, "comparison_scale_vs_noscale.csv"))
 
 
 # ============================================================
@@ -239,7 +244,7 @@ def plot_recall_accuracy_vs_k(X_train, y_train, gs):
     ax.set_title(f"Recall & Accuracy theo K (weights={best_weights}, metric={best_metric})")
     ax.legend()
     fig.tight_layout()
-    fig.savefig("reports/recall_theo_K.png", dpi=130)
+    fig.savefig(os.path.join(REPORTS_DIR, "recall_theo_K.png"), dpi=130)
     plt.close(fig)
     print("Đã lưu reports/recall_theo_K.png")
     print("Giải thích hình dạng: K nhỏ -> variance cao, dễ overfit theo nhiễu cục bộ "
@@ -356,7 +361,7 @@ def evaluate_on_test(gs, X_train, y_train, X_test, y_test, results_log):
     ax.set_title(f"Ma trận nhầm lẫn — KNN tối ưu (K={gs.best_params_['knn__n_neighbors']})")
     fig.colorbar(im, ax=ax, fraction=0.046)
     fig.tight_layout()
-    fig.savefig("reports/confusion_matrix.png", dpi=130)
+    fig.savefig(os.path.join(REPORTS_DIR, "confusion_matrix.png"), dpi=130)
     plt.close(fig)
     print("Đã lưu reports/confusion_matrix.png")
 
@@ -412,13 +417,13 @@ def compare_knn_vs_logreg(gs, X_train, y_train, results_log):
     }, index=["Recall", "Precision", "F1", "Accuracy"]).round(3)
 
     print(final_compare.to_string())
-    final_compare.to_csv("reports/comparison_knn_vs_logreg.csv")
+    final_compare.to_csv(os.path.join(REPORTS_DIR, "comparison_knn_vs_logreg.csv"))
     results_log["knn_vs_logreg_cv"] = final_compare.to_dict()
 
 
 def save_outputs(best_model, results_log):
-    joblib.dump(best_model, "models/knn_pipeline.joblib")
-    with open("reports/results_log.json", "w", encoding="utf-8") as f:
+    joblib.dump(best_model, os.path.join(MODELS_DIR, "knn_pipeline.joblib"))
+    with open(os.path.join(REPORTS_DIR, "results_log.json"), "w", encoding="utf-8") as f:
         json.dump(results_log, f, ensure_ascii=False, indent=2, default=str)
     print("\n" + "=" * 70)
     print("HOÀN TẤT. Model đã lưu: models/knn_pipeline.joblib")
@@ -426,8 +431,8 @@ def save_outputs(best_model, results_log):
 
 
 def main():
-    os.makedirs("reports", exist_ok=True)
-    os.makedirs("models", exist_ok=True)
+    os.makedirs(REPORTS_DIR, exist_ok=True)
+    os.makedirs(MODELS_DIR, exist_ok=True)
 
     results_log = {}
 
