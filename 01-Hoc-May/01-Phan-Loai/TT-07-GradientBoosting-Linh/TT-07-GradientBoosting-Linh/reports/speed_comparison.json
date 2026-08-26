@@ -1,0 +1,7 @@
+{
+  "GradientBoostingClassifier_s": 26.63,
+  "HistGradientBoostingClassifier_s": 4.56,
+  "speedup_x": 5.83,
+  "GB_roc_auc": 0.9277,
+  "HGB_roc_auc": 0.9304
+}
