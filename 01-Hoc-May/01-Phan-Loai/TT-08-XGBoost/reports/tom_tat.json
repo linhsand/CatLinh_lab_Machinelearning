@@ -1,0 +1,18 @@
+{
+  "fraud_rate": 0.001727485630620034,
+  "n_total": 284807,
+  "n_train": 199364,
+  "n_val": 42721,
+  "n_test": 42722,
+  "scale_pos_weight": 518.1770833333334,
+  "xgb_best_iteration": 124,
+  "threshold_precision_90": 0.9802663922309875,
+  "threshold_cost_optimal": 0.97,
+  "cost_optimal_total_vnd": 65075320.0,
+  "predict_latency_ms": {
+    "Logistic Regression": 1.584890500016627,
+    "XGBoost": 6.131411999740521,
+    "Random Forest": 47.05060599902936,
+    "LightGBM": 1.7474500004027504
+  }
+}
