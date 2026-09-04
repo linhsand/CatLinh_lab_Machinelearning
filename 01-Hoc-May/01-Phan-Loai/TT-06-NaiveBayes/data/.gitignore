@@ -1,0 +1,4 @@
+# Bộ dữ liệu KHÔNG được commit. Lấy bằng: python data/download_data.py
+spam.csv
+*.csv
+!.gitignore
