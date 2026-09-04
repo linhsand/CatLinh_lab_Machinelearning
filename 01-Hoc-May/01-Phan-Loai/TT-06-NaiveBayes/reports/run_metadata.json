@@ -1,0 +1,12 @@
+{
+  "threshold": "0.41701064070345056",
+  "positive_label": "spam",
+  "target_precision": "0.98",
+  "selection": "{'combo': 'TfidfVectorizer + MultinomialNB', 'alpha': 0.1, 'ngram_range': (1, 2), 'chosen_on': '5-fold CV out-of-fold trên tập train'}",
+  "validation_metrics": "{'precision': 0.9811715481171548, 'recall': 0.8984674329501916}",
+  "test_metrics": "{'Mô hình': 'TfidfVectorizer + MultinomialNB @ T=0.417', 'Precision': 0.9752, 'Recall': 0.9008, 'F1': 0.9365, 'Accuracy': 0.9845}",
+  "data_fingerprint": "{'n_raw': 5572, 'n_dedup': 5169, 'n_train': 4135, 'n_test': 1034}",
+  "seed": "42",
+  "sklearn_version": "1.8.0",
+  "created_at": "2026-09-04T14:28:18"
+}

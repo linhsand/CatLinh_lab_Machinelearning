@@ -1,4 +1,6 @@
-Tổ hợp,Precision,Recall,F1,Accuracy,Train (s),Predict (ms/tin)
-CountVectorizer + MultinomialNB,1.0,1.0,1.0,1.0,0.036,0.015
-TfidfVectorizer + MultinomialNB,1.0,1.0,1.0,1.0,0.014,0.0163
-TfidfVectorizer + BernoulliNB,1.0,1.0,1.0,1.0,0.014,0.0187
+Tổ hợp,Precision (CV),Recall (CV),F1 (CV),Accuracy (CV),Train 1 lần (s),5-fold CV (s)
+TfidfVectorizer + MultinomialNB,0.9936,0.887,0.9372,0.985,0.2404,1.22
+TfidfVectorizer + BernoulliNB,0.9957,0.8812,0.935,0.9845,0.2819,1.199
+CountVectorizer + MultinomialNB,0.9503,0.9157,0.9327,0.9833,0.2291,1.285
+Logistic Regression + TFIDF,0.9156,0.9349,0.9251,0.9809,0.3012,1.509
+Baseline: DummyClassifier,0.0,0.0,0.0,0.8738,0.1128,0.671

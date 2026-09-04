@@ -1,0 +1,3 @@
+Chế độ,Trung vị p50 (ms),p95 (ms),p99 (ms),Trung bình (ms)
+Từng tin một (giống gateway thật),1.1984,1.8745,2.6777,1.2671
+Theo lô 1034 tin (vector hoá 1 lần),,,,0.051
