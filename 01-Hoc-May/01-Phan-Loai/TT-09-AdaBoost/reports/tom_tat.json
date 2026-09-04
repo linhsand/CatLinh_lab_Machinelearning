@@ -1,0 +1,84 @@
+{
+  "n_train": 125973,
+  "n_test": 22544,
+  "attack_rate_train": 0.4654171925730117,
+  "attack_rate_test": 0.5692423704755145,
+  "u2r_share_train": 0.00041278686702706137,
+  "n_unseen_attack_types_in_test": 17,
+  "cv_baseline": [
+    {
+      "model": "Baseline (Dummy)",
+      "cv_accuracy_mean": 0.502853800056314,
+      "cv_accuracy_std": 0.002612204833509734,
+      "cv_f1_mean": 0.46670017695399746,
+      "cv_f1_std": 0.00280196422064639,
+      "cv_time_s": 6.784520999994129
+    },
+    {
+      "model": "1 Stump (depth=1)",
+      "cv_accuracy_mean": 0.9221499683590484,
+      "cv_accuracy_std": 0.002019125132329863,
+      "cv_f1_mean": 0.9160969050868966,
+      "cv_f1_std": 0.002234364135567719,
+      "cv_time_s": 7.630678000001353
+    },
+    {
+      "model": "AdaBoost (300 stump)",
+      "cv_accuracy_mean": 0.9848618316230017,
+      "cv_accuracy_std": 0.0005492776472457654,
+      "cv_f1_mean": 0.9836244261154257,
+      "cv_f1_std": 0.000597957306630557,
+      "cv_time_s": 217.9558290999994
+    }
+  ],
+  "noise_experiment": [
+    {
+      "model": "AdaBoost",
+      "f1_clean": 0.9843413920674524,
+      "f1_noisy_5pct": 0.9730074931880109,
+      "sut_giam_f1": 0.011333898879441473
+    },
+    {
+      "model": "Random Forest",
+      "f1_clean": 0.9989761965702585,
+      "f1_noisy_5pct": 0.9927288280581694,
+      "sut_giam_f1": 0.006247368512089069
+    }
+  ],
+  "ensemble_comparison": [
+    {
+      "model": "AdaBoost",
+      "accuracy": 0.9855526890256003,
+      "f1": 0.9843413920674524,
+      "train_time_s": NaN
+    },
+    {
+      "model": "Random Forest",
+      "accuracy": 0.999047430045644,
+      "f1": 0.9989761965702585,
+      "train_time_s": NaN
+    },
+    {
+      "model": "Gradient Boosting",
+      "accuracy": 0.9976979559436396,
+      "f1": 0.997524541186513,
+      "train_time_s": 173.40376990000368
+    }
+  ],
+  "final_test_eval": {
+    "accuracy_test": 0.7655251951738822,
+    "f1_test": 0.7575896542236081,
+    "cv_f1_train": 0.9836244261154257,
+    "gap_cv_vs_test_f1": 0.22603477189181753,
+    "confusion_matrix": {
+      "tn": 8998,
+      "fp": 713,
+      "fn": 4573,
+      "tp": 8260
+    },
+    "false_positive_rate": 0.07342189269900114,
+    "false_negative_rate": 0.3563469181017689,
+    "assumed_daily_connections": 2000000,
+    "estimated_false_alarms_per_day": 63254.08090844571
+  }
+}

@@ -1,0 +1,6 @@
+attack_category,train,test
+DoS,45927,7460
+Normal,67343,9711
+Probe,11656,2421
+R2L,995,2885
+U2R,52,67
