@@ -1,0 +1,132 @@
+{
+  "train_sample": 12000,
+  "test_sample": 3000,
+  "baseline_logreg_accuracy": 0.908,
+  "normalization_comparison": [
+    {
+      "cau_hinh": "KHONG chuan hoa (0-255)",
+      "accuracy": 0.9306666666666666,
+      "so_epoch_thuc_te": 28,
+      "loss_cuoi": 0.05838335011127003,
+      "thoi_gian_s": 44.60997430002317
+    },
+    {
+      "cau_hinh": "CO chuan hoa (/255)",
+      "accuracy": 0.9603333333333334,
+      "so_epoch_thuc_te": 24,
+      "loss_cuoi": 0.0033970685134114427,
+      "thoi_gian_s": 39.07430169999134
+    }
+  ],
+  "architecture_comparison": [
+    {
+      "kien_truc": "(64)",
+      "so_tham_so": 50890,
+      "accuracy": 0.9533333333333334,
+      "so_epoch_thuc_te": 38,
+      "thoi_gian_s": 44.34137830004329
+    },
+    {
+      "kien_truc": "(128)",
+      "so_tham_so": 101770,
+      "accuracy": 0.9586666666666667,
+      "so_epoch_thuc_te": 38,
+      "thoi_gian_s": 19.472305200004485
+    },
+    {
+      "kien_truc": "(128,64)",
+      "so_tham_so": 109386,
+      "accuracy": 0.9603333333333334,
+      "so_epoch_thuc_te": 26,
+      "thoi_gian_s": 7.587742900010198
+    },
+    {
+      "kien_truc": "(256,128,64)",
+      "so_tham_so": 242762,
+      "accuracy": 0.964,
+      "so_epoch_thuc_te": 23,
+      "thoi_gian_s": 67.29247079999186
+    }
+  ],
+  "activation_comparison": [
+    {
+      "activation": "relu",
+      "accuracy": 0.9603333333333334,
+      "so_epoch_thuc_te": 26,
+      "loss_cuoi": 0.0027591038532180766
+    },
+    {
+      "activation": "tanh",
+      "accuracy": 0.96,
+      "so_epoch_thuc_te": 59,
+      "loss_cuoi": 0.0007853396422028481
+    },
+    {
+      "activation": "logistic",
+      "accuracy": 0.9596666666666667,
+      "so_epoch_thuc_te": 63,
+      "loss_cuoi": 0.0053889265543310035
+    }
+  ],
+  "learning_rate_comparison": [
+    {
+      "learning_rate_init": 0.01,
+      "accuracy": 0.9633333333333334,
+      "so_epoch_thuc_te": 28
+    },
+    {
+      "learning_rate_init": 0.001,
+      "accuracy": 0.9603333333333334,
+      "so_epoch_thuc_te": 26
+    },
+    {
+      "learning_rate_init": 0.0001,
+      "accuracy": 0.9523333333333334,
+      "so_epoch_thuc_te": 66
+    }
+  ],
+  "final_model": {
+    "hidden_layer_sizes": [
+      128,
+      64
+    ],
+    "accuracy_test": 0.9603333333333334
+  },
+  "error_analysis": {
+    "top5_cap_nham_lan": [
+      {
+        "thuc_te": 7,
+        "du_doan": 9,
+        "so_lan": 6
+      },
+      {
+        "thuc_te": 8,
+        "du_doan": 5,
+        "so_lan": 6
+      },
+      {
+        "thuc_te": 4,
+        "du_doan": 9,
+        "so_lan": 5
+      },
+      {
+        "thuc_te": 5,
+        "du_doan": 3,
+        "so_lan": 4
+      },
+      {
+        "thuc_te": 2,
+        "du_doan": 6,
+        "so_lan": 4
+      }
+    ],
+    "so_mau_sai": 119,
+    "tong_test": 3000
+  },
+  "human_in_the_loop_threshold_99pct": {
+    "nguong_tin_cay": 0.99,
+    "pct_tu_dong": 0.8046666666666666,
+    "pct_chuyen_nguoi": 0.19533333333333336,
+    "accuracy_tren_phan_tu_dong": 0.9979287489643744
+  }
+}
