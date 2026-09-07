@@ -1,0 +1,7 @@
+{
+  "GradientBoostingClassifier_s": 62.38015365600586,
+  "HistGradientBoostingClassifier_s": 11.668406248092651,
+  "speedup_x": 5.346073176549084,
+  "GB_roc_auc": 0.9276997939066213,
+  "HGB_roc_auc": 0.9303694070996364
+}

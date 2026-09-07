@@ -4,11 +4,13 @@ TT-07 — Gradient Boosting: Dự đoán thu nhập để chấm điểm hồ s�
 Script huấn luyện độc lập (chạy: python src/train.py). Toàn bộ logic ở đây
 cũng được trình bày lại theo từng bước, có giải thích, trong
 notebooks/gradient_boosting_income.ipynb.
+
+Mọi số liệu trong README được trích từ reports/ do file này sinh ra — chạy
+lại script sẽ ghi đè các file đó.
 """
 
 import time
 import json
-import warnings
 from pathlib import Path
 
 import numpy as np
@@ -34,8 +36,6 @@ from sklearn.metrics import (
     log_loss,
     accuracy_score,
 )
-
-warnings.filterwarnings("ignore")
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "data" / "adult.csv"
@@ -77,9 +77,11 @@ def load_and_clean(path: Path) -> pd.DataFrame:
     # Bẫy 4: fnlwgt là trọng số điều tra dân số, không phải đặc trưng cá nhân.
     df = df.drop(columns=["fnlwgt"])
 
-    # Nhãn nhị phân
-    df["income"] = df["income"].str.strip()
-    df["target"] = (df["income"] == ">50K").astype(int)
+    # Nhãn nhị phân. Một số bản phân phối của Adult (vd. adult.test) ghi nhãn
+    # kèm dấu chấm cuối (">50K.") — bỏ dấu chấm đó trước khi so khớp, nếu
+    # không toàn bộ dòng sẽ bị gán nhãn 0 một cách âm thầm.
+    income = df["income"].str.strip().str.rstrip(".")
+    df["target"] = (income == ">50K").astype(int)
     df = df.drop(columns=["income"])
 
     return df, CAT_COLS_LOCAL
@@ -105,57 +107,51 @@ def main():
     X = df.drop(columns=["target"])
     y = df["target"]
 
-    X_train, X_test, y_train, y_test = train_test_split(
+    # Tách TEST trước, khoá lại, chỉ mở đúng MỘT LẦN ở phần đánh giá cuối.
+    # Mọi lựa chọn (grid learning_rate x n_estimators, điểm dừng sớm best_iter)
+    # phải chấm bằng VALIDATION (tách từ train_full), không được chạm test.
+    X_train_full, X_test, y_train_full, y_test = train_test_split(
         X, y, test_size=0.2, stratify=y, random_state=RANDOM_STATE
+    )
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train_full, y_train_full, test_size=0.2, stratify=y_train_full, random_state=RANDOM_STATE
     )
 
     results = {}
 
-    # ---- Baselines ----
+    # ---- Baselines (huấn luyện trên toàn bộ train_full, chấm trên test) ----
     dummy = build_pipeline(cat_cols, NUM_COLS, DummyClassifier(strategy="most_frequent"))
-    dummy.fit(X_train, y_train)
+    dummy.fit(X_train_full, y_train_full)
     results["Dummy (most_frequent)"] = average_precision_score(
         y_test, dummy.predict_proba(X_test)[:, 1]
     )
 
     dtree = build_pipeline(cat_cols, NUM_COLS, DecisionTreeClassifier(max_depth=6, random_state=RANDOM_STATE))
-    dtree.fit(X_train, y_train)
+    dtree.fit(X_train_full, y_train_full)
     results["Decision Tree (depth=6)"] = average_precision_score(
         y_test, dtree.predict_proba(X_test)[:, 1]
     )
 
-    # ---- Gradient Boosting (tham số mặc định theo README) ----
-    gb = build_pipeline(
+    # ---- Gradient Boosting dùng để DÒ điểm dừng sớm — huấn luyện trên
+    # X_train (bỏ riêng phần validation) để staged loss trên X_val hợp lệ ----
+    gb_tune = build_pipeline(
         cat_cols, NUM_COLS,
         GradientBoostingClassifier(
             n_estimators=500, learning_rate=0.05, max_depth=3,
-            subsample=0.8, validation_fraction=0.1, n_iter_no_change=20,
-            random_state=RANDOM_STATE,
+            subsample=0.8, random_state=RANDOM_STATE,
         ),
     )
-    t0 = time.time()
-    gb.fit(X_train, y_train)
-    gb_time = time.time() - t0
-    gb_proba = gb.predict_proba(X_test)[:, 1]
-    results["Gradient Boosting"] = average_precision_score(y_test, gb_proba)
-
-    print("PR-AUC (Average Precision):")
-    for k, v in results.items():
-        print(f"  {k:28s}: {v:.4f}")
-    print(f"ROC-AUC (GB): {roc_auc_score(y_test, gb_proba):.4f}")
-    print(f"Accuracy (GB): {accuracy_score(y_test, gb.predict(X_test)):.4f}")
-
-    # ---- Train/validation loss theo số cây ----
-    gb_model = gb.named_steps["model"]
-    Xtr_enc = gb.named_steps["pre"].transform(X_train)
-    Xte_enc = gb.named_steps["pre"].transform(X_test)
-    train_loss = [log_loss(y_train, p) for p in gb_model.staged_predict_proba(Xtr_enc)]
-    test_loss = [log_loss(y_test, p) for p in gb_model.staged_predict_proba(Xte_enc)]
-    best_iter = int(np.argmin(test_loss))
+    gb_tune.fit(X_train, y_train)
+    gb_tune_model = gb_tune.named_steps["model"]
+    Xtr_enc = gb_tune.named_steps["pre"].transform(X_train)
+    Xval_enc = gb_tune.named_steps["pre"].transform(X_val)
+    train_loss = [log_loss(y_train, p) for p in gb_tune_model.staged_predict_proba(Xtr_enc)]
+    val_loss = [log_loss(y_val, p) for p in gb_tune_model.staged_predict_proba(Xval_enc)]
+    best_iter = int(np.argmin(val_loss))
 
     plt.figure(figsize=(7, 5))
     plt.plot(train_loss, label="Train log loss")
-    plt.plot(test_loss, label="Validation (test) log loss")
+    plt.plot(val_loss, label="Validation log loss")
     plt.axvline(best_iter, color="red", linestyle="--", label=f"Điểm tốt nhất (cây #{best_iter})")
     plt.xlabel("Số cây (boosting stage)")
     plt.ylabel("Log loss")
@@ -165,7 +161,7 @@ def main():
     plt.savefig(REPORTS_DIR / "loss_theo_so_cay.png", dpi=120)
     plt.close()
 
-    # ---- Lưới learning_rate x n_estimators (3x3) ----
+    # ---- Lưới learning_rate x n_estimators (3x3) — chấm bằng VALIDATION ----
     grid = {
         "learning_rate": [0.3, 0.1, 0.05],
         "n_estimators": [50, 200, 500],
@@ -177,7 +173,7 @@ def main():
             GradientBoostingClassifier(max_depth=3, random_state=RANDOM_STATE, **params),
         )
         m.fit(X_train, y_train)
-        auc = roc_auc_score(y_test, m.predict_proba(X_test)[:, 1])
+        auc = roc_auc_score(y_val, m.predict_proba(X_val)[:, 1])
         grid_results.append({**params, "roc_auc": auc})
 
     grid_df = pd.DataFrame(grid_results)
@@ -190,16 +186,39 @@ def main():
     plt.yticks(range(len(pivot.index)), pivot.index)
     plt.xlabel("n_estimators")
     plt.ylabel("learning_rate")
-    plt.title("ROC-AUC theo learning_rate × n_estimators")
+    plt.title("ROC-AUC (validation) theo learning_rate × n_estimators")
     for i in range(pivot.shape[0]):
         for j in range(pivot.shape[1]):
             plt.text(j, i, f"{pivot.values[i, j]:.3f}", ha="center", va="center", color="white")
-    plt.colorbar(im, label="ROC-AUC")
+    plt.colorbar(im, label="ROC-AUC (validation)")
     plt.tight_layout()
     plt.savefig(REPORTS_DIR / "lr_vs_nestimators.png", dpi=120)
     plt.close()
 
-    # ---- So sánh Bagging vs Boosting vs AdaBoost ----
+    # ---- Model cuối cùng: huấn luyện trên TOÀN BỘ train_full với cấu hình
+    # đã chọn (learning_rate nhỏ + n_estimators lớn, theo "quy tắc vàng"
+    # được xác nhận bằng lưới validation ở trên), chấm trên TEST đúng 1 lần ----
+    gb = build_pipeline(
+        cat_cols, NUM_COLS,
+        GradientBoostingClassifier(
+            n_estimators=500, learning_rate=0.05, max_depth=3,
+            subsample=0.8, validation_fraction=0.1, n_iter_no_change=20,
+            random_state=RANDOM_STATE,
+        ),
+    )
+    t0 = time.time()
+    gb.fit(X_train_full, y_train_full)
+    gb_time = time.time() - t0
+    gb_proba = gb.predict_proba(X_test)[:, 1]
+    results["Gradient Boosting"] = average_precision_score(y_test, gb_proba)
+
+    print("PR-AUC (Average Precision) trên TEST:")
+    for k, v in results.items():
+        print(f"  {k:28s}: {v:.4f}")
+    print(f"ROC-AUC (GB, test): {roc_auc_score(y_test, gb_proba):.4f}")
+    print(f"Accuracy (GB, test): {accuracy_score(y_test, gb.predict(X_test)):.4f}")
+
+    # ---- So sánh Bagging vs Boosting vs AdaBoost (train_full -> test) ----
     models_to_compare = {
         "Random Forest (Bagging)": RandomForestClassifier(n_estimators=300, max_depth=None, random_state=RANDOM_STATE, n_jobs=-1),
         "Gradient Boosting": GradientBoostingClassifier(n_estimators=500, learning_rate=0.05, max_depth=3, random_state=RANDOM_STATE),
@@ -209,11 +228,9 @@ def main():
     for name, model in models_to_compare.items():
         pipe = build_pipeline(cat_cols, NUM_COLS, model)
         t0 = time.time()
-        pipe.fit(X_train, y_train)
+        pipe.fit(X_train_full, y_train_full)
         train_time = time.time() - t0
         proba = pipe.predict_proba(X_test)[:, 1]
-        n_params = sum(getattr(est, "tree_", None).node_count if hasattr(est, "tree_") else 0
-                        for est in (model.estimators_ if hasattr(model, "estimators_") else []))
         compare_rows.append({
             "model": name,
             "pr_auc": average_precision_score(y_test, proba),
@@ -223,15 +240,15 @@ def main():
         })
     compare_df = pd.DataFrame(compare_rows)
     compare_df.to_csv(REPORTS_DIR / "bagging_vs_boosting_vs_adaboost.csv", index=False)
-    print("\nSo sánh 3 thuật toán:\n", compare_df)
+    print("\nSo sánh 3 thuật toán (test):\n", compare_df)
 
-    # ---- GradientBoosting vs HistGradientBoosting (thời gian) ----
+    # ---- GradientBoosting vs HistGradientBoosting (thời gian, train_full -> test) ----
     hgb = build_pipeline(
         cat_cols, NUM_COLS,
         HistGradientBoostingClassifier(max_iter=500, learning_rate=0.05, early_stopping=True, random_state=RANDOM_STATE),
     )
     t0 = time.time()
-    hgb.fit(X_train, y_train)
+    hgb.fit(X_train_full, y_train_full)
     hgb_time = time.time() - t0
     hgb_auc = roc_auc_score(y_test, hgb.predict_proba(X_test)[:, 1])
     speed_row = {
@@ -253,7 +270,7 @@ def main():
             rows.append({
                 "group": g,
                 "n": len(sub),
-                "selection_rate(dự đoán >50K)": sub["y_pred"].mean(),
+                "selection_rate": sub["y_pred"].mean(),
                 "true_positive_rate": (sub[sub.y_true == 1]["y_pred"].mean() if (sub.y_true == 1).any() else np.nan),
                 "false_positive_rate": (sub[sub.y_true == 0]["y_pred"].mean() if (sub.y_true == 0).any() else np.nan),
             })
@@ -266,10 +283,10 @@ def main():
     bias_race.to_csv(REPORTS_DIR / "bias_by_race.csv", index=False)
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-    axes[0].bar(bias_sex["group"], bias_sex["selection_rate(dự đoán >50K)"], color=["#4C72B0", "#DD8452"])
+    axes[0].bar(bias_sex["group"], bias_sex["selection_rate"], color=["#4C72B0", "#DD8452"])
     axes[0].set_title("Tỉ lệ dự đoán >50K theo giới tính")
     axes[0].set_ylabel("Selection rate")
-    axes[1].bar(bias_race["group"], bias_race["selection_rate(dự đoán >50K)"], color="#55A868")
+    axes[1].bar(bias_race["group"], bias_race["selection_rate"], color="#55A868")
     axes[1].set_title("Tỉ lệ dự đoán >50K theo chủng tộc")
     axes[1].tick_params(axis="x", rotation=45)
     plt.tight_layout()
@@ -278,6 +295,27 @@ def main():
 
     print("\nThiên lệch theo sex:\n", bias_sex)
     print("\nThiên lệch theo race:\n", bias_race)
+
+    # ---- Thử giảm thiên lệch bằng cách bỏ sex/race khỏi đặc trưng ----
+    # (kiểm tra xem thiên lệch có phải do model "nhìn" trực tiếp vào sex/race,
+    # hay do các cột còn lại rò rỉ cùng thông tin đó qua biến thay thế - proxy)
+    cat_cols_blind = [c for c in cat_cols if c not in ("sex", "race")]
+    gb_blind = build_pipeline(
+        cat_cols_blind, NUM_COLS,
+        GradientBoostingClassifier(
+            n_estimators=500, learning_rate=0.05, max_depth=3,
+            subsample=0.8, random_state=RANDOM_STATE,
+        ),
+    )
+    gb_blind.fit(X_train_full, y_train_full)
+    gb_blind_proba = gb_blind.predict_proba(X_test)[:, 1]
+    gb_blind_pred = gb_blind.predict(X_test)
+    bias_sex_blind = group_bias_table(y_test, gb_blind_pred, gb_blind_proba, X_test["sex"])
+    bias_sex_blind.to_csv(REPORTS_DIR / "bias_by_sex_no_sensitive.csv", index=False)
+
+    print("\nROC-AUC có sex/race   :", round(roc_auc_score(y_test, gb_proba), 4))
+    print("ROC-AUC KHÔNG sex/race:", round(roc_auc_score(y_test, gb_blind_proba), 4))
+    print("Thiên lệch theo sex (đã bỏ sex/race khỏi đặc trưng):\n", bias_sex_blind)
 
     # ---- Lưu model ----
     joblib.dump(gb, MODELS_DIR / "gb_pipeline.joblib")
