@@ -144,18 +144,20 @@ Toàn bộ số liệu dưới đây là **kết quả chạy thật** trên b�
 | Mô hình | PR-AUC | ROC-AUC | Train time (s) | Predict (ms/giao dịch) |
 | :--- | :---: | :---: | :---: | :---: |
 | *Baseline (Dummy)* | *0,0012* | *0,4991* | *–* | *–* |
-| Logistic Regression (balanced) | 0,6948 | 0,9778 | 2,06 | 1,58 |
-| **XGBoost** | **0,7645** | 0,9770 | 5,86 | 6,13 |
-| Random Forest | 0,7770 | 0,9750 | 25,12 | 47,05 |
-| LightGBM | 0,6771 | 0,9725 | 0,91 | 1,75 |
+| Logistic Regression (balanced) | 0,6948 | 0,9778 | 1,14 | 0,55 |
+| **XGBoost** | **0,7645** | 0,9770 | 2,34 | 2,14 |
+| Random Forest | 0,7770 | 0,9750 | 23,42 | 53,25 |
+| LightGBM | 0,6771 | 0,9725 | 0,88 | 1,73 |
 
-> Bảng đầy đủ: [`reports/so_sanh_mo_hinh.csv`](reports/so_sanh_mo_hinh.csv)
+> Bảng đầy đủ: [`reports/so_sanh_mo_hinh.csv`](reports/so_sanh_mo_hinh.csv). Thời
+> gian train/predict phụ thuộc máy chạy — chạy lại `src/train.py` sẽ cho số hơi
+> khác, nhưng tỉ lệ tương đối giữa các mô hình ổn định qua các lần chạy.
 
 **Nhận xét:**
 * Cả 4 mô hình đều bỏ xa baseline (PR-AUC ≈ 0,001 → gần một nghìn lần đối với
   XGBoost) — xác nhận `scale_pos_weight`/`class_weight` hoạt động đúng.
 * Random Forest có PR-AUC cao nhất trong lần chạy này nhưng **chậm hơn
-  XGBoost ~4 lần khi train và ~8 lần khi dự đoán** — với ràng buộc < 100ms/giao
+  XGBoost ~10 lần khi train và ~25 lần khi dự đoán** — với ràng buộc < 100ms/giao
   dịch và 300 giao dịch/giây, độ trễ dự đoán quan trọng ngang PR-AUC.
 * ⭐ **Phát hiện thực nghiệm quan trọng về LightGBM:** áp trực tiếp
   `scale_pos_weight=518` (hoặc `is_unbalance=True`) **kết hợp early stopping**
@@ -189,14 +191,30 @@ bao nhiêu % là đúng?".
 → **Luôn báo cáo cả hai**, và ưu tiên PR-AUC làm chỉ số chính khi lớp dương
 hiếm hơn 1%.
 
-### 5.4. Chọn ngưỡng theo Precision ≥ 90%
+### 5.4. Chọn ngưỡng theo Precision ≥ 90% — **chọn trên VALIDATION, báo cáo trên TEST**
 
-* **Ngưỡng:** 0,9803
-* **Precision đạt được:** 90,24% (≥ 90% mục tiêu)
-* **Recall tương ứng:** 71,15% — bắt được 71,15% tổng số giao dịch gian lận
-  trong tập test, với 9,76% cảnh báo là chặn nhầm.
+⚠️ **Bản trước của báo cáo này quét ngưỡng trực tiếp trên TEST rồi báo cáo
+Precision/Recall trên chính TEST đó** — về bản chất là để mô hình "nhìn thấy"
+nhãn thật của tập dùng để đánh giá nó, cùng loại rò rỉ đã xử lý ở TT-04/TT-05,
+chỉ khác là rò rỉ qua bước *chọn ngưỡng* thay vì bước *huấn luyện*. Con số
+"Precision 90,24% / Recall 71,15%" trước đây bị lạc quan ảo vì lý do này.
 
-### 5.5. Tối ưu ngưỡng theo chi phí thực tế
+**Cách làm đúng** (đã sửa trong `src/train.py` và notebook): quét ngưỡng trên
+**validation**, chọn ngưỡng đạt Precision ≥ 90% tại đó, rồi chỉ áp dụng đúng
+**1 lần** lên **test** để biết con số thật khi triển khai:
+
+* **Ngưỡng (chọn trên VAL):** 0,9513 — tại đây Precision(VAL) = 91,67%,
+  Recall(VAL) = 78,57%.
+* **Áp dụng 1 lần lên TEST:** Precision = **84,78%**, Recall = **75,00%**.
+
+→ Precision thật trên test (84,78%) **không đạt mục tiêu 90%** dù đạt trên
+validation (91,67%) — đây là khoảng chênh val↔test **có thật**, chính là phần
+bị che giấu khi chọn ngưỡng thẳng trên test. Recall trên test lại cao hơn cách
+làm cũ (75,00% so với 71,15%) — không nhất quán theo một chiều, cho thấy đây
+đúng là nhiễu do cỡ mẫu dương rất nhỏ (52 ca gian lận trên test, 56 ca trên
+val) chứ không phải mô hình "kém đi thấy rõ".
+
+### 5.5. Tối ưu ngưỡng theo chi phí thực tế — **chọn trên VALIDATION, báo cáo trên TEST**
 
 ![Chi phí theo ngưỡng](reports/chi_phi_theo_nguong.png)
 
@@ -205,30 +223,86 @@ cho mục đích minh hoạ (không phải tỉ giá thực tế thời điểm 
 
 Chi phí = (số FP × 200.000đ chăm sóc khách hàng) + (tổng số tiền các giao dịch FN).
 
-* **Ngưỡng tối ưu lợi nhuận:** 0,97
-* **Tổng chi phí ước tính:** ≈ 65.075.320 VND trên 42.722 giao dịch test
+⚠️ Cùng lỗi rò rỉ như mục 5.4: bản trước quét *và* báo cáo chi phí trên cùng
+TEST, ra ngưỡng "tối ưu" = 0,97 với chi phí ≈ 65.075.320đ — con số này **không
+đáng tin** vì đã bị chọn để khớp tốt nhất với chính tập dùng để báo cáo nó.
 
-Đường chi phí giảm mạnh khi tăng ngưỡng từ thấp lên (giảm số lần chặn nhầm
-vốn rất nhiều ở ngưỡng thấp), đạt đáy ở ngưỡng ≈ 0,97, rồi **tăng trở lại** ở
-ngưỡng ≥ 0,98 vì lúc này mô hình bỏ lọt thêm các giao dịch gian lận giá trị
-lớn — xác nhận đây là bài toán tối ưu thực sự, và **ngưỡng tối ưu theo tiền
-khác với ngưỡng theo Precision** (0,97 vs 0,98) vì hai mục tiêu không nhất
-thiết trùng nhau.
+**Cách làm đúng:** quét chi phí trên **validation**, chọn ngưỡng chi phí thấp
+nhất tại đó, áp dụng đúng 1 lần lên **test**:
 
-> Bảng chi phí đầy đủ theo từng ngưỡng: [`reports/chi_phi_theo_nguong.csv`](reports/chi_phi_theo_nguong.csv)
+* **Ngưỡng tối ưu (chọn trên VAL):** 0,83 — tổng chi phí trên VAL ≈
+  10.388.850đ (trên 42.721 giao dịch val).
+* **Áp dụng 1 lần lên TEST:** tổng chi phí ≈ **69.654.800đ** (trên 42.722
+  giao dịch test), Precision = 58,21%, Recall = 75,00%.
+
+Đường nét đứt màu xám trên biểu đồ là chi phí đo trực tiếp trên TEST — **chỉ
+để đối chiếu, không dùng để chọn ngưỡng**: nó cho thấy nếu "gian lận" nhìn cả
+nhãn test, ngưỡng tối ưu sẽ trôi về 0,97 — khác hẳn 0,83 chọn trên val. Khoảng
+lệch 0,83 vs 0,97 này **chính là bằng chứng cụ thể** cho việc tại sao không
+được chọn ngưỡng trên tập dùng để báo cáo: hai tập validation/test tuy liền kề
+về thời gian nhưng phân phối gian lận (số ca, giá trị giao dịch) đủ khác nhau
+để kéo ngưỡng "tối ưu" đi xa.
+
+> Bảng chi phí đầy đủ theo từng ngưỡng (cả val lẫn test-để-đối-chiếu):
+> [`reports/chi_phi_theo_nguong.csv`](reports/chi_phi_theo_nguong.csv)
+
+#### 5.5.1. Độ nhạy theo giả định chi phí chặn nhầm
+
+`COST_CHAN_NHAM = 200.000đ` là một **giả định**, không phải số đo lường được,
+và công thức chi phí (FP × 200.000đ + tổng tiền FN) không tách riêng "giá trị
+thu hồi" khi bắt đúng TP — phần thu hồi đó nằm **ẩn** trong công thức dưới
+dạng "chi phí FN tránh được" so với kịch bản không có mô hình (ngưỡng =
+100%), chứ không phải một số dương được cộng thêm rõ ràng. Để không báo cáo
+một con số duy nhất như thể chắc chắn đúng, quét lại toàn bộ quy trình
+(chọn ngưỡng trên val, báo cáo trên test) với vài mức chi phí FP khác nhau:
+
+| Chi phí FP giả định | Ngưỡng (chọn trên VAL) | Precision (TEST) | Recall (TEST) | Tổng chi phí (TEST) |
+| ---: | :---: | :---: | :---: | ---: |
+| 100.000đ | 0,83 | 58,21% | 75,00% | 66.854.800đ |
+| **200.000đ (mặc định)** | **0,83** | **58,21%** | **75,00%** | **69.654.800đ** |
+| 300.000đ | 0,95 | 84,78% | 75,00% | 66.154.800đ |
+| 500.000đ | 0,95 | 84,78% | 75,00% | 67.554.800đ |
+
+> Bảng đầy đủ: [`reports/do_nhay_chi_phi.csv`](reports/do_nhay_chi_phi.csv)
+
+Ngưỡng tối ưu nhảy từ 0,83 lên 0,95 khi chi phí chặn nhầm giả định tăng từ
+200k lên 300k (hợp lý: FP đắt hơn → mô hình nên "dè dặt" hơn, đòi hỏi xác suất
+cao hơn mới chặn) — kết luận cuối cùng **không nhạy quá mức** với giả định
+200k cụ thể, nhưng đây rõ ràng không phải một hằng số nên "đóng đinh".
+
+#### 5.5.2. Kiểm tra calibration ở vùng vận hành
+
+Cả hai ngưỡng (0,83–0,9513) đều được đọc như xác suất thật ("ngưỡng 0,95
+nghĩa là tin 95%"). Đo Brier score trên **validation**: **0,00502** (0 =
+hoàn hảo). Con số này thấp chủ yếu vì 99,87% mẫu val là lớp âm với xác suất
+dự đoán gần 0 — Brier score toàn cục **không đủ** để kết luận mô hình
+calibrated tốt đúng ở vùng ngưỡng vận hành (0,83–0,98), vì vùng đó gần như
+không có mẫu.
+
+Thực vậy, đường calibration 10-bin theo quantile ([`reports/calibration.png`](reports/calibration.png),
+[`reports/calibration.csv`](reports/calibration.csv)) dồn gần hết các bin vào
+vùng xác suất < 0,17 — quá ít giao dịch gian lận trên val (56 ca) để quantile
+binning tách riêng được vùng cao. Kiểm tra trực tiếp thay thế: Precision tại
+ngưỡng 0,9513 trên chính val là **91,67%**, tức khá gần với "lời hứa xác suất"
+95% của ngưỡng đó (chỉ hơi *under-confident* — thực tế đúng nhiều hơn một
+chút so với xác suất dự đoán). Đây là hướng lệch an toàn hơn cho bài toán chặn
+gian lận so với overconfident, nhưng vẫn nên xem là ước lượng thô — mẫu quá
+nhỏ (56 ca) để kết luận chắc chắn.
 
 ### 5.6. Tốc độ dự đoán 1 giao dịch
 
 | Mô hình | Thời gian / giao dịch |
 | :--- | ---: |
-| Logistic Regression | 1,58 ms |
-| **XGBoost** | **6,13 ms** |
-| LightGBM | 1,75 ms |
-| Random Forest | 47,05 ms |
+| Logistic Regression | 0,55 ms |
+| **XGBoost** | **2,14 ms** |
+| LightGBM | 1,73 ms |
+| Random Forest | 53,25 ms |
 
-→ XGBoost đạt yêu cầu **< 100ms** với biên độ dư ~16 lần, đủ an toàn cho
+→ XGBoost đạt yêu cầu **< 100ms** với biên độ dư ~47 lần, đủ an toàn cho
 300 giao dịch/giây (dự đoán tuần tự vẫn còn dư nhiều thời gian; production
-thật sẽ dùng batch/song song để tối ưu thêm).
+thật sẽ dùng batch/song song để tối ưu thêm). Số ms tuyệt đối phụ thuộc máy
+chạy (xem ghi chú ở mục 5.2) — điều ổn định qua các lần chạy là **thứ hạng
+tương đối**: XGBoost luôn nhanh hơn Random Forest hàng chục lần.
 
 ### 5.7. Feature importance
 
@@ -251,6 +325,16 @@ bước feature engineering có đóng góp thực chất.
       giản hoá cho mục đích minh hoạ phương pháp, không phải tỉ giá thực.
    3. Bộ dữ liệu chỉ trải dài 48 giờ (2 ngày) → chưa đủ để đánh giá drift
       theo mùa vụ/tuần/tháng, chỉ mô phỏng được drift ở quy mô rất nhỏ.
+   4. Chi phí chặn nhầm (200.000đ/FP) là một con số cố định giả định, không
+      phân biệt theo giá trị giao dịch hay theo khách hàng — mục 5.5.1 đã đo
+      độ nhạy quanh giả định này nhưng chưa mô hình hoá chi phí biến thiên.
+   5. Công thức chi phí không tách riêng "giá trị thu hồi" khi bắt đúng TP
+      thành một số dương độc lập — nó nằm ẩn dưới dạng chi phí FN tránh được
+      so với kịch bản không dùng mô hình. Muốn báo cáo rõ khoản tiết kiệm
+      tuyệt đối, cần thêm bước so sánh với baseline "không chặn gì".
+   6. Kiểm tra calibration (mục 5.5.2) chỉ đo được thô ở vùng ngưỡng vận hành
+      vì val chỉ có 56 ca gian lận — không đủ dữ liệu để khẳng định chắc
+      chắn xgb_score là xác suất hiệu chỉnh tốt ở đó.
 ```
 
 ---
@@ -284,6 +368,8 @@ bước feature engineering có đóng góp thực chất.
 | Không early stopping với 1000 cây | Overfit + tốn thời gian | `early_stopping_rounds=50` theo `aucpr` |
 | Đánh giá bằng accuracy | 99,83% mà bắt được 0 vụ gian lận | Precision/Recall/PR-AUC theo ngưỡng |
 | Copy nguyên `scale_pos_weight` sang LightGBM | Model sụp đổ (ROC-AUC 0,19) | Kiểm chứng riêng từng thư viện (mục 5.2) |
+| **Quét & chọn ngưỡng (Precision, chi phí) trên chính TEST rồi báo cáo trên TEST đó** | **Precision/Recall/chi phí lạc quan ảo, không tái lập khi triển khai — lỗi thật đã tồn tại ở bản trước của báo cáo này** | Quét & chọn cả hai ngưỡng trên **VALIDATION**, chỉ áp dụng 1 lần lên TEST để báo cáo (mục 5.4, 5.5) |
+| Commit thẳng file dữ liệu ~102MB vào Git | `.git` phồng to dù đã có hướng dẫn tải ở `DATA_SOURCE.md` | `data/.gitignore` bỏ qua `*.csv`, gỡ khỏi tracking (mục 9) |
 
 ---
 
@@ -294,7 +380,8 @@ TT-08-XGBoost/
 ├── README.md                       # Báo cáo này
 ├── requirements.txt
 ├── data/
-│   ├── creditcard.csv               # 284.807 giao dịch (tải qua mirror, xem DATA_SOURCE.md)
+│   ├── creditcard.csv               # 284.807 giao dịch — KHÔNG commit (xem .gitignore), tải theo DATA_SOURCE.md
+│   ├── .gitignore                   # Bỏ qua *.csv — tránh lặp lại lỗi commit file ~102MB
 │   └── DATA_SOURCE.md
 ├── notebooks/
 │   └── xgboost_fraud.ipynb          # Giải thích từng bước + toàn bộ output thật
@@ -308,9 +395,12 @@ TT-08-XGBoost/
     ├── pr_vs_roc.png
     ├── chi_phi_theo_nguong.png
     ├── feature_importance.png
+    ├── calibration.png              # Đường calibration (VAL) — mục 5.5.2
     ├── fraud_theo_gio.csv
     ├── so_sanh_mo_hinh.csv
-    ├── chi_phi_theo_nguong.csv
+    ├── chi_phi_theo_nguong.csv      # Chi phí theo ngưỡng: cả val (dùng để chọn) lẫn test (đối chiếu)
+    ├── do_nhay_chi_phi.csv          # Độ nhạy theo giả định chi phí FP — mục 5.5.1
+    ├── calibration.csv
     └── tom_tat.json
 ```
 

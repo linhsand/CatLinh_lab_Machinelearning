@@ -10,8 +10,11 @@ Pipeline day du:
  6. Logistic Regression (class_weight='balanced')
  7. XGBoost voi scale_pos_weight + early stopping
  8. So sanh ROC-AUC vs PR-AUC
- 9. Duong Precision-Recall, chon nguong Precision >= 0.90
-10. Toi uu nguong theo chi phi (chan nham vs bo lot)
+ 9. Duong Precision-Recall, chon nguong Precision >= 0.90 TREN VALIDATION,
+    chi ap dung 1 lan len TEST de bao cao (khong quet nguong tren TEST)
+10. Toi uu nguong theo chi phi TREN VALIDATION (chan nham vs bo lot), bao cao
+    ket qua tren TEST + do nhay theo gia dinh chi phi chan nham
+10b. Kiem tra calibration (Brier score + duong calibration) tren validation
 11. Do thoi gian du doan 1 giao dich
 12. So sanh voi Random Forest va LightGBM
 
@@ -29,11 +32,13 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.calibration import calibration_curve
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     average_precision_score,
+    brier_score_loss,
     precision_recall_curve,
     roc_auc_score,
     roc_curve,
@@ -134,7 +139,7 @@ def time_based_split(df: pd.DataFrame):
     X_train, y_train = train[feature_cols], train["Class"].to_numpy()
     X_val, y_val = val[feature_cols], val["Class"].to_numpy()
     X_test, y_test = test[feature_cols], test["Class"].to_numpy()
-    return (X_train, y_train), (X_val, y_val), (X_test, y_test), feature_cols, test
+    return (X_train, y_train), (X_val, y_val), (X_test, y_test), feature_cols, val, test
 
 
 # ----------------------------------------------------------------------------
@@ -163,7 +168,7 @@ def main() -> None:
     run_eda(df)
 
     log("Chia du lieu theo THOI GIAN (khong shuffle) 70/15/15:")
-    (X_train, y_train), (X_val, y_val), (X_test, y_test), feature_cols, test_raw = time_based_split(df)
+    (X_train, y_train), (X_val, y_val), (X_test, y_test), feature_cols, val_raw, test_raw = time_based_split(df)
 
     results = []
 
@@ -281,7 +286,7 @@ def main() -> None:
     axes[1].axhline(PRECISION_TARGET, ls="--", color="gray", label=f"Precision muc tieu = {PRECISION_TARGET:.0%}")
     axes[1].set_xlabel("Recall")
     axes[1].set_ylabel("Precision")
-    axes[1].set_title("Precision-Recall Curve - phan anh dung nang luc that")
+    axes[1].set_title("Precision-Recall Curve (TEST) - phan anh dung nang luc that")
     axes[1].legend()
 
     fig.tight_layout()
@@ -289,38 +294,74 @@ def main() -> None:
     plt.close(fig)
     log("Da luu -> reports/pr_vs_roc.png")
 
-    # Chon nguong dat Precision >= muc tieu
-    valid_idx = np.where(prec[:-1] >= PRECISION_TARGET)[0]
+    # ------------------------------------------------------------------------
+    # 9-10. CHON NGUONG TREN VALIDATION, chi bao cao ket qua tren TEST 1 LAN
+    # ------------------------------------------------------------------------
+    # LUU Y QUAN TRONG: ca nguong theo Precision (muc 9) va nguong theo chi
+    # phi (muc 10) BAT BUOC phai duoc do/quet tren VALIDATION, roi chi ap
+    # dung 1 LAN DUY NHAT len TEST de bao cao so cuoi cung. Neu quet nguong
+    # truc tiep tren TEST roi bao cao Precision/Recall/chi phi cung tren
+    # chinh TEST do, ket qua se bi lac quan ao vi da "nhin thay" nhan that
+    # cua tap dung de bao cao - cung mot dang ro ri nhu da xu ly o TT-04/TT-05,
+    # chi khac la ro ri qua buoc chon nguong thay vi qua buoc huan luyen.
+    log("Chon nguong tren VALIDATION (khong dung TEST de chon nguong):")
+    xgb_score_val = xgb_model.predict_proba(X_val)[:, 1]
+    prec_val, rec_val, pr_thresholds_val = precision_recall_curve(y_val, xgb_score_val)
+
+    valid_idx = np.where(prec_val[:-1] >= PRECISION_TARGET)[0]
     if len(valid_idx) > 0:
-        idx = valid_idx[np.argmax(rec[valid_idx])]
-        thr_precision = pr_thresholds[idx]
-        log(f"Nguong dat Precision >= {PRECISION_TARGET:.0%}: threshold={thr_precision:.4f}, "
-            f"Precision={prec[idx]:.4f}, Recall={rec[idx]:.4f}")
+        idx = valid_idx[np.argmax(rec_val[valid_idx])]
+        thr_precision = float(pr_thresholds_val[idx])
+        log(f"  [VAL] Nguong dat Precision >= {PRECISION_TARGET:.0%}: threshold={thr_precision:.4f}, "
+            f"Precision={prec_val[idx]:.4f}, Recall={rec_val[idx]:.4f}")
     else:
         thr_precision = None
-        log(f"Khong tim thay nguong nao dat Precision >= {PRECISION_TARGET:.0%}")
+        log(f"  [VAL] Khong tim thay nguong nao dat Precision >= {PRECISION_TARGET:.0%}")
 
-    # 10. Toi uu nguong theo chi phi
+    def cost_sweep(y_true, y_score, amounts, thresholds, cost_fp=COST_CHAN_NHAM):
+        costs = []
+        for thr in thresholds:
+            pred = (y_score >= thr).astype(int)
+            fp_mask = (pred == 1) & (y_true == 0)
+            fn_mask = (pred == 0) & (y_true == 1)
+            costs.append(fp_mask.sum() * cost_fp + amounts[fn_mask].sum())
+        return np.array(costs)
+
+    def threshold_report(y_true, y_score, threshold, amounts, cost_fp=COST_CHAN_NHAM):
+        pred = (y_score >= threshold).astype(int)
+        tp = int(((pred == 1) & (y_true == 1)).sum())
+        fp = int(((pred == 1) & (y_true == 0)).sum())
+        fn = int(((pred == 0) & (y_true == 1)).sum())
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        cost = fp * cost_fp + amounts[(pred == 0) & (y_true == 1)].sum()
+        return {"threshold": float(threshold), "tp": tp, "fp": fp, "fn": fn,
+                "precision": precision, "recall": recall, "total_cost_vnd": float(cost)}
+
+    amounts_val = val_raw["Amount"].to_numpy() * EUR_TO_VND
     amounts_test = test_raw["Amount"].to_numpy() * EUR_TO_VND
     thresholds = np.linspace(0.01, 0.99, 99)
-    costs = []
-    for thr in thresholds:
-        pred = (xgb_score >= thr).astype(int)
-        fp_mask = (pred == 1) & (y_test == 0)
-        fn_mask = (pred == 0) & (y_test == 1)
-        total_cost = fp_mask.sum() * COST_CHAN_NHAM + amounts_test[fn_mask].sum()
-        costs.append(total_cost)
-    costs = np.array(costs)
-    best_idx = np.argmin(costs)
-    best_threshold = thresholds[best_idx]
-    best_cost = costs[best_idx]
-    log(f"Nguong toi uu loi nhuan: threshold={best_threshold:.2f}, "
-        f"tong chi phi uoc tinh={best_cost:,.0f} VND")
+
+    costs_val = cost_sweep(y_val, xgb_score_val, amounts_val, thresholds)
+    best_idx = np.argmin(costs_val)
+    best_threshold = float(thresholds[best_idx])
+    best_cost_val = float(costs_val[best_idx])
+    log(f"  [VAL] Nguong toi uu chi phi: threshold={best_threshold:.2f}, "
+        f"tong chi phi uoc tinh tren VAL={best_cost_val:,.0f} VND")
+
+    # Duong chi phi tren TEST duoi day chi de THAM KHAO/DOI CHIEU (khong
+    # dung de chon nguong) - kiem tra nguong chon tu VAL co gan voi nguong
+    # toi uu that tren TEST hay khong, tuc do "do on dinh" cua lua chon.
+    costs_test = cost_sweep(y_test, xgb_score, amounts_test, thresholds)
+    thr_test_only = float(thresholds[np.argmin(costs_test)])
+    log(f"  [TEST - chi de doi chieu] Neu do truc tiep tren TEST, nguong toi uu se la "
+        f"{thr_test_only:.2f} (KHONG dung so nay de chon nguong san xuat)")
 
     fig, ax = plt.subplots(figsize=(8, 4.8))
-    ax.plot(thresholds, costs / 1e6, color="#8e44ad")
+    ax.plot(thresholds, costs_val / 1e6, color="#8e44ad", label="Chi phi tren VALIDATION (dung de chon nguong)")
+    ax.plot(thresholds, costs_test / 1e6, color="#7f8c8d", ls=":", label="Chi phi tren TEST (chi de doi chieu)")
     ax.axvline(best_threshold, ls="--", color="#c0392b",
-               label=f"Nguong toi uu = {best_threshold:.2f}")
+               label=f"Nguong toi uu (chon tren VAL) = {best_threshold:.2f}")
     ax.set_xlabel("Nguong xac suat")
     ax.set_ylabel("Tong chi phi uoc tinh (trieu VND)")
     ax.set_title("Chi phi theo nguong: chan nham (200.000d) vs bo lot (so tien giao dich)")
@@ -330,8 +371,77 @@ def main() -> None:
     plt.close(fig)
     log("Da luu -> reports/chi_phi_theo_nguong.png")
 
-    threshold_summary = pd.DataFrame({"threshold": thresholds, "total_cost_vnd": costs})
+    threshold_summary = pd.DataFrame({
+        "threshold": thresholds,
+        "total_cost_val_vnd": costs_val,
+        "total_cost_test_vnd_doi_chieu": costs_test,
+    })
     threshold_summary.to_csv(REPORTS_DIR / "chi_phi_theo_nguong.csv", index=False)
+
+    # Ap dung ca hai nguong (da chon xong tren VAL) len TEST DUY NHAT 1 LAN
+    # de bao cao ket qua cuoi cung - day la Precision/Recall/chi phi THAT,
+    # khong bi ro ri qua buoc chon nguong.
+    report_precision_thr = None
+    if thr_precision is not None:
+        report_precision_thr = threshold_report(y_test, xgb_score, thr_precision, amounts_test)
+        log(f"  [TEST - BAO CAO CUOI] Tai nguong Precision>={PRECISION_TARGET:.0%} (chon tren VAL): "
+            f"Precision={report_precision_thr['precision']:.4f}, Recall={report_precision_thr['recall']:.4f}")
+
+    report_cost_thr = threshold_report(y_test, xgb_score, best_threshold, amounts_test)
+    log(f"  [TEST - BAO CAO CUOI] Tai nguong toi uu chi phi (chon tren VAL): "
+        f"tong chi phi tren TEST={report_cost_thr['total_cost_vnd']:,.0f} VND, "
+        f"Precision={report_cost_thr['precision']:.4f}, Recall={report_cost_thr['recall']:.4f}")
+
+    # ------------------------------------------------------------------------
+    # Do nhay theo gia dinh chi phi chan nham (COST_CHAN_NHAM co the sai)
+    # ------------------------------------------------------------------------
+    # Chi phi 200.000d/FP la mot GIA DINH, khong phai so do luong duoc. Quet
+    # lai toan bo quy trinh chon-nguong-tren-VAL / bao-cao-tren-TEST voi vai
+    # muc chi phi khac nhau de xem nguong toi uu va ket qua nhay den dau khi
+    # gia dinh thay doi - tranh bao cao "mot con so duy nhat" nhu the no
+    # chac chan dung.
+    cost_fp_candidates = [100_000, 200_000, 300_000, 500_000]
+    sensitivity_rows = []
+    for cost_fp in cost_fp_candidates:
+        costs_v = cost_sweep(y_val, xgb_score_val, amounts_val, thresholds, cost_fp=cost_fp)
+        thr = float(thresholds[np.argmin(costs_v)])
+        rep = threshold_report(y_test, xgb_score, thr, amounts_test, cost_fp=cost_fp)
+        sensitivity_rows.append({
+            "cost_fp_vnd": cost_fp,
+            "threshold_chon_tren_val": thr,
+            "test_precision": rep["precision"],
+            "test_recall": rep["recall"],
+            "test_total_cost_vnd": rep["total_cost_vnd"],
+        })
+    sensitivity_df = pd.DataFrame(sensitivity_rows)
+    sensitivity_df.to_csv(REPORTS_DIR / "do_nhay_chi_phi.csv", index=False)
+    log("Do nhay theo gia dinh chi phi chan nham (nguong chon tren VAL, bao cao tren TEST):\n"
+        + sensitivity_df.to_string(index=False))
+
+    # ------------------------------------------------------------------------
+    # Kiem tra calibration (xac suat xgb_score co dang la xac suat that khong)
+    # ------------------------------------------------------------------------
+    # Ca hai nguong van hanh (~0,97-0,98) deu duoc doc nhu the xgb_score la
+    # mot xac suat that ("tin 97%"). XGBoost toi uu log-loss nen thuong kha
+    # calibrated, nhung khong co gi dam bao - phai kiem tra bang duong
+    # calibration + Brier score tren VALIDATION (khong dung TEST) truoc khi
+    # tin ngưỡng theo nghia xac suat.
+    frac_pos, mean_pred = calibration_curve(y_val, xgb_score_val, n_bins=10, strategy="quantile")
+    brier = brier_score_loss(y_val, xgb_score_val)
+    calib_df = pd.DataFrame({"mean_predicted_prob": mean_pred, "fraction_of_positives": frac_pos})
+    calib_df.to_csv(REPORTS_DIR / "calibration.csv", index=False)
+
+    fig, ax = plt.subplots(figsize=(6, 5.5))
+    ax.plot(mean_pred, frac_pos, "o-", color="#2c3e50", label="XGBoost (VAL)")
+    ax.plot([0, 1], [0, 1], "--", color="gray", label="Calibration hoan hao")
+    ax.set_xlabel("Xac suat du doan trung binh (moi bin)")
+    ax.set_ylabel("Ty le thuc te la gian lan")
+    ax.set_title(f"Duong calibration (VAL) - Brier score={brier:.5f}")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(REPORTS_DIR / "calibration.png", dpi=130)
+    plt.close(fig)
+    log(f"Da luu -> reports/calibration.png (Brier score tren VAL={brier:.5f})")
 
     # Feature importance
     importances = pd.Series(xgb_model.feature_importances_, index=feature_cols)
@@ -354,9 +464,24 @@ def main() -> None:
         "n_test": int(len(X_test)),
         "scale_pos_weight": float(ty_le),
         "xgb_best_iteration": int(xgb_model.best_iteration + 1),
-        "threshold_precision_90": None if thr_precision is None else float(thr_precision),
-        "threshold_cost_optimal": float(best_threshold),
-        "cost_optimal_total_vnd": float(best_cost),
+        "threshold_selection_note": (
+            "Ca hai nguong duoi day duoc CHON tren VALIDATION (khong dung TEST), "
+            "chi ap dung 1 lan len TEST de bao cao Precision/Recall/chi phi cuoi cung."
+        ),
+        "threshold_precision_90": None if report_precision_thr is None else {
+            "threshold": report_precision_thr["threshold"],
+            "test_precision": report_precision_thr["precision"],
+            "test_recall": report_precision_thr["recall"],
+        },
+        "threshold_cost_optimal": {
+            "threshold": report_cost_thr["threshold"],
+            "val_total_cost_vnd": best_cost_val,
+            "test_precision": report_cost_thr["precision"],
+            "test_recall": report_cost_thr["recall"],
+            "test_total_cost_vnd": report_cost_thr["total_cost_vnd"],
+        },
+        "cost_sensitivity_note": "Xem reports/do_nhay_chi_phi.csv cho cac gia dinh COST_CHAN_NHAM khac nhau.",
+        "calibration_brier_score_val": float(brier),
         "predict_latency_ms": {r["model"]: r.get("predict_ms") for r in results if "predict_ms" in r},
     }
     with open(REPORTS_DIR / "tom_tat.json", "w", encoding="utf-8") as f:

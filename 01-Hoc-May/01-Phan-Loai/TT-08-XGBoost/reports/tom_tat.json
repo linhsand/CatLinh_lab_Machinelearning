@@ -6,13 +6,25 @@
   "n_test": 42722,
   "scale_pos_weight": 518.1770833333334,
   "xgb_best_iteration": 124,
-  "threshold_precision_90": 0.9802663922309875,
-  "threshold_cost_optimal": 0.97,
-  "cost_optimal_total_vnd": 65075320.0,
+  "threshold_selection_note": "Ca hai nguong duoi day duoc CHON tren VALIDATION (khong dung TEST), chi ap dung 1 lan len TEST de bao cao Precision/Recall/chi phi cuoi cung.",
+  "threshold_precision_90": {
+    "threshold": 0.951259970664978,
+    "test_precision": 0.8478260869565217,
+    "test_recall": 0.75
+  },
+  "threshold_cost_optimal": {
+    "threshold": 0.8300000000000001,
+    "val_total_cost_vnd": 10388850.0,
+    "test_precision": 0.582089552238806,
+    "test_recall": 0.75,
+    "test_total_cost_vnd": 69654800.0
+  },
+  "cost_sensitivity_note": "Xem reports/do_nhay_chi_phi.csv cho cac gia dinh COST_CHAN_NHAM khac nhau.",
+  "calibration_brier_score_val": 0.0050214543007314205,
   "predict_latency_ms": {
-    "Logistic Regression": 1.584890500016627,
-    "XGBoost": 6.131411999740521,
-    "Random Forest": 47.05060599902936,
-    "LightGBM": 1.7474500004027504
+    "Logistic Regression": 0.5541329979314469,
+    "XGBoost": 2.1448500017868355,
+    "Random Forest": 53.24702250043629,
+    "LightGBM": 1.7296780017204583
   }
 }

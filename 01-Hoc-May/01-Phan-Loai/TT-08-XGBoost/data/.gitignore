@@ -1,0 +1,3 @@
+# Bo du lieu KHONG duoc commit (gan 102MB, lam phong .git). Lay theo huong dan trong DATA_SOURCE.md
+*.csv
+!.gitignore
