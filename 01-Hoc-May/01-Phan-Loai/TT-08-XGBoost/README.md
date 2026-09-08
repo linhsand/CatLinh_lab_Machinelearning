@@ -1,5 +1,5 @@
 # TT-08 — XGBOOST
-## Phát hiện gian lận thẻ tín dụng theo thời gian thực
+## Phát hiện gian lận thẻ tín dụng theo thời gian thực (real-time)
 
 | | |
 |---|---|
@@ -15,7 +15,7 @@
 ## 1. THUẬT TOÁN NÀY LÀ GÌ
 
 XGBoost = Gradient Boosting (TT-07) + 4 cải tiến khiến nó thắng gần như mọi cuộc thi
-dữ liệu bảng:
+về dữ liệu dạng bảng:
 
 ```
    ① REGULARIZATION (L1 + L2) ngay trong hàm mục tiêu  → chống overfit tốt hơn hẳn

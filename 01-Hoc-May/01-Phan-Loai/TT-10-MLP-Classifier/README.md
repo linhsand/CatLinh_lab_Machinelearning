@@ -1,5 +1,5 @@
 # TT-10 — MLP CLASSIFIER (sklearn)
-## Đọc số viết tay trên séc / phiếu chuyển khoản
+## Đọc số viết tay trên séc/phiếu chuyển khoản
 
 | | |
 |---|---|
@@ -9,6 +9,9 @@
 | 🏭 **Lĩnh vực** | Ngân hàng · Số hoá chứng từ |
 | ⏱ **Thời lượng** | 6–8 giờ |
 | 📈 **Độ khó** | ⭐⭐⭐ |
+
+> Kết quả thực nghiệm đầy đủ (đã chạy thật, không phải số minh hoạ) nằm ở
+> `notebooks/mlp_digits.ipynb` và `reports/` — sinh tự động bởi `src/train.py`.
 
 ---
 
@@ -38,7 +41,7 @@
    1 nhân viên nhập được 300 séc/ngày → cần 27 người.
    Tỉ lệ nhập sai của người: ~0,5%.
 
-   → Tự động đọc dãy số → giảm nhân sự, giảm sai sót.
+   → Tự động đọc dãy số viết tay → giảm nhân sự, giảm sai sót.
 
    ⚠️ Ràng buộc nghiệp vụ: sai 1 chữ số trong số tiền là SAI TIỀN THẬT.
       → Model phải trả về ĐỘ TIN CẬY. Nếu tin cậy < 99% → chuyển cho người kiểm tra.
@@ -166,7 +169,7 @@ mlp = MLPClassifier(
 ## 8. SẢN PHẨM NỘP & MỞ RỘNG
 
 ```
-TT-10-MLP-<HoTen>/
+TT-10-MLP-Classifier/
 ├── README.md          ← có bảng human-in-the-loop
 ├── notebooks/mlp_digits.ipynb
 ├── src/train.py

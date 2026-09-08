@@ -1,5 +1,5 @@
 # TT-07 — GRADIENT BOOSTING
-## Dự đoán mức thu nhập để chấm điểm hồ sơ vay tiêu dùng
+## Dự đoán mức thu nhập để hỗ trợ chấm điểm hồ sơ vay tiêu dùng
 
 | | |
 |---|---|
@@ -35,7 +35,7 @@ mô hình chấm điểm tín dụng, không phải quyết định cuối cùng
 ```
 
 **Cơ chế:** mỗi cây mới học để dự đoán **phần dư (residual)** mà các cây
-trước còn để sót — dự đoán mới = dự đoán cũ + `learning_rate` × cây mới.
+trước đó còn để sót lại — dự đoán mới = dự đoán cũ + `learning_rate` × cây mới.
 
 ---
 
