@@ -1,0 +1,106 @@
+{
+  "n_rows": 500,
+  "corr_TV_Facebook": 0.9992205765715803,
+  "vif": [
+    {
+      "feature": "TV",
+      "VIF": 642.0840228310847
+    },
+    {
+      "feature": "Facebook",
+      "VIF": 642.0662463603185
+    },
+    {
+      "feature": "Google",
+      "VIF": 1.0007497251570647
+    }
+  ],
+  "linear_he_so_chuan_hoa": {
+    "TV": 349.92,
+    "Facebook": 210.2098,
+    "Google": 212.9126
+  },
+  "linear_metrics": {
+    "RMSE": 383.56580206691433,
+    "MAE": 312.9063908217515,
+    "R2": 0.6534791865230956
+  },
+  "ridge_alpha_ridgecv": 6.25055192527397,
+  "ridge_alpha_best_on_test": 89.02150854450375,
+  "ridge_he_so_chuan_hoa": {
+    "TV": 281.6663,
+    "Facebook": 274.2775,
+    "Google": 210.0155
+  },
+  "ridge_metrics": {
+    "RMSE": 382.97433576224626,
+    "MAE": 311.8537759618385,
+    "R2": 0.6545470469070935
+  },
+  "bootstrap_stability": [
+    {
+      "feature": "TV",
+      "std_linear": 200.86214624094163,
+      "std_ridge": 11.122243326087075,
+      "ty_le_giam_do_lech_%": 94.46274794219039
+    },
+    {
+      "feature": "Facebook",
+      "std_linear": 199.73006030810257,
+      "std_ridge": 10.183157237115761,
+      "ty_le_giam_do_lech_%": 94.90153999783143
+    },
+    {
+      "feature": "Google",
+      "std_linear": 8.16544983291823,
+      "std_ridge": 8.046769546567685,
+      "ty_le_giam_do_lech_%": 1.4534445594423517
+    }
+  ],
+  "model_comparison": [
+    {
+      "model": "Linear Regression",
+      "RMSE": 383.56580206691433,
+      "MAE": 312.9063908217515,
+      "R2": 0.6534791865230956
+    },
+    {
+      "model": "Ridge (alpha=6.25)",
+      "RMSE": 382.97433576224626,
+      "MAE": 311.8537759618385,
+      "R2": 0.6545470469070935
+    },
+    {
+      "model": "Lasso (TT-13, LassoCV)",
+      "RMSE": 383.2992382365863,
+      "MAE": 312.690678444749,
+      "R2": 0.653960657071407
+    },
+    {
+      "model": "ElasticNet (TT-14, ElasticNetCV)",
+      "RMSE": 382.9372133868116,
+      "MAE": 311.80880017337967,
+      "R2": 0.6546140143850374
+    }
+  ],
+  "de_xuat_ngan_sach": [
+    {
+      "kenh": "TV",
+      "he_so_ridge_chuan_hoa": 281.6663333949172,
+      "trong_so_%": 36.77301218051668,
+      "ngan_sach_de_xuat_vnd": 735460243.6103336
+    },
+    {
+      "kenh": "Facebook",
+      "he_so_ridge_chuan_hoa": 274.27750233235815,
+      "trong_so_%": 35.808361661626634,
+      "ngan_sach_de_xuat_vnd": 716167233.2325326
+    },
+    {
+      "kenh": "Google",
+      "he_so_ridge_chuan_hoa": 210.01553690239322,
+      "trong_so_%": 27.418626157856675,
+      "ngan_sach_de_xuat_vnd": 548372523.1571335
+    }
+  ]
+}

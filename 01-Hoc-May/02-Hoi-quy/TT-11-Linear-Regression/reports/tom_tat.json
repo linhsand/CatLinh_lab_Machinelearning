@@ -1,0 +1,134 @@
+{
+  "n_rows": 20640,
+  "n_capped_at_5": 992,
+  "pct_capped": 0.04806201550387597,
+  "vif": [
+    {
+      "feature": "Latitude",
+      "VIF": 9.737570628239402
+    },
+    {
+      "feature": "Longitude",
+      "VIF": 9.314005934258473
+    },
+    {
+      "feature": "AveRooms",
+      "VIF": 2.5576948162240214
+    },
+    {
+      "feature": "MedInc",
+      "VIF": 2.3731685725230087
+    },
+    {
+      "feature": "AveBedrms",
+      "VIF": 1.2991359352593206
+    },
+    {
+      "feature": "HouseAge",
+      "VIF": 1.2519889509993425
+    },
+    {
+      "feature": "Population",
+      "VIF": 1.1706153464869646
+    },
+    {
+      "feature": "AveOccup",
+      "VIF": 1.0827464359088612
+    }
+  ],
+  "he_so_chuan_hoa": [
+    {
+      "dac_trung": "Longitude",
+      "he_so_chuan_hoa": -0.9017463592207989
+    },
+    {
+      "dac_trung": "MedInc",
+      "he_so_chuan_hoa": 0.6977709708178511
+    },
+    {
+      "dac_trung": "Latitude",
+      "he_so_chuan_hoa": -0.6812786218074302
+    },
+    {
+      "dac_trung": "AveOccup",
+      "he_so_chuan_hoa": -0.2844146842903161
+    },
+    {
+      "dac_trung": "BedrmsRatio",
+      "he_so_chuan_hoa": 0.2756468677539349
+    },
+    {
+      "dac_trung": "AveRooms",
+      "he_so_chuan_hoa": 0.2062379177843527
+    },
+    {
+      "dac_trung": "DistSF_km",
+      "he_so_chuan_hoa": 0.19446868784780172
+    },
+    {
+      "dac_trung": "DistNearestCity_km",
+      "he_so_chuan_hoa": -0.16462314734286126
+    },
+    {
+      "dac_trung": "AveBedrms",
+      "he_so_chuan_hoa": -0.13206190933970857
+    },
+    {
+      "dac_trung": "HouseAge",
+      "he_so_chuan_hoa": 0.09781642190066234
+    },
+    {
+      "dac_trung": "DistLA_km",
+      "he_so_chuan_hoa": -0.08961954725005974
+    },
+    {
+      "dac_trung": "Population",
+      "he_so_chuan_hoa": 0.030493338008612567
+    }
+  ],
+  "model_comparison": [
+    {
+      "model": "Baseline (mean)",
+      "RMSE": 1.1448563543099792,
+      "MAE": 0.9060685490007149,
+      "R2": -0.00021908714592466794,
+      "MAPE_%": 62.8861496325994
+    },
+    {
+      "model": "LR co ban",
+      "RMSE": 0.6918188437370285,
+      "MAE": 0.5051863188397602,
+      "R2": 0.6347603530676871,
+      "MAPE_%": 30.83895587858052
+    },
+    {
+      "model": "LR log-target",
+      "RMSE": 0.7609796940524145,
+      "MAE": 0.49153414595561506,
+      "R2": 0.5580844573138684,
+      "MAPE_%": 27.648446821562462
+    },
+    {
+      "model": "LR + feature engineering",
+      "RMSE": 0.6661571084486478,
+      "MAE": 0.4854818048337066,
+      "R2": 0.6613535922713406,
+      "MAPE_%": 29.77837521559567
+    },
+    {
+      "model": "Ridge (TT-12, alpha=1.0)",
+      "RMSE": 0.6661571322541342,
+      "MAE": 0.4854757699847063,
+      "R2": 0.6613535680679132,
+      "MAPE_%": 29.776355920135135
+    },
+    {
+      "model": "Random Forest (TT-17)",
+      "RMSE": 0.4748643615846882,
+      "MAE": 0.3035682995155041,
+      "R2": 0.8279192483815696,
+      "MAPE_%": 17.167021598596147
+    }
+  ],
+  "final_model": "LR + feature engineering (clip outlier + ty le phong ngu + khoang cach SF/LA)"
+}
