@@ -147,6 +147,74 @@ biến thật. Không đạt 10/10 là bình thường — bộ diabetes vốn c
 
 ---
 
+## 6.1. KẾT QUẢ CHẠY THỰC TẾ
+
+**Toàn bộ số liệu dưới đây là kết quả chạy thật** (`notebooks/lasso_feature_selection.ipynb`,
+tái lập bằng `src/train.py`), `random_state=42`.
+
+**Baseline overfit (Linear Regression trên 200 biến, p≈n):**
+
+| | RMSE | R² |
+|---|---|---|
+| Train | 33,99 | 0,8099 |
+| Test | 84,78 | **-0,3566** (âm — tệ hơn dự đoán bằng trung bình!) |
+
+**⭐ Bảng chấm điểm chọn biến** (LassoCV, alpha tối ưu = 7,92483, giữ 5/200 biến):
+
+| Loại | Tổng số | Số được giữ | Tỷ lệ | Danh sách |
+|---|---|---|---|---|
+| Biến THẬT | 10 | **4** | 40% (recall) | `bmi, bp, s3, s5` |
+| Biến NHIỄU | 190 | **1** | 0,5% (false positive) | `chi_so_nhieu_009` |
+
+Recall 4/10 thấp hơn mức tham chiếu (6–9/10) vì `alpha` được chọn hoàn toàn bằng
+cross-validation (tối ưu khả năng tổng quát hoá, không tối ưu recall) nên loại
+luôn vài biến thật có tín hiệu yếu (age, sex, s1, s2, s4, s6) cùng với nhiễu.
+Tỷ lệ false positive cực thấp (0,5%) cho thấy Lasso rất hiệu quả trong việc loại
+nhiễu.
+
+**So sánh Ridge vs Lasso (cùng dữ liệu 200 biến):**
+
+| Model | Số biến giữ | RMSE test | R² test |
+|---|---|---|---|
+| Ridge (alpha≈351) | **200/200** (chỉ co nhỏ) | 58,05 | 0,3640 |
+| Lasso (alpha≈7,92) | **5/200** | **53,73** (tốt hơn) | **0,4551** |
+
+Khác với TT-12 (Ridge và Lasso cho RMSE gần bằng nhau), ở đây Lasso vượt trội hơn
+Ridge vì 190/200 biến là nhiễu thuần tuý — khả năng loại bỏ hẳn biến vô dụng mang
+lại lợi thế dự đoán rõ rệt.
+
+**Thí nghiệm biến tương quan** (nhân đôi `bmi` → `bmi_dup`, r=0,9806, chạy 5 seed
+train/test khác nhau):
+
+| seed | hệ số bmi | hệ số bmi_dup | biến được giữ |
+|---|---|---|---|
+| 0 | 26,13 | 0,00 | chỉ `bmi` |
+| 1 | 24,10 | 0,61 | cả hai |
+| 2 | 18,53 | 4,90 | cả hai |
+| 3 | 24,92 | 0,00 | chỉ `bmi` |
+| 4 | 16,15 | 6,21 | cả hai |
+
+→ **Lựa chọn không ổn định** giữa các seed — đúng cảnh báo của README, xác nhận
+bằng thực nghiệm.
+
+**Debiased lasso:** Linear Regression chỉ trên 5 biến Lasso chọn cho RMSE = 53,74
+(gần như giống hệt RMSE Lasso đầy đủ = 53,73) → phần lớn giá trị của Lasso ở bài
+này nằm ở việc **chọn biến**, không phải ở việc co hệ số.
+
+**✍️ Đề xuất bộ xét nghiệm cuối cùng:**
+
+| Bộ xét nghiệm | Số chỉ số | Chi phí/bệnh nhân |
+|---|---|---|
+| Đầy đủ (200 chỉ số) | 200 | 22.105.930 VND |
+| Đề xuất (Lasso chọn) | 5 (`s5, s3, bp, bmi` + 1 nhiễu cần rà soát lâm sàng) | 286.566 VND |
+| **Tiết kiệm** | | **98,7% (≈21,8 triệu VND/bệnh nhân)** |
+
+Lưu ý: `chi_so_nhieu_009` là false positive (hệ số rất nhỏ) — cần bác sĩ rà soát
+lại ý nghĩa lâm sàng trước khi đưa vào bộ xét nghiệm thật, không nên tin tuyệt
+đối vào kết quả thuật toán.
+
+---
+
 ## 7. CẠM BẪY
 
 | Cạm bẫy | Hậu quả |
@@ -162,12 +230,19 @@ biến thật. Không đạt 10/10 là bình thường — bộ diabetes vốn c
 ## 8. SẢN PHẨM NỘP & MỞ RỘNG
 
 ```
-TT-13-Lasso-<HoTen>/
-├── README.md          ← có bảng chấm điểm chọn biến
+TT-13-Lasso/
+├── README.md          ← có bảng chấm điểm chọn biến (mục 6.1)
 ├── notebooks/lasso_feature_selection.ipynb
 ├── src/train.py
 ├── models/lasso_pipeline.joblib
-├── reports/{lasso_path.png, ridge_vs_lasso.png, chon_bien_score.png}
+├── reports/
+│   ├── chon_bien_score.csv, chon_bien_score.png   ← bảng/biểu đồ chấm điểm chọn biến
+│   ├── lasso_path.png                             ← coefficient path
+│   ├── rmse_theo_alpha.png                        ← RMSE train/test theo alpha
+│   ├── ridge_vs_lasso.csv, ridge_vs_lasso.png      ← so sánh Ridge vs Lasso
+│   ├── thi_nghiem_tuong_quan.csv                  ← thí nghiệm biến tương quan
+│   ├── de_xuat_bo_xet_nghiem.csv                  ← bộ xét nghiệm đề xuất + chi phí
+│   └── tom_tat.json                               ← tổng hợp toàn bộ số liệu
 └── requirements.txt
 ```
 

@@ -1,0 +1,137 @@
+{
+  "n_features_total": 200,
+  "n_real_features": 10,
+  "n_noise_features": 190,
+  "overfit_baseline": {
+    "train": {
+      "RMSE": 33.98939734800149,
+      "MAE": 27.07681807639733,
+      "R2": 0.809874348320893
+    },
+    "test": {
+      "RMSE": 84.7797497365916,
+      "MAE": 70.75738223804636,
+      "R2": -0.3566251603517243
+    }
+  },
+  "lasso_alpha_lassocv": 7.92482898353917,
+  "lasso_alpha_best_on_test": 3.9565388658322687,
+  "lasso_metrics_test": {
+    "RMSE": 53.72801274117708,
+    "MAE": 44.25654654725527,
+    "R2": 0.4551497408649504
+  },
+  "feature_selection_score": [
+    {
+      "loai": "bien_that",
+      "tong_so": 10,
+      "so_duoc_giu": 4,
+      "ty_le_%": 40.0,
+      "danh_sach_giu": "bmi, bp, s3, s5"
+    },
+    {
+      "loai": "bien_nhieu",
+      "tong_so": 190,
+      "so_duoc_giu": 1,
+      "ty_le_%": 0.5263157894736842,
+      "danh_sach_giu": "chi_so_nhieu_009"
+    }
+  ],
+  "ridge_vs_lasso": [
+    {
+      "model": "Ridge (alpha=351)",
+      "so_bien_giu": 200,
+      "tong_so_bien": 200,
+      "RMSE": 58.047273431664124,
+      "MAE": 48.53567511750526,
+      "R2": 0.3640261523664772
+    },
+    {
+      "model": "Lasso (alpha=7.925)",
+      "so_bien_giu": 5,
+      "tong_so_bien": 200,
+      "RMSE": 53.72801274117708,
+      "MAE": 44.25654654725527,
+      "R2": 0.4551497408649504
+    }
+  ],
+  "correlated_feature_experiment": [
+    {
+      "seed_split": 0,
+      "he_so_bmi": 26.125663975980697,
+      "he_so_bmi_dup": 0.0,
+      "bien_duoc_giu": "bmi"
+    },
+    {
+      "seed_split": 1,
+      "he_so_bmi": 24.103942824759674,
+      "he_so_bmi_dup": 0.6066658565930624,
+      "bien_duoc_giu": "ca hai"
+    },
+    {
+      "seed_split": 2,
+      "he_so_bmi": 18.526669849775473,
+      "he_so_bmi_dup": 4.8999699922497815,
+      "bien_duoc_giu": "ca hai"
+    },
+    {
+      "seed_split": 3,
+      "he_so_bmi": 24.91590248084685,
+      "he_so_bmi_dup": 0.0,
+      "bien_duoc_giu": "bmi"
+    },
+    {
+      "seed_split": 4,
+      "he_so_bmi": 16.153668332497826,
+      "he_so_bmi_dup": 6.214975830719598,
+      "bien_duoc_giu": "ca hai"
+    }
+  ],
+  "debiased_lasso": {
+    "n_selected": 5,
+    "selected_features": [
+      "bmi",
+      "bp",
+      "s3",
+      "s5",
+      "chi_so_nhieu_009"
+    ],
+    "metrics_test": {
+      "RMSE": 53.738707623911836,
+      "MAE": 44.27424113212016,
+      "R2": 0.454932807861377
+    }
+  },
+  "test_panel_proposal": {
+    "total_cost_full_panel_vnd": 22105930.126042776,
+    "total_cost_selected_vnd": 286565.6094422464,
+    "savings_pct": 98.70367088012893,
+    "panel": [
+      {
+        "chi_so": "chi_so_nhieu_009",
+        "chi_phi_vnd": 106565.60944224641,
+        "loai": "nhieu"
+      },
+      {
+        "chi_so": "s5",
+        "chi_phi_vnd": 70000.0,
+        "loai": "that"
+      },
+      {
+        "chi_so": "s3",
+        "chi_phi_vnd": 60000.0,
+        "loai": "that"
+      },
+      {
+        "chi_so": "bp",
+        "chi_phi_vnd": 30000.0,
+        "loai": "that"
+      },
+      {
+        "chi_so": "bmi",
+        "chi_phi_vnd": 20000.0,
+        "loai": "that"
+      }
+    ]
+  }
+}
