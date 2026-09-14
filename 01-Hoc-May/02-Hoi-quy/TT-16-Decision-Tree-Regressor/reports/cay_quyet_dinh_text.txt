@@ -1,0 +1,82 @@
+|--- trip_distance <= 8.22
+|   |--- trip_distance <= 2.71
+|   |   |--- trip_distance <= 1.50
+|   |   |   |--- trip_distance <= 1.01
+|   |   |   |   |--- trip_distance <= 0.16
+|   |   |   |   |   |--- value: [19.25]
+|   |   |   |   |--- trip_distance >  0.16
+|   |   |   |   |   |--- value: [7.28]
+|   |   |   |--- trip_distance >  1.01
+|   |   |   |   |--- trip_distance <= 1.23
+|   |   |   |   |   |--- value: [9.40]
+|   |   |   |   |--- trip_distance >  1.23
+|   |   |   |   |   |--- value: [10.62]
+|   |   |--- trip_distance >  1.50
+|   |   |   |--- trip_distance <= 2.03
+|   |   |   |   |--- trip_distance <= 1.73
+|   |   |   |   |   |--- value: [11.89]
+|   |   |   |   |--- trip_distance >  1.73
+|   |   |   |   |   |--- value: [13.14]
+|   |   |   |--- trip_distance >  2.03
+|   |   |   |   |--- trip_distance <= 2.41
+|   |   |   |   |   |--- value: [14.70]
+|   |   |   |   |--- trip_distance >  2.41
+|   |   |   |   |   |--- value: [16.25]
+|   |--- trip_distance >  2.71
+|   |   |--- trip_distance <= 4.70
+|   |   |   |--- trip_distance <= 3.45
+|   |   |   |   |--- trip_distance <= 3.01
+|   |   |   |   |   |--- value: [17.63]
+|   |   |   |   |--- trip_distance >  3.01
+|   |   |   |   |   |--- value: [19.17]
+|   |   |   |--- trip_distance >  3.45
+|   |   |   |   |--- trip_distance <= 4.12
+|   |   |   |   |   |--- value: [21.33]
+|   |   |   |   |--- trip_distance >  4.12
+|   |   |   |   |   |--- value: [23.78]
+|   |   |--- trip_distance >  4.70
+|   |   |   |--- trip_distance <= 6.18
+|   |   |   |   |--- trip_distance <= 5.52
+|   |   |   |   |   |--- value: [26.22]
+|   |   |   |   |--- trip_distance >  5.52
+|   |   |   |   |   |--- value: [28.75]
+|   |   |   |--- trip_distance >  6.18
+|   |   |   |   |--- trip_distance <= 7.22
+|   |   |   |   |   |--- value: [31.68]
+|   |   |   |   |--- trip_distance >  7.22
+|   |   |   |   |   |--- value: [34.69]
+|--- trip_distance >  8.22
+|   |--- trip_distance <= 13.38
+|   |   |--- trip_distance <= 10.47
+|   |   |   |--- trip_distance <= 9.23
+|   |   |   |   |--- trip_distance <= 8.93
+|   |   |   |   |   |--- value: [37.34]
+|   |   |   |   |--- trip_distance >  8.93
+|   |   |   |   |   |--- value: [39.76]
+|   |   |   |--- trip_distance >  9.23
+|   |   |   |   |--- trip_distance <= 9.82
+|   |   |   |   |   |--- value: [41.41]
+|   |   |   |   |--- trip_distance >  9.82
+|   |   |   |   |   |--- value: [43.68]
+|   |   |--- trip_distance >  10.47
+|   |   |   |--- trip_distance <= 12.07
+|   |   |   |   |--- trip_distance <= 11.47
+|   |   |   |   |   |--- value: [46.89]
+|   |   |   |   |--- trip_distance >  11.47
+|   |   |   |   |   |--- value: [49.69]
+|   |   |   |--- trip_distance >  12.07
+|   |   |   |   |--- value: [54.06]
+|   |--- trip_distance >  13.38
+|   |   |--- trip_distance <= 22.57
+|   |   |   |--- trip_distance <= 16.02
+|   |   |   |   |--- trip_distance <= 14.56
+|   |   |   |   |   |--- value: [60.22]
+|   |   |   |   |--- trip_distance >  14.56
+|   |   |   |   |   |--- value: [64.04]
+|   |   |   |--- trip_distance >  16.02
+|   |   |   |   |--- DOLocationID <= 34.00
+|   |   |   |   |   |--- value: [82.02]
+|   |   |   |   |--- DOLocationID >  34.00
+|   |   |   |   |   |--- value: [70.56]
+|   |   |--- trip_distance >  22.57
+|   |   |   |--- value: [111.97]

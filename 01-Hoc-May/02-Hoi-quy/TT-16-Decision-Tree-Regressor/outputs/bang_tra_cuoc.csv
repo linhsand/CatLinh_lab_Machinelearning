@@ -1,0 +1,29 @@
+﻿leaf_id,dieu_kien,gia_du_doan_usd,so_chuyen_thuc_te
+6,trip_distance <= 8.22 VA trip_distance <= 2.71 VA trip_distance <= 1.50 VA trip_distance <= 1.01 VA trip_distance > 0.16,7.28,33619
+8,trip_distance <= 8.22 VA trip_distance <= 2.71 VA trip_distance <= 1.50 VA trip_distance > 1.01 VA trip_distance <= 1.23,9.4,12518
+9,trip_distance <= 8.22 VA trip_distance <= 2.71 VA trip_distance <= 1.50 VA trip_distance > 1.01 VA trip_distance > 1.23,10.62,15470
+12,trip_distance <= 8.22 VA trip_distance <= 2.71 VA trip_distance > 1.50 VA trip_distance <= 2.03 VA trip_distance <= 1.73,11.89,10330
+13,trip_distance <= 8.22 VA trip_distance <= 2.71 VA trip_distance > 1.50 VA trip_distance <= 2.03 VA trip_distance > 1.73,13.14,12227
+15,trip_distance <= 8.22 VA trip_distance <= 2.71 VA trip_distance > 1.50 VA trip_distance > 2.03 VA trip_distance <= 2.41,14.7,11295
+16,trip_distance <= 8.22 VA trip_distance <= 2.71 VA trip_distance > 1.50 VA trip_distance > 2.03 VA trip_distance > 2.41,16.25,6748
+20,trip_distance <= 8.22 VA trip_distance > 2.71 VA trip_distance <= 4.70 VA trip_distance <= 3.45 VA trip_distance <= 3.01,17.63,5547
+21,trip_distance <= 8.22 VA trip_distance > 2.71 VA trip_distance <= 4.70 VA trip_distance <= 3.45 VA trip_distance > 3.01,19.17,5763
+5,trip_distance <= 8.22 VA trip_distance <= 2.71 VA trip_distance <= 1.50 VA trip_distance <= 1.01 VA trip_distance <= 0.16,19.25,509
+23,trip_distance <= 8.22 VA trip_distance > 2.71 VA trip_distance <= 4.70 VA trip_distance > 3.45 VA trip_distance <= 4.12,21.33,6287
+24,trip_distance <= 8.22 VA trip_distance > 2.71 VA trip_distance <= 4.70 VA trip_distance > 3.45 VA trip_distance > 4.12,23.78,3721
+27,trip_distance <= 8.22 VA trip_distance > 2.71 VA trip_distance > 4.70 VA trip_distance <= 6.18 VA trip_distance <= 5.52,26.22,3603
+28,trip_distance <= 8.22 VA trip_distance > 2.71 VA trip_distance > 4.70 VA trip_distance <= 6.18 VA trip_distance > 5.52,28.75,2032
+30,trip_distance <= 8.22 VA trip_distance > 2.71 VA trip_distance > 4.70 VA trip_distance > 6.18 VA trip_distance <= 7.22,31.68,2674
+31,trip_distance <= 8.22 VA trip_distance > 2.71 VA trip_distance > 4.70 VA trip_distance > 6.18 VA trip_distance > 7.22,34.69,1999
+36,trip_distance > 8.22 VA trip_distance <= 13.38 VA trip_distance <= 10.47 VA trip_distance <= 9.23 VA trip_distance <= 8.93,37.34,1626
+37,trip_distance > 8.22 VA trip_distance <= 13.38 VA trip_distance <= 10.47 VA trip_distance <= 9.23 VA trip_distance > 8.93,39.76,702
+39,trip_distance > 8.22 VA trip_distance <= 13.38 VA trip_distance <= 10.47 VA trip_distance > 9.23 VA trip_distance <= 9.82,41.41,1276
+40,trip_distance > 8.22 VA trip_distance <= 13.38 VA trip_distance <= 10.47 VA trip_distance > 9.23 VA trip_distance > 9.82,43.68,1230
+43,trip_distance > 8.22 VA trip_distance <= 13.38 VA trip_distance > 10.47 VA trip_distance <= 12.07 VA trip_distance <= 11.47,46.89,1600
+44,trip_distance > 8.22 VA trip_distance <= 13.38 VA trip_distance > 10.47 VA trip_distance <= 12.07 VA trip_distance > 11.47,49.69,734
+45,trip_distance > 8.22 VA trip_distance <= 13.38 VA trip_distance > 10.47 VA trip_distance > 12.07,54.06,920
+49,trip_distance > 8.22 VA trip_distance > 13.38 VA trip_distance <= 22.57 VA trip_distance <= 16.02 VA trip_distance <= 14.56,60.22,582
+50,trip_distance > 8.22 VA trip_distance > 13.38 VA trip_distance <= 22.57 VA trip_distance <= 16.02 VA trip_distance > 14.56,64.04,763
+53,trip_distance > 8.22 VA trip_distance > 13.38 VA trip_distance <= 22.57 VA trip_distance > 16.02 VA DOLocationID > 34.00,70.56,5792
+52,trip_distance > 8.22 VA trip_distance > 13.38 VA trip_distance <= 22.57 VA trip_distance > 16.02 VA DOLocationID <= 34.00,82.02,512
+54,trip_distance > 8.22 VA trip_distance > 13.38 VA trip_distance > 22.57,111.97,500
