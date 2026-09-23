@@ -142,6 +142,53 @@ du_doan = np.clip(du_doan, 0, None)             # ⭐ số lượt thuê không 
 
 **Mức tham chiếu:** RMSE ~40–55 lượt/giờ · R² ~0,93–0,95 trên tập test theo thời gian.
 
+### ⭐ CHỨNG MINH RÒ RỈ (mục 2 checklist)
+
+Huấn luyện XGBoost khi **cố tình giữ lại** `casual` + `registered` làm đặc trưng
+(cùng cấu hình refit train+val như mô hình chính thức, xem `notebooks/xgboost_bike_demand.ipynb` mục 2):
+
+| | R² | RMSE |
+|---|---|---|
+| Tập train+val (đã thấy dữ liệu) | 0,9999 | 0,90 lượt/giờ |
+| Tập test (chưa thấy) | **0,9993** | **5,49 lượt/giờ** |
+
+`registered` chiếm ~93% feature importance — mô hình chỉ học phép cộng
+`cnt = casual + registered`, không học quy luật thuê xe nào. **→ Bắt buộc bỏ
+cả hai cột trước khi huấn luyện mô hình thật.**
+
+### ✅ Kết quả thực đo (`notebooks/xgboost_bike_demand.ipynb`, xem `reports/tom_tat.json`)
+
+| Bước | RMSE (lượt/giờ) | R² |
+|---|---|---|
+| Baseline ngay thơ "cùng giờ tuần trước" | 117,30 | 0,661 |
+| XGBoost early-stopping, chỉ train trên năm 1 | 118,67 | 0,653 (⚠️ **không thắng nổi** baseline!) |
+| XGBoost refit trên train+val (số cây cố định) | 64,51 | 0,898 |
+| XGBoost refit train+val, huấn luyện trên `log1p(cnt)` | 65,45 | 0,895 (không tốt hơn — giữ thang gốc) |
+| **XGBoost cuối (RandomizedSearchCV + refit + clip ≥ 0)** | **63,53** | **0,901** |
+
+**Vì sao XGBoost "chỉ train năm 1" ban đầu không thắng nổi baseline:** `cnt`
+trung bình năm 2 cao hơn năm 1 tới ~63% (hệ thống ngày càng phổ biến hơn).
+Cây quyết định không thể ngoại suy vượt quá khoảng giá trị đã thấy khi
+train, nên early stopping đúng kỹ thuật vẫn cho kết quả tệ. Refit lại trên
+toàn bộ train+val (bao phủ 9/12 tháng của năm 2) mới là bước quyết định giúp
+RMSE giảm gần một nửa — quan trọng hơn cả việc tune siêu tham số.
+
+| Mục | Kết quả |
+|---|---|
+| Số cây thực tế dùng (sau RandomizedSearchCV) | 1.176 / 3.000 |
+| Siêu tham số tốt nhất | `max_depth=6, learning_rate=0,03, subsample=0,7, colsample_bytree=0,8, min_child_weight=5, reg_lambda=2,0, reg_alpha=0,1` |
+| So sánh mô hình (refit train+val, cùng đặc trưng) | XGBoost RMSE 63,53 · Gradient Boosting (TT-18) RMSE 80,71 · Random Forest (TT-17) RMSE 73,58 |
+| Sai số lớn nhất theo giờ | 8h (MAE ≈ 94), 17h (≈ 85), 18h (≈ 77) — đúng 2 khung giờ cao điểm |
+| Sai số theo thời tiết | weathersit xấu (3) MAE ≈ 65, gần **gấp đôi** thời tiết đẹp (1–2: MAE ≈ 37–39) |
+| Dự đoán | đã `clip` về ≥ 0 |
+
+**Lưu ý mức tham chiếu:** kết quả đo được (RMSE ~63–65, R² ~0,90) thấp hơn
+mức tham chiếu gợi ý (~40–55, ~0,93–0,95) của README. Nguyên nhân đã nêu ở
+trên (mức cầu tăng mạnh giữa 2 năm khiến việc chia đúng theo thời gian trở
+nên khó hơn nhiều so với chia ngẫu nhiên) — đây là con số đo thật, không
+điều chỉnh để khớp mức tham chiếu, và mô hình vẫn thắng rõ ràng baseline
+naive lẫn Random Forest/Gradient Boosting trên cùng điều kiện.
+
 ---
 
 ## 7. CẠM BẪY
@@ -160,12 +207,14 @@ du_doan = np.clip(du_doan, 0, None)             # ⭐ số lượt thuê không 
 ## 8. SẢN PHẨM NỘP & MỞ RỘNG
 
 ```
-TT-19-XGBoostRegressor-<HoTen>/
-├── README.md          ← có mục "CHỨNG MINH RÒ RỈ" và so sánh với baseline naive
-├── notebooks/xgboost_bike_demand.ipynb
-├── src/{features.py, train.py}
-├── models/xgb_bike.json
-├── reports/{cnt_theo_gio.png, du_bao_vs_thuc_te.png, shap_summary.png, phan_tich_loi.png}
+TT-19-XGBoost-Regressor/
+├── README.md          ← có mục "CHỨNG MINH RÒ RỈ" và so sánh với baseline naive (mục 6)
+├── data/hour.csv      ← Bike Sharing Dataset (UCI), 17.379 dòng
+├── notebooks/xgboost_bike_demand.ipynb  ← toàn bộ pipeline, giải thích từng bước bằng markdown
+├── src/{features.py, train.py}          ← logic dùng chung giữa notebook và script train doc lap
+├── models/xgb_bike.json                 ← mô hình XGBoost cuối (native format)
+├── reports/{cnt_theo_gio.png, feature_importance.png, shap_summary.png, du_bao_vs_thuc_te.png,
+│            phan_tich_loi.png, so_sanh_models.csv, tom_tat.json}
 └── requirements.txt
 ```
 

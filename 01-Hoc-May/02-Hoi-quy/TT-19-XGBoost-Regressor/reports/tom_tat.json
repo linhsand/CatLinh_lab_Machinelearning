@@ -1,0 +1,73 @@
+{
+  "n_rows": 17379,
+  "leak_check": {
+    "r2_train": 0.9999744296073914,
+    "rmse_train": 0.9001192358293549,
+    "r2_test": 0.9992592334747314,
+    "rmse_test": 5.486484045988801
+  },
+  "naive_baseline": {
+    "rmse": 117.29536999735765,
+    "r2": 0.6614357064701091,
+    "missing_lookup": 39,
+    "n_test": 2168
+  },
+  "xgb_train_only_early_stop": {
+    "best_iteration": 1097,
+    "rmse": 118.67443730775597,
+    "r2": 0.6534277200698853
+  },
+  "xgb_refit_trainval_raw": {
+    "n_estimators": 1097,
+    "rmse": 64.51065803415743,
+    "r2": 0.8975899815559387
+  },
+  "xgb_refit_trainval_log1p": {
+    "n_estimators": 558,
+    "rmse": 65.45107905909573,
+    "r2": 0.8945823907852173
+  },
+  "xgb_tuned_final": {
+    "best_params": {
+      "subsample": 0.7,
+      "reg_lambda": 2.0,
+      "reg_alpha": 0.1,
+      "min_child_weight": 5,
+      "max_depth": 6,
+      "learning_rate": 0.03,
+      "colsample_bytree": 0.8
+    },
+    "n_estimators": 1176,
+    "rmse": 63.52602159683758,
+    "r2": 0.900692343711853,
+    "mae": 39.638221740722656,
+    "fit_time_s": 7.404480934143066
+  },
+  "so_sanh_models": {
+    "RandomForest": {
+      "RMSE": 73.58260420449295,
+      "R2": 0.866761503672599,
+      "fit_time_s": 5.7013163566589355
+    },
+    "GradientBoosting": {
+      "RMSE": 80.71229819831827,
+      "R2": 0.839690654264455,
+      "fit_time_s": 16.021382331848145
+    },
+    "XGBoost": {
+      "RMSE": 63.52602159683758,
+      "R2": 0.900692343711853,
+      "fit_time_s": 7.404480934143066
+    }
+  },
+  "error_by_hour_top3": {
+    "8": 93.9850095960829,
+    "17": 85.2899163214715,
+    "18": 76.6705795958802
+  },
+  "error_by_weather": {
+    "1": 37.04642490128487,
+    "2": 38.568740358804256,
+    "3": 64.70589208565653
+  }
+}

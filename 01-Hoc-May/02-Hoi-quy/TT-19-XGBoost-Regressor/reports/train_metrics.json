@@ -1,0 +1,17 @@
+{
+  "best_params": {
+    "subsample": 0.7,
+    "reg_lambda": 2.0,
+    "reg_alpha": 0.1,
+    "min_child_weight": 5,
+    "max_depth": 6,
+    "learning_rate": 0.03,
+    "colsample_bytree": 0.8
+  },
+  "n_estimators": 1176,
+  "rmse_test": 63.52602159683758,
+  "r2_test": 0.900692343711853,
+  "mae_test": 39.638221740722656,
+  "fit_time_s": 7.628582239151001,
+  "n_features": 18
+}
