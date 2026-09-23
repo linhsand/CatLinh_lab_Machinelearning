@@ -1,0 +1,10 @@
+[NbConvertApp] Converting notebook rf_regressor_flight.ipynb to notebook
+D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+Traceback (most recent call last):
+  File [35m"D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py"[0m, line [35m319[0m, in [35mmain[0m
+    del [31mregistry[rtype][0m[1;31m[name][0m
+        [31m~~~~~~~~~~~~~~~[0m[1;31m^^^^^^[0m
+[1;35mKeyError[0m: [35m'C:\\Users\\Asus\\AppData\\Local\\Temp\\joblib_memmapping_folder_36096_7575e392d7ca4e6db28268d450f23a38_194cc02d01894e16be575d4dbae44bc7'[0m
+[NbConvertApp] Writing 267981 bytes to rf_regressor_flight.ipynb

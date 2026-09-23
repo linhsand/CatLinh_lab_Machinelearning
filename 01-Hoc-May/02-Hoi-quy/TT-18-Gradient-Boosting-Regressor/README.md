@@ -148,6 +148,19 @@ for q in [0.1, 0.5, 0.9]:
 
 **Mức tham chiếu:** RMSE trên thang log ~0,12–0,13 · Median APE ~8–10%.
 
+### ✅ Kết quả thực đo (`notebooks/gbr_regressor_house.ipynb`, xem `reports/tom_tat.json`)
+
+| Tiêu chí | Kết quả |
+|---|---|
+| Giá trị thiếu | 17 cột "không có tiện ích" (điền `None`/0) · 2 cột thiếu thật (`LotFrontage` theo median-Neighborhood, `Electrical` theo mode) |
+| Biến thứ tự (`OrdinalEncoder`) | 18 cột (yêu cầu tối thiểu 5) |
+| RMSE (thang log) | Gradient Boosting: ~0,135 · HistGradientBoosting: ~0,136 · Ridge: ~0,134 |
+| ⭐ Median APE | **~5,4%** (chuẩn ngành AVM: < 10–12%) |
+| ⭐ Khoảng dự báo 10–90% | Thô (chưa hiệu chỉnh): độ phủ thực tế chỉ ~67% → **quá tự tin**. Sau **split-conformal calibration**: độ phủ ~79%, sát mức danh nghĩa 80% |
+| Human-in-the-loop | Ngưỡng độ rộng khoảng > 25% giá dự đoán → ~42% hồ sơ tự động duyệt, ~58% chuyển thẩm định viên (MAE nhóm tự động thấp hơn hẳn nhóm chuyển người, xác nhận ngưỡng lọc đúng) |
+| Feature engineering (`TotalSF`, `TuoiNha`, `DaSuaChua`) | Median APE cải thiện từ ~5,80% → ~5,50% |
+| Số cây tối ưu (từ đường loss train/validation) | 540 / 1000 (sau mốc này validation loss chững lại — early stopping đúng hướng) |
+
 ---
 
 ## 7. CẠM BẪY
@@ -166,12 +179,15 @@ for q in [0.1, 0.5, 0.9]:
 ## 8. SẢN PHẨM NỘP & MỞ RỘNG
 
 ```
-TT-18-GradientBoostingRegressor-<HoTen>/
-├── README.md          ← có Median APE + bảng human-in-the-loop
-├── notebooks/{01_data_cleaning.ipynb, 02_gbr_model.ipynb}
-├── src/{features.py, train.py}
-├── models/gbr_pipeline.joblib
-├── reports/{missing_analysis.png, loss_theo_so_cay.png, khoang_gia.png, ape_distribution.png}
+TT-18-Gradient-Boosting-Regressor/
+├── README.md              ← có Median APE + bảng human-in-the-loop (kết quả thực đo ở mục 6)
+├── data/train.csv         ← Ames Housing that (qua OpenML, xem ghi chu trong notebook)
+├── notebooks/
+│   └── gbr_regressor_house.ipynb   ← toan bo pipeline, giai thich tung buoc bang markdown
+├── models/gbr_pipeline.joblib      ← pipeline GBR (co FE) + 3 model quantile 10/50/90 + preprocessor
+├── reports/{missing_analysis.png, skew_saleprice.png, loss_theo_so_cay.png, khoang_gia.png,
+│            ape_distribution.png, so_sanh_feature_engineering.csv, so_sanh_models.csv,
+│            human_in_the_loop.csv, tom_tat.json}
 └── requirements.txt
 ```
 

@@ -1,0 +1,254 @@
+[NbConvertApp] Converting notebook rf_regressor_flight.ipynb to notebook
+D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+Traceback (most recent call last):
+  File [35m"D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py"[0m, line [35m319[0m, in [35mmain[0m
+    del [31mregistry[rtype][0m[1;31m[name][0m
+        [31m~~~~~~~~~~~~~~~[0m[1;31m^^^^^^[0m
+[1;35mKeyError[0m: [35m'C:\\Users\\Asus\\AppData\\Local\\Temp\\joblib_memmapping_folder_25208_06b015fad0d546ef93a714498bd45d41_87848852f4254b7eb302491dd32b5aad'[0m
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Scripts\jupyter-nbconvert.EXE\__main__.py", line 5, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\jupyter_core\application.py", line 284, in launch_instance
+    super().launch_instance(argv=argv, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\traitlets\config\application.py", line 1080, in launch_instance
+    app.start()
+    ~~~~~~~~~^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\nbconvertapp.py", line 420, in start
+    self.convert_notebooks()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\nbconvertapp.py", line 563, in convert_single_notebook
+    output, resources = self.export_single_notebook(
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        notebook_filename, resources, input_buffer=input_buffer
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\nbconvertapp.py", line 487, in export_single_notebook
+    output, resources = self.exporter.from_filename(
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        notebook_filename, resources=resources
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\exporters\exporter.py", line 201, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\exporters\exporter.py", line 220, in from_file
+    return self.from_notebook_node(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        nbformat.read(file_stream, as_version=4), resources=resources, **kw
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\exporters\notebook.py", line 36, in from_notebook_node
+    nb_copy, resources = super().from_notebook_node(nb, resources, **kw)
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\exporters\exporter.py", line 154, in from_notebook_node
+    nb_copy, resources = self._preprocess(nb_copy, resources)
+                         ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\exporters\exporter.py", line 353, in _preprocess
+    nbc, resc = preprocessor(nbc, resc)
+                ~~~~~~~~~~~~^^^^^^^^^^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\preprocessors\base.py", line 48, in __call__
+    return self.preprocess(nb, resources)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\preprocessors\execute.py", line 103, in preprocess
+    self.preprocess_cell(cell, resources, index)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbconvert\preprocessors\execute.py", line 124, in preprocess_cell
+    cell = self.execute_cell(cell, index, store_history=True)
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\jupyter_core\utils\__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Asus\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbclient\client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\nbclient\client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+pdp_result = partial_dependence(rf_pipe, X_test, features=["days_left"], kind="average", grid_resolution=49)
+grid = pdp_result["grid_values"][0]
+avg = pdp_result["average"][0]
+pdp_df = pd.DataFrame({"days_left": grid, "gia_du_doan_trung_binh": avg})
+pdp_df.to_csv(REPORTS_DIR / "pdp_days_left.csv", index=False)
+
+fig, ax = plt.subplots(figsize=(9, 6))
+ax.plot(pdp_df["days_left"], pdp_df["gia_du_doan_trung_binh"], color="#8e44ad", lw=2)
+ax.set_xlabel("days_left"); ax.set_ylabel("Gia du doan trung binh (Rupee) - PDP")
+ax.set_title("Partial Dependence: anh huong rieng cua days_left")
+fig.tight_layout()
+fig.savefig(REPORTS_DIR / "pdp_days_left.png", dpi=130)
+plt.show()
+
+def pdp_at(d):
+    return pdp_df.loc[(pdp_df["days_left"] - d).abs().idxmin(), "gia_du_doan_trung_binh"]
+
+print(f"PDP tai days_left=1  : {pdp_at(1):,.0f}")
+print(f"PDP tai days_left=7  : {pdp_at(7):,.0f}")
+print(f"PDP tai days_left=14 : {pdp_at(14):,.0f}")
+print(f"PDP tai days_left=30 : {pdp_at(30):,.0f}")
+print(f"PDP tai days_left=49 : {pdp_at(49):,.0f}")
+print(f"Tiet kiem khi mua truoc 7 ngay thay vi mua sat ngay (1 ngay): {pdp_at(1) - pdp_at(7):,.0f} Rupee")
+print(f"Tiet kiem khi mua truoc 30 ngay thay vi truoc 7 ngay: {pdp_at(7) - pdp_at(30):,.0f} Rupee")
+------------------
+
+----- stderr -----
+D:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\sklearn\inspection\_partial_dependence.py:721: FutureWarning: The column 'days_left' contains integer data. Partial dependence plots are not supported for integer data: this can lead to implicit rounding with NumPy arrays or even errors with newer pandas versions. Please convert numerical featuresto floating point dtypes ahead of time to avoid problems. This will raise ValueError in scikit-learn 1.9.
+  warnings.warn(
+------------------
+
+[31m---------------------------------------------------------------------------[39m
+[31mLossySetitemError[39m                         Traceback (most recent call last)
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\pandas\core\indexing.py:2144[39m, in [36m_iLocIndexer._setitem_single_column[39m[34m(self, loc, value, plane_indexer)[39m
+[32m   2143[39m [38;5;28;01mtry[39;00m:
+[32m-> [39m[32m2144[39m     [30;43mself[39;49m[30;43m.[39;49m[30;43mobj[39;49m[30;43m.[39;49m[30;43m_mgr[39;49m[30;43m.[39;49m[30;43mcolumn_setitem[39;49m[30;43m([39;49m
+[32m   2145[39m [30;43m        [39;49m[30;43mloc[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mplane_indexer[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mvalue[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43minplace_only[39;49m[30;43m=[39;49m[30;43;01mTrue[39;49;00m
+[32m   2146[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m   2147[39m [38;5;28;01mexcept[39;00m ([38;5;167;01mValueError[39;00m, [38;5;167;01mTypeError[39;00m, LossySetitemError) [38;5;28;01mas[39;00m exc:
+[32m   2148[39m     [38;5;66;03m# If we're setting an entire column and we can't do it inplace,[39;00m
+[32m   2149[39m     [38;5;66;03m#  then we can use value's dtype (or inferred dtype)[39;00m
+[32m   2150[39m     [38;5;66;03m#  instead of object[39;00m
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\pandas\core\internals\managers.py:1518[39m, in [36mBlockManager.column_setitem[39m[34m(self, loc, idx, value, inplace_only)[39m
+[32m   1517[39m [38;5;28;01mif[39;00m inplace_only:
+[32m-> [39m[32m1518[39m     [30;43mcol_mgr[39;49m[30;43m.[39;49m[30;43msetitem_inplace[39;49m[30;43m([39;49m[30;43midx[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mvalue[39;49m[30;43m)[39;49m
+[32m   1519[39m [38;5;28;01melse[39;00m:
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\pandas\core\internals\managers.py:2220[39m, in [36mSingleBlockManager.setitem_inplace[39m[34m(self, indexer, value)[39m
+[32m   2217[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(arr, np.ndarray):
+[32m   2218[39m     [38;5;66;03m# Note: checking for ndarray instead of np.dtype means we exclude[39;00m
+[32m   2219[39m     [38;5;66;03m#  dt64/td64, which do their own validation.[39;00m
+[32m-> [39m[32m2220[39m     value = [30;43mnp_can_hold_element[39;49m[30;43m([39;49m[30;43marr[39;49m[30;43m.[39;49m[30;43mdtype[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mvalue[39;49m[30;43m)[39;49m
+[32m   2222[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(value, np.ndarray) [38;5;129;01mand[39;00m value.ndim == [32m1[39m [38;5;129;01mand[39;00m [38;5;28mlen[39m(value) == [32m1[39m:
+[32m   2223[39m     [38;5;66;03m# NumPy 1.25 deprecation: https://github.com/numpy/numpy/pull/10615[39;00m
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\pandas\core\dtypes\cast.py:1725[39m, in [36mnp_can_hold_element[39m[34m(dtype, element)[39m
+[32m   1724[39m     [38;5;66;03m# Anything other than integer we cannot hold[39;00m
+[32m-> [39m[32m1725[39m     [38;5;28;01mraise[39;00m LossySetitemError
+[32m   1726[39m [38;5;28;01mif[39;00m (
+[32m   1727[39m     dtype.kind == [33m"[39m[33mu[39m[33m"[39m
+[32m   1728[39m     [38;5;129;01mand[39;00m [38;5;28misinstance[39m(element, np.ndarray)
+[32m   1729[39m     [38;5;129;01mand[39;00m element.dtype.kind == [33m"[39m[33mi[39m[33m"[39m
+[32m   1730[39m ):
+[32m   1731[39m     [38;5;66;03m# see test_where_uint64[39;00m
+
+[31mLossySetitemError[39m: 
+
+The above exception was the direct cause of the following exception:
+
+[31mTypeError[39m                                 Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[10][39m[32m, line 1[39m
+[32m----> [39m[32m1[39m pdp_result = partial_dependence(rf_pipe, X_test, features=[[33m"days_left"[39m], kind=[33m"average"[39m, grid_resolution=[32m49[39m)
+[32m      2[39m grid = pdp_result[[33m"grid_values"[39m][[32m0[39m]
+[32m      3[39m avg = pdp_result[[33m"average"[39m][[32m0[39m]
+[32m      4[39m pdp_df = pd.DataFrame({[33m"days_left"[39m: grid, [33m"gia_du_doan_trung_binh"[39m: avg})
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\sklearn\utils\_param_validation.py:218[39m, in [36mvalidate_params.<locals>.decorator.<locals>.wrapper[39m[34m(*args, **kwargs)[39m
+[32m    212[39m [38;5;28;01mtry[39;00m:
+[32m    213[39m     [38;5;28;01mwith[39;00m config_context(
+[32m    214[39m         skip_parameter_validation=(
+[32m    215[39m             prefer_skip_nested_validation [38;5;129;01mor[39;00m global_skip_validation
+[32m    216[39m         )
+[32m    217[39m     ):
+[32m--> [39m[32m218[39m         [38;5;28;01mreturn[39;00m [30;43mfunc[39;49m[30;43m([39;49m[30;43m*[39;49m[30;43margs[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    219[39m [38;5;28;01mexcept[39;00m InvalidParameterError [38;5;28;01mas[39;00m e:
+[32m    220[39m     [38;5;66;03m# When the function is just a wrapper around an estimator, we allow[39;00m
+[32m    221[39m     [38;5;66;03m# the function to delegate validation to the estimator, but we replace[39;00m
+[32m    222[39m     [38;5;66;03m# the name of the estimator by the name of the function in the error[39;00m
+[32m    223[39m     [38;5;66;03m# message to avoid confusion.[39;00m
+[32m    224[39m     msg = re.sub(
+[32m    225[39m         [33mr[39m[33m"[39m[33mparameter of [39m[33m\[39m[33mw+ must be[39m[33m"[39m,
+[32m    226[39m         [33mf[39m[33m"[39m[33mparameter of [39m[38;5;132;01m{[39;00mfunc.[34m__qualname__[39m[38;5;132;01m}[39;00m[33m must be[39m[33m"[39m,
+[32m    227[39m         [38;5;28mstr[39m(e),
+[32m    228[39m     )
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\sklearn\inspection\_partial_dependence.py:750[39m, in [36mpartial_dependence[39m[34m(estimator, X, features, sample_weight, categorical_features, feature_names, response_method, percentiles, grid_resolution, custom_values, method, kind)[39m
+[32m    741[39m grid, values = _grid_from_X(
+[32m    742[39m     X_subset,
+[32m    743[39m     percentiles,
+[32m   (...)[39m[32m    746[39m     custom_values_for_X_subset,
+[32m    747[39m )
+[32m    749[39m [38;5;28;01mif[39;00m method == [33m"[39m[33mbrute[39m[33m"[39m:
+[32m--> [39m[32m750[39m     averaged_predictions, predictions = [30;43m_partial_dependence_brute[39;49m[30;43m([39;49m
+[32m    751[39m [30;43m        [39;49m[30;43mestimator[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mgrid[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mfeatures_indices[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mX[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mresponse_method[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43msample_weight[39;49m
+[32m    752[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    754[39m     [38;5;66;03m# reshape predictions to[39;00m
+[32m    755[39m     [38;5;66;03m# (n_outputs, n_instances, n_values_feature_0, n_values_feature_1, ...)[39;00m
+[32m    756[39m     predictions = predictions.reshape(
+[32m    757[39m         -[32m1[39m, X.shape[[32m0[39m], *[val.shape[[32m0[39m] [38;5;28;01mfor[39;00m val [38;5;129;01min[39;00m values]
+[32m    758[39m     )
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\sklearn\inspection\_partial_dependence.py:305[39m, in [36m_partial_dependence_brute[39m[34m(est, grid, features, X, response_method, sample_weight)[39m
+[32m    303[39m [38;5;28;01mfor[39;00m new_values [38;5;129;01min[39;00m grid:
+[32m    304[39m     [38;5;28;01mfor[39;00m i, variable [38;5;129;01min[39;00m [38;5;28menumerate[39m(features):
+[32m--> [39m[32m305[39m         [30;43m_safe_assign[39;49m[30;43m([39;49m[30;43mX_eval[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mnew_values[39;49m[30;43m[[39;49m[30;43mi[39;49m[30;43m][39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mcolumn_indexer[39;49m[30;43m=[39;49m[30;43mvariable[39;49m[30;43m)[39;49m
+[32m    307[39m     [38;5;66;03m# Note: predictions is of shape[39;00m
+[32m    308[39m     [38;5;66;03m# (n_points,) for non-multioutput regressors[39;00m
+[32m    309[39m     [38;5;66;03m# (n_points, n_tasks) for multioutput regressors[39;00m
+[32m    310[39m     [38;5;66;03m# (n_points, 1) for the regressors in cross_decomposition (I think)[39;00m
+[32m    311[39m     [38;5;66;03m# (n_points, 1) for binary classification (positive class already selected)[39;00m
+[32m    312[39m     [38;5;66;03m# (n_points, n_classes) for multiclass classification[39;00m
+[32m    313[39m     pred, _ = _get_response_values(est, X_eval, response_method=response_method)
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\sklearn\utils\_indexing.py:412[39m, in [36m_safe_assign[39m[34m(X, values, row_indexer, column_indexer)[39m
+[32m    405[39m     [38;5;28;01mwith[39;00m warnings.catch_warnings():
+[32m    406[39m         [38;5;66;03m# pandas >= 1.5 raises a warning when using iloc to set values in a column[39;00m
+[32m    407[39m         [38;5;66;03m# that does not have the same type as the column being set. It happens[39;00m
+[32m    408[39m         [38;5;66;03m# for instance when setting a categorical column with a string.[39;00m
+[32m    409[39m         [38;5;66;03m# In the future the behavior won't change and the warning should disappear.[39;00m
+[32m    410[39m         [38;5;66;03m# TODO(1.3): check if the warning is still raised or remove the filter.[39;00m
+[32m    411[39m         warnings.simplefilter([33m"[39m[33mignore[39m[33m"[39m, [38;5;167;01mFutureWarning[39;00m)
+[32m--> [39m[32m412[39m         [30;43mX[39;49m[30;43m.[39;49m[30;43miloc[39;49m[30;43m[[39;49m[30;43mrow_indexer[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mcolumn_indexer[39;49m[30;43m][39;49m = values
+[32m    413[39m [38;5;28;01melse[39;00m:  [38;5;66;03m# numpy array or sparse matrix[39;00m
+[32m    414[39m     X[row_indexer, column_indexer] = values
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\pandas\core\indexing.py:938[39m, in [36m_LocationIndexer.__setitem__[39m[34m(self, key, value)[39m
+[32m    933[39m [38;5;28mself[39m._has_valid_setitem_indexer(key)
+[32m    935[39m iloc: _iLocIndexer = (
+[32m    936[39m     cast([33m"[39m[33m_iLocIndexer[39m[33m"[39m, [38;5;28mself[39m) [38;5;28;01mif[39;00m [38;5;28mself[39m.name == [33m"[39m[33miloc[39m[33m"[39m [38;5;28;01melse[39;00m [38;5;28mself[39m.obj.iloc
+[32m    937[39m )
+[32m--> [39m[32m938[39m [30;43miloc[39;49m[30;43m.[39;49m[30;43m_setitem_with_indexer[39;49m[30;43m([39;49m[30;43mindexer[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mvalue[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mname[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\pandas\core\indexing.py:1953[39m, in [36m_iLocIndexer._setitem_with_indexer[39m[34m(self, indexer, value, name)[39m
+[32m   1950[39m [38;5;66;03m# align and set the values[39;00m
+[32m   1951[39m [38;5;28;01mif[39;00m take_split_path:
+[32m   1952[39m     [38;5;66;03m# We have to operate column-wise[39;00m
+[32m-> [39m[32m1953[39m     [30;43mself[39;49m[30;43m.[39;49m[30;43m_setitem_with_indexer_split_path[39;49m[30;43m([39;49m[30;43mindexer[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mvalue[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mname[39;49m[30;43m)[39;49m
+[32m   1954[39m [38;5;28;01melse[39;00m:
+[32m   1955[39m     [38;5;28mself[39m._setitem_single_block(indexer, value, name)
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\pandas\core\indexing.py:2044[39m, in [36m_iLocIndexer._setitem_with_indexer_split_path[39m[34m(self, indexer, value, name)[39m
+[32m   2041[39m [38;5;28;01melse[39;00m:
+[32m   2042[39m     [38;5;66;03m# scalar value[39;00m
+[32m   2043[39m     [38;5;28;01mfor[39;00m loc [38;5;129;01min[39;00m ilocs:
+[32m-> [39m[32m2044[39m         [30;43mself[39;49m[30;43m.[39;49m[30;43m_setitem_single_column[39;49m[30;43m([39;49m[30;43mloc[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mvalue[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mpi[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32mD:\WORK\Cat Linh_Lab_MachineLearning\.venv\Lib\site-packages\pandas\core\indexing.py:2163[39m, in [36m_iLocIndexer._setitem_single_column[39m[34m(self, loc, value, plane_indexer)[39m
+[32m   2151[39m         dtype = [38;5;28mself[39m.obj.dtypes.iloc[loc]
+[32m   2152[39m         [38;5;28;01mif[39;00m dtype [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m (np.void, [38;5;28mobject[39m) [38;5;129;01mand[39;00m [38;5;129;01mnot[39;00m [38;5;28mself[39m.obj.empty:
+[32m   2153[39m             [38;5;66;03m# - Exclude np.void, as that is a special case for expansion.[39;00m
+[32m   2154[39m             [38;5;66;03m#   We want to raise for[39;00m
+[32m   (...)[39m[32m   2161[39m             [38;5;66;03m# - Exclude empty initial object with enlargement,[39;00m
+[32m   2162[39m             [38;5;66;03m#   as then there's nothing to be inconsistent with.[39;00m
+[32m-> [39m[32m2163[39m             [38;5;28;01mraise[39;00m [38;5;167;01mTypeError[39;00m(
+[32m   2164[39m                 [33mf[39m[33m"[39m[33mInvalid value [39m[33m'[39m[38;5;132;01m{[39;00mvalue[38;5;132;01m}[39;00m[33m'[39m[33m for dtype [39m[33m'[39m[38;5;132;01m{[39;00mdtype[38;5;132;01m}[39;00m[33m'[39m[33m"[39m
+[32m   2165[39m             ) [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mexc[39;00m
+[32m   2166[39m         [38;5;28mself[39m.obj.isetitem(loc, value)
+[32m   2167[39m [38;5;28;01melse[39;00m:
+[32m   2168[39m     [38;5;66;03m# set value into the column (first attempting to operate inplace, then[39;00m
+[32m   2169[39m     [38;5;66;03m#  falling back to casting if necessary)[39;00m
+
+[31mTypeError[39m: Invalid value '4.895833333333333' for dtype 'int64'
+

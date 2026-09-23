@@ -1,0 +1,59 @@
+{
+  "shape_raw": [
+    1460,
+    81
+  ],
+  "so_cot_thieu_khong_co_tien_ich": 17,
+  "so_cot_thieu_that": 2,
+  "so_cot_thu_tu_ordinal": 18,
+  "baseline": {
+    "dummy": {
+      "MAE_log": 0.33713389241665187,
+      "RMSE_log": 0.43324391618066094,
+      "R2_log": -0.005837289254832179,
+      "Median_APE_%": 27.085711173451088
+    },
+    "linear": {
+      "MAE_log": 0.08848116898997169,
+      "RMSE_log": 0.12716753096202393,
+      "R2_log": 0.913340682382903,
+      "Median_APE_%": 5.825543988385026
+    },
+    "ridge": {
+      "MAE_log": 0.09266859373377404,
+      "RMSE_log": 0.13370481040741106,
+      "R2_log": 0.9042019097522078,
+      "Median_APE_%": 6.684083127064805
+    }
+  },
+  "gradient_boosting_truoc_fe": {
+    "MAE_log": 0.08995777596467723,
+    "RMSE_log": 0.13325356806701835,
+    "R2_log": 0.9048474393879546,
+    "Median_APE_%": 5.804338595216634,
+    "fit_time_s": 0.33458399772644043
+  },
+  "gradient_boosting_sau_fe": {
+    "MAE_log": 0.08705729498977575,
+    "RMSE_log": 0.1347335112721588,
+    "R2_log": 0.9027221322978836,
+    "Median_APE_%": 5.504740600649713
+  },
+  "hist_gradient_boosting": {
+    "MAE_log": 0.08742588394957337,
+    "RMSE_log": 0.13607144912571997,
+    "R2_log": 0.9007805520608998,
+    "Median_APE_%": 5.686450996274372,
+    "fit_time_s": 3.9742560386657715
+  },
+  "best_n_trees_tu_duong_loss": 540,
+  "median_ape_%": 5.389775623448971,
+  "do_phu_khoang_10_90_tho_%": 67.12328767123287,
+  "do_phu_khoang_10_90_sau_conformal_%": 79.1095890410959,
+  "human_in_the_loop": {
+    "ty_le_tu_dong_%": 41.78082191780822,
+    "ty_le_chuyen_nguoi_%": 58.21917808219178,
+    "mae_tu_dong_usd": 8226.59975583068,
+    "mae_chuyen_nguoi_usd": 20653.995205841617
+  }
+}
