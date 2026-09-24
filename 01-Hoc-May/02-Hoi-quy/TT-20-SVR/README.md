@@ -148,6 +148,42 @@ model = TransformedTargetRegressor(regressor=svr, transformer=StandardScaler())
 
 **Mức tham chiếu:** R² ~0,88–0,92 · RMSE ~4,5–5,5 MPa (XGBoost thường tốt hơn chút).
 
+### ⭐ ĐẶC TRƯNG TỪ KIẾN THỨC MIỀN
+
+Ba đặc trưng thêm vào (`water_cement_ratio = Water/Cement`,
+`tong_chat_ket_dinh = Cement + BlastFurnaceSlag + FlyAsh`, `log_age =
+log1p(Age)`) đều xuất phát từ kiến thức ngành xây dựng — model không thể tự
+suy ra từ 8 cột nguyên liệu thô. Đo hiệu quả (cùng tham số SVR
+`C=100, gamma='scale', epsilon=0.1`, xem `notebooks/svr_concrete.ipynb` mục 11):
+
+| | RMSE (MPa) | R² |
+|---|---|---|
+| Không có đặc trưng miền | 5,83 | 0,868 |
+| **Có đặc trưng miền** | **5,33** | **0,890** |
+
+### ✅ Kết quả thực đo (`notebooks/svr_concrete.ipynb`, xem `reports/tom_tat.json`)
+
+| Bước | RMSE (MPa) | R² |
+|---|---|---|
+| Baseline Dummy (dự đoán trung bình) | 16,05 | — |
+| Baseline Linear Regression (đã có đặc trưng miền) | 6,57 | 0,832 |
+| SVR **không** chuẩn hoá | 13,10 | 0,334 (⚠️ tệ hơn cả Linear Regression) |
+| SVR có chuẩn hoá cả X và y (tham số mặc định) | 5,33 | 0,890 |
+| Kernel: linear / **rbf** / poly (deg 2) / poly (deg 3) | 6,74 / **5,33** / 11,48 / 6,79 | 0,823 / **0,890** / 0,488 / 0,821 |
+| **SVR cuối (GridSearchCV: `C=1000, gamma=0.01, epsilon=0.1`)** | **5,35** | **0,889** |
+
+| Mục | Kết quả |
+|---|---|
+| Support vectors | 511 / 824 mẫu train (**62,0%** — khá cao, không phải mô hình "gọn") |
+| So sánh mô hình (cùng đặc trưng, 1 lần fit) | SVR RMSE 5,35 · Random Forest RMSE 5,21 · **XGBoost RMSE 4,21** (tốt nhất, đúng dự báo README) |
+| Thời gian train theo kích thước dữ liệu (1×→10×, 824→8.240 dòng) | SVR: 0,63s → 205,4s (**tăng hơn 300 lần**) · Random Forest: 0,12s → 0,50s (gần như không đổi) |
+
+**Nhận xét:** SVR không scale cho R² = 0,334 — **tệ hơn cả** Linear
+Regression (0,832) dù SVR mạnh hơn về lý thuyết, đúng minh chứng cho cạm
+bẫy "quên chuẩn hoá" ở mục 7. Sau khi chuẩn hoá + GridSearchCV, SVR đạt R²
+= 0,889, vượt tiêu chí ⭐ (> 0,88) nhưng vẫn thua XGBoost — khớp mức tham
+chiếu của README.
+
 ---
 
 ## 7. CẠM BẪY
@@ -165,12 +201,15 @@ model = TransformedTargetRegressor(regressor=svr, transformer=StandardScaler())
 ## 8. SẢN PHẨM NỘP & MỞ RỘNG
 
 ```
-TT-20-SVR-<HoTen>/
-├── README.md          ← có mục "ĐẶC TRƯNG TỪ KIẾN THỨC MIỀN"
-├── notebooks/svr_concrete.ipynb
-├── src/train.py
-├── models/svr_pipeline.joblib
-├── reports/{scale_vs_noscale.png, kernel_comparison.png, C_gamma_heatmap.png, thoi_gian_train.png}
+TT-20-SVR/
+├── README.md          ← có mục "ĐẶC TRƯNG TỪ KIẾN THỨC MIỀN" và kết quả thực đo (mục 6)
+├── data/concrete.csv  ← Concrete Compressive Strength (UCI), 1.030 dòng
+├── notebooks/svr_concrete.ipynb  ← toàn bộ pipeline, giải thích từng bước bằng markdown
+├── src/{features.py, train.py}   ← logic dùng chung giữa notebook và script train độc lập
+├── models/svr_pipeline.joblib    ← pipeline SVR cuối (StandardScaler + SVR, target đã scale)
+├── reports/{eda_scatter.png, correlation_heatmap.png, scale_vs_noscale.png, kernel_comparison.png,
+│            C_gamma_heatmap.png, thoi_gian_train.png, so_sanh_models.csv,
+│            so_sanh_feature_engineering.csv, tom_tat.json}
 └── requirements.txt
 ```
 

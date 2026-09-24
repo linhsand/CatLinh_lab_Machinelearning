@@ -1,0 +1,16 @@
+{
+  "best_params": {
+    "regressor__svr__C": 1000,
+    "regressor__svr__epsilon": 0.1,
+    "regressor__svr__gamma": 0.01
+  },
+  "cv_rmse": 4.9298122039446834,
+  "rmse_test": 5.350867420127149,
+  "r2_test": 0.888886753934557,
+  "mae_test": 3.687901956290088,
+  "n_support_vectors": 511,
+  "n_train": 824,
+  "support_vector_ratio_%": 62.0,
+  "fit_time_s": 22.228238105773926,
+  "n_features": 11
+}
