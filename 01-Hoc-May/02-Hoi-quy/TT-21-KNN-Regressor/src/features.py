@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.datasets import fetch_california_housing
 
 TARGET = "MedHouseVal"
+FEATURES = ["MedInc", "HouseAge", "AveRooms", "AveBedrms", "Population", "AveOccup", "Latitude", "Longitude"]
+LOC_IDX = [FEATURES.index("Latitude"), FEATURES.index("Longitude")]
 
 
 def load_raw() -> pd.DataFrame:
@@ -24,5 +26,12 @@ def load_clean() -> pd.DataFrame:
 
 
 def split_xy(df: pd.DataFrame):
-    feature_cols = [c for c in df.columns if c != TARGET]
-    return df[feature_cols], df[TARGET]
+    return df[FEATURES], df[TARGET]
+
+
+def nhan_vi_tri(X_s, w=1.0):
+    """Nhan 2 cot Latitude/Longitude (mang DA chuan hoa) voi he so w de KNN uu tien
+    hang xom gan ve dia ly. Dat o module rieng de pipeline pickle/joblib duoc."""
+    X_s = X_s.copy()
+    X_s[:, LOC_IDX] *= w
+    return X_s

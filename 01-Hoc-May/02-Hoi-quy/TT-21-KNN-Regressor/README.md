@@ -145,23 +145,30 @@ Regression (~0,60) trên bộ này, đúng như kỳ vọng lý thuyết.
 |---|---|---|
 | Baseline Dummy (dự đoán trung bình) | 1,150 | — |
 | Baseline Linear Regression | 0,679 | 0,651 |
-| KNN **không** chuẩn hoá | 1,039 | 0,183 (⚠️ tệ hơn cả Linear Regression) |
-| KNN có chuẩn hoá, K=5 mặc định | 0,591 | 0,736 |
-| **KNN cuối (K=10, `weights='distance'`)** | **0,571** | **0,754** |
+| KNN K=5 **không** chuẩn hoá | 1,066 | 0,141 (⚠️ tệ hơn cả Linear Regression) |
+| KNN K=5 có chuẩn hoá | 0,591 | 0,736 |
+| KNN chuẩn (K=10, `weights='distance'`) — `models/knn_pipeline.joblib` | 0,571 | 0,754 |
+| ⭐ **KNN + trọng số vị trí ×50** (chọn bằng 5-fold CV) — `models/knn_vi_tri_pipeline.joblib` | **0,436** | **0,856** |
 
-**Bảng so sánh Linear vs KNN vs Random Forest** (cùng đặc trưng, đo cả thời gian):
+**Bảng so sánh Linear vs KNN vs Random Forest** (`reports/so_sanh_models.csv`):
 
 | | RMSE | R² | Train (ms) | Dự đoán 1 căn (ms) | Giải thích được |
 |---|---|---|---|---|---|
-| Linear Regression | 0,679 | 0,651 | 3,6 | 0,48 | Có (hệ số) |
-| **KNN (K=10, distance)** | **0,571** | **0,754** | 17,0 | 0,43 | Có (5 căn tương tự) |
-| Random Forest | 0,495 | 0,815 | 2.612 | 69,9 | Một phần (feature importance) |
+| Linear Regression | 0,679 | 0,651 | ~3,5 | ~0,46 | Có (hệ số) |
+| KNN (K=10, distance) | 0,571 | 0,754 | ~16 | ~0,39 | Có (5 căn tương tự) |
+| **KNN + vị trí ×50** | **0,436** | **0,856** | ~31 | ~1,2 | Có (5 căn tương tự) |
+| Random Forest (300 cây) | 0,495 | 0,815 | ~2.600 | ~54 | Một phần (feature importance) |
 
-**Phát hiện đáng chú ý khi thực đo (khác dự đoán ban đầu):**
-- `metric='manhattan'` cho RMSE tốt hơn `metric='euclidean'` trên bộ này (0,552 so với 0,571) — không phải lựa chọn mặc định thường dùng nhưng đáng thử nghiệm.
-- Với tham số mặc định (`algorithm='auto'` → tự chọn KD-Tree vì chỉ 8 chiều, `n_jobs=1`), KNN dự đoán 1 căn còn **nhanh hơn** Random Forest ở quy mô dữ liệu này — ngược với định kiến "KNN luôn chậm". Chỉ khi ép `algorithm='brute'` (hoặc dữ liệu nhiều chiều khiến KD-Tree suy biến) thì thời gian dự đoán mới tăng gần tuyến tính theo n (đo được trong `reports/thoi_gian_predict.png`).
-- Thí nghiệm trọng số vị trí: nhân Latitude/Longitude ×1/×5/×10/×20 cho RMSE giảm đều đặn (0,571 → 0,489 ở ×20) — xác nhận vị trí là đặc trưng quan trọng nhất.
-- Tiêu chí ⭐ bắt buộc "KNN phải thắng Linear Regression" đạt rõ ràng (RMSE 0,571 so với 0,679).
+*(Thời gian đo trên máy cá nhân, dao động giữa các lần chạy; bản "KNN + vị trí" tính cả bước scale + nhân trọng số trong pipeline.)*
+
+**Phát hiện chính:**
+- **Trọng số vị trí** (thử ×1/2/3/5 theo README rồi mở rộng tới ×500): đường RMSE hình chữ U — giảm mạnh tới ×5, đáy ở **×50** (chọn bằng CV trên train, không nhìn test), rồi tăng lại khi KNN gần như chỉ còn nhìn toạ độ. KNN *chỉ* dùng toạ độ đạt RMSE 0,526 — tệ hơn bản tối ưu → vị trí quyết định "khu nào", các đặc trưng còn lại "phân xử trong khu". Kết quả: KNN **vượt cả Random Forest** mà vẫn chỉ ra được 5 căn tương tự.
+- `K=1` cho RMSE train = 0 (điểm train là hàng xóm của chính nó); K tối ưu = 10 theo RMSE test. Với `weights='distance'`, RMSE train = 0 với **mọi** K.
+- `distance` tốt hơn `uniform` ở mọi K, rõ nhất khi K lớn (K=50: 0,587 vs 0,593).
+- `metric='manhattan'` tốt hơn `euclidean` (0,552 vs 0,571).
+- Thời gian dự đoán: `algorithm='brute'` tăng gần tuyến tính theo n (1× → 20× dữ liệu: ~1 → ~3,2 ms); KD-Tree (`auto`, 8 chiều) gần như không đổi (~0,4 ms).
+- **Không ngoại suy:** tăng `MedInc` lên gấp 3 lần max trong train, KNN đi ngang ở 5,0 (= max giá train) còn Linear tiếp tục tăng (`reports/ngoai_suy.png`).
+- Tiêu chí "KNN phải thắng Linear Regression" đạt rõ ràng (0,571 và 0,436 so với 0,679).
 
 ---
 
@@ -182,11 +189,13 @@ Regression (~0,60) trên bộ này, đúng như kỳ vọng lý thuyết.
 ```
 TT-21-KNN-Regressor/
 ├── README.md          ← có bảng so sánh Linear vs KNN vs RF (mục 6)
-├── notebooks/knn_regressor_housing.ipynb  ← toàn bộ pipeline, giải thích từng bước bằng markdown
-├── src/{features.py, train.py}            ← nạp/lọc outlier dùng chung + script train độc lập
-├── models/knn_pipeline.joblib             ← pipeline StandardScaler + KNeighborsRegressor
-├── reports/{rmse_theo_K.png, trong_so_vi_tri.png, can_tuong_tu_vi_du.png, thoi_gian_predict.png,
-│            so_sanh_models.csv, tom_tat.json}
+├── notebooks/knn_regressor_housing.ipynb  ← toàn bộ pipeline; mỗi bước có markdown "Logic" + "Giải thích code" + "Đọc kết quả"
+├── src/{features.py, train.py}            ← nạp/lọc outlier + hàm nhân trọng số vị trí dùng chung; train.py train 2 model
+├── models/{knn_pipeline.joblib,           ← StandardScaler + KNeighborsRegressor (K=10, distance)
+│           knn_vi_tri_pipeline.joblib}    ← + bước nhân Latitude/Longitude ×50 (bản tốt nhất)
+├── reports/{rmse_theo_K.png, uniform_vs_distance.png, trong_so_vi_tri.png, can_tuong_tu_vi_du.png,
+│            thoi_gian_predict.png, ngoai_suy.png, so_sanh_scale.csv, so_sanh_models.csv,
+│            tom_tat.json, train_metrics.json}
 └── requirements.txt
 ```
 
