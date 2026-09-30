@@ -1,0 +1,38 @@
+label,attack_category,nhom_thay,so_dong,fn,recall,ty_trong_fn
+guess_passwd,R2L,seen (co trong train),1231,1231,0.0,0.339773668230748
+warezmaster,R2L,seen (co trong train),944,469,0.5031779661016949,0.1294507314380348
+apache2,DoS,unseen (chi co o test),737,333,0.5481682496607869,0.09191277946453215
+snmpguess,R2L,unseen (chi co o test),331,329,0.0060422960725075026,0.09080872205354679
+mailbomb,DoS,unseen (chi co o test),293,293,0.0,0.08087220535467844
+mscan,Probe,unseen (chi co o test),996,277,0.7218875502008032,0.07645597571073696
+processtable,DoS,unseen (chi co o test),685,268,0.6087591240875913,0.07397184653601988
+snmpgetattack,R2L,unseen (chi co o test),178,178,0.0,0.04913055478884902
+httptunnel,R2L,unseen (chi co o test),133,120,0.09774436090225569,0.033121722329561135
+back,DoS,seen (co trong train),359,21,0.9415041782729805,0.005796301407673199
+sendmail,R2L,unseen (chi co o test),14,14,0.0,0.0038642009384487995
+multihop,R2L,seen (co trong train),18,13,0.2777777777777778,0.0035881865857024567
+named,R2L,unseen (chi co o test),17,11,0.3529411764705882,0.003036157880209771
+rootkit,U2R,seen (co trong train),13,11,0.15384615384615385,0.003036157880209771
+ps,U2R,unseen (chi co o test),15,10,0.33333333333333337,0.002760143527463428
+xterm,U2R,unseen (chi co o test),13,8,0.3846153846153846,0.0022081148219707425
+xlock,R2L,unseen (chi co o test),9,8,0.11111111111111116,0.0022081148219707425
+saint,Probe,unseen (chi co o test),319,5,0.9843260188087775,0.001380071763731714
+buffer_overflow,U2R,seen (co trong train),20,5,0.75,0.001380071763731714
+neptune,DoS,seen (co trong train),4657,4,0.9991410779471763,0.0011040574109853713
+ftp_write,R2L,seen (co trong train),3,3,0.0,0.0008280430582390284
+perl,U2R,seen (co trong train),2,2,0.0,0.0005520287054926856
+worm,DoS,unseen (chi co o test),2,2,0.0,0.0005520287054926856
+xsnoop,R2L,unseen (chi co o test),4,2,0.5,0.0005520287054926856
+phf,R2L,seen (co trong train),2,2,0.0,0.0005520287054926856
+imap,R2L,seen (co trong train),1,1,0.0,0.0002760143527463428
+land,DoS,seen (co trong train),7,1,0.8571428571428572,0.0002760143527463428
+pod,DoS,seen (co trong train),41,1,0.975609756097561,0.0002760143527463428
+satan,Probe,seen (co trong train),735,1,0.998639455782313,0.0002760143527463428
+portsweep,Probe,seen (co trong train),157,0,1.0,0.0
+nmap,Probe,seen (co trong train),73,0,1.0,0.0
+ipsweep,Probe,seen (co trong train),141,0,1.0,0.0
+loadmodule,U2R,seen (co trong train),2,0,1.0,0.0
+smurf,DoS,seen (co trong train),665,0,1.0,0.0
+udpstorm,DoS,unseen (chi co o test),2,0,1.0,0.0
+sqlattack,U2R,unseen (chi co o test),2,0,1.0,0.0
+teardrop,DoS,seen (co trong train),12,0,1.0,0.0

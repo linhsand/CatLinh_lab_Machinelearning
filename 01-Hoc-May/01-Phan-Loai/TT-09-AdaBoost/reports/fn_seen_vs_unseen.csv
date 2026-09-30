@@ -1,0 +1,3 @@
+nhom_thay,so_dong,fn,recall,ty_trong_fn
+seen (co trong train),9083,1765,0.8056809424199053,0.48716533259729505
+unseen (chi co o test),3750,1858,0.5045333333333333,0.5128346674027049

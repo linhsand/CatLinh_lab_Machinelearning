@@ -139,6 +139,30 @@ gia_cac_can      = y_train.iloc[chi_so[0]]
 **Mức tham chiếu:** KNN (K≈10, distance) đạt R² ~0,70–0,75 — **cao hơn hẳn** Linear
 Regression (~0,60) trên bộ này, đúng như kỳ vọng lý thuyết.
 
+### ✅ Kết quả thực đo (`notebooks/knn_regressor_housing.ipynb`, xem `reports/tom_tat.json`)
+
+| Bước | RMSE | R² |
+|---|---|---|
+| Baseline Dummy (dự đoán trung bình) | 1,150 | — |
+| Baseline Linear Regression | 0,679 | 0,651 |
+| KNN **không** chuẩn hoá | 1,039 | 0,183 (⚠️ tệ hơn cả Linear Regression) |
+| KNN có chuẩn hoá, K=5 mặc định | 0,591 | 0,736 |
+| **KNN cuối (K=10, `weights='distance'`)** | **0,571** | **0,754** |
+
+**Bảng so sánh Linear vs KNN vs Random Forest** (cùng đặc trưng, đo cả thời gian):
+
+| | RMSE | R² | Train (ms) | Dự đoán 1 căn (ms) | Giải thích được |
+|---|---|---|---|---|---|
+| Linear Regression | 0,679 | 0,651 | 3,6 | 0,48 | Có (hệ số) |
+| **KNN (K=10, distance)** | **0,571** | **0,754** | 17,0 | 0,43 | Có (5 căn tương tự) |
+| Random Forest | 0,495 | 0,815 | 2.612 | 69,9 | Một phần (feature importance) |
+
+**Phát hiện đáng chú ý khi thực đo (khác dự đoán ban đầu):**
+- `metric='manhattan'` cho RMSE tốt hơn `metric='euclidean'` trên bộ này (0,552 so với 0,571) — không phải lựa chọn mặc định thường dùng nhưng đáng thử nghiệm.
+- Với tham số mặc định (`algorithm='auto'` → tự chọn KD-Tree vì chỉ 8 chiều, `n_jobs=1`), KNN dự đoán 1 căn còn **nhanh hơn** Random Forest ở quy mô dữ liệu này — ngược với định kiến "KNN luôn chậm". Chỉ khi ép `algorithm='brute'` (hoặc dữ liệu nhiều chiều khiến KD-Tree suy biến) thì thời gian dự đoán mới tăng gần tuyến tính theo n (đo được trong `reports/thoi_gian_predict.png`).
+- Thí nghiệm trọng số vị trí: nhân Latitude/Longitude ×1/×5/×10/×20 cho RMSE giảm đều đặn (0,571 → 0,489 ở ×20) — xác nhận vị trí là đặc trưng quan trọng nhất.
+- Tiêu chí ⭐ bắt buộc "KNN phải thắng Linear Regression" đạt rõ ràng (RMSE 0,571 so với 0,679).
+
 ---
 
 ## 7. CẠM BẪY
@@ -156,12 +180,13 @@ Regression (~0,60) trên bộ này, đúng như kỳ vọng lý thuyết.
 ## 8. SẢN PHẨM NỘP & MỞ RỘNG
 
 ```
-TT-21-KNNRegressor-<HoTen>/
-├── README.md          ← có bảng so sánh Linear vs KNN vs RF
-├── notebooks/knn_regressor_housing.ipynb
-├── src/train.py
-├── models/knn_pipeline.joblib
-├── reports/{rmse_theo_K.png, trong_so_vi_tri.png, can_tuong_tu_vi_du.png, thoi_gian_predict.png}
+TT-21-KNN-Regressor/
+├── README.md          ← có bảng so sánh Linear vs KNN vs RF (mục 6)
+├── notebooks/knn_regressor_housing.ipynb  ← toàn bộ pipeline, giải thích từng bước bằng markdown
+├── src/{features.py, train.py}            ← nạp/lọc outlier dùng chung + script train độc lập
+├── models/knn_pipeline.joblib             ← pipeline StandardScaler + KNeighborsRegressor
+├── reports/{rmse_theo_K.png, trong_so_vi_tri.png, can_tuong_tu_vi_du.png, thoi_gian_predict.png,
+│            so_sanh_models.csv, tom_tat.json}
 └── requirements.txt
 ```
 

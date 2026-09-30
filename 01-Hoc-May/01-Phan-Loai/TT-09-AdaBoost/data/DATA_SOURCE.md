@@ -11,6 +11,17 @@ bản mirror công khai trên GitHub
 dòng test**, đúng số dòng công bố chính thức của NSL-KDD, không phải dữ liệu
 giả lập/tổng hợp.
 
+**Hai file `.txt` (~22MB) không được commit vào git** (xem `.gitignore`). Tải
+lại bằng:
+
+```bash
+python data/download_data.py
+```
+
+Script kiểm tra SHA-256 (`KDDTrain+.txt`:
+`1b86d2f9…aadf95`, `KDDTest+.txt`: `fa46b093…a7aaabbc`) và số dòng, khớp đúng
+bản đã dùng để sinh mọi số liệu trong `reports/`.
+
 **Cấu trúc cột (43 cột, không có header trong file gốc):**
 
 41 đặc trưng theo đúng thứ tự chuẩn NSL-KDD (`duration`, `protocol_type`,
