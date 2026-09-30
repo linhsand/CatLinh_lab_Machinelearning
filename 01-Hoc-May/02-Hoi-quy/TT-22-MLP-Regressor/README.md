@@ -134,6 +134,60 @@ model = TransformedTargetRegressor(regressor=net, transformer=StandardScaler())
 **Mức tham chiếu:** R² ~0,85–0,89. Random Forest thường **ngang hoặc hơn** MLP trên
 bộ nhỏ này — và đó chính là kết luận quan trọng nhất của bài.
 
+### ✅ Kết quả thực đo (`notebooks/mlp_regressor_mpg.ipynb`, xem `reports/tom_tat.json`)
+
+Chia 318 train / 80 test (`random_state=42`). Vì tập test chỉ 80 xe, mọi lựa chọn cấu hình
+dùng **RMSE cross-validation 5-fold trên tập train**; test chỉ để báo cáo.
+
+**So sánh 3 trường hợp scale** (MLP (64,32), `alpha=1e-2`, early stopping):
+
+| | RMSE CV | RMSE test | R² test | Số vòng |
+|---|---|---|---|---|
+| Không scale | 3,72 | 3,11 | 0,820 (⚠️ thua cả Linear) | 235 (dừng vì kẹt) |
+| Chỉ scale X | 3,00 | 2,36 | 0,896 | 342 |
+| Scale X và y | 3,00 | 2,19 | 0,911 | 247 |
+
+**4 kiến trúc** — không regularization (`alpha=1e-5`, không early stopping), mạng to overfit rõ:
+
+| Kiến trúc | Số tham số | RMSE train | RMSE test |
+|---|---|---|---|
+| (16) | 177 | 2,85 | 2,58 |
+| (64) | 705 | 2,36 | 2,13 |
+| (64,32) | 2.753 | 1,41 | 2,50 |
+| (256,128,64) | 43.777 | **0,72** | **2,62** |
+
+Có regularization thì khoảng cách train–test thu hẹp. Kiến trúc cuối chọn theo **quy tắc 1-SE**
+(mạng nhỏ nhất có RMSE CV trong khoảng tốt nhất + 1 std) → **(64)**. `loss_curve_` của mạng to:
+R² validation đạt đỉnh 0,94 ở vòng ~65 rồi tụt về 0,85 trong khi loss train vẫn giảm.
+
+**Khảo sát alpha:** với mạng to, đường RMSE CV hình chữ U (3,17 ở 1e-4 → 2,79 ở alpha=1 → 3,48 ở 10);
+với mạng (64) gần như phẳng trong khoảng 1e-4..1e-1 → alpha quan trọng khi mạng quá to.
+**Activation:** relu (CV 2,87) ≳ tanh (2,97) >> logistic (3,54).
+
+**Model cuối** `models/mlp_reg.joblib`: (64), relu, `alpha=1`, scale X và y →
+**RMSE test 2,25 mpg · R² 0,906 · MAE 1,67 mpg ≈ 0,88 L/100km** — đạt tiêu chí R² > 0,85.
+Ổn định qua 10 seed: 2,20 ± 0,03 (mạng to + early stopping: 2,35 ± 0,39).
+
+**⭐ Bảng so sánh với các thuật toán hồi quy khác** (train lại trên cùng Auto MPG, cùng tiền xử lý;
+RMSE CV = 5 fold × 3 lần lặp trên tập train):
+
+| Thuật toán | RMSE CV (± std) | RMSE test | R² test | Train (s) | Giải thích được |
+|---|---|---|---|---|---|
+| SVR RBF (TT-20) | **2,70 ± 0,39** | **2,00** | **0,926** | 0,01 | Khó |
+| **MLP (64) (TT-22)** | 2,86 ± 0,29 | 2,25 | 0,906 | 0,18 | Khó (hộp đen) |
+| Random Forest (TT-17) | 2,97 ± 0,35 | 2,16 | 0,913 | 0,29 | Một phần |
+| KNN K=5 (TT-21) | 3,06 ± 0,39 | 2,21 | 0,909 | 0,01 | Có (xe tương tự) |
+| Linear Regression (TT-11) | 3,47 ± 0,27 | 2,89 | 0,845 | 0,01 | Có (hệ số) |
+
+**Kết luận trung thực:** MLP đạt yêu cầu và đứng nhóm đầu, nhưng chênh lệch với SVR/Random Forest
+nhỏ hơn độ nhiễu của CV — **không thắng rõ**. Hai model tạo hàm mượt (SVR, MLP) nhỉnh hơn cây, khớp
+nhận định "quan hệ vật lý trơn", nhưng SVR đạt được điều đó với 2 siêu tham số, còn MLP cần scale X+y,
+chọn kiến trúc, alpha, activation và dễ hỏng nếu cấu hình sai. Với 398 dòng dữ liệu bảng, MLP
+**không đáng là lựa chọn mặc định**.
+
+**Đổi đơn vị cho người Việt** (15.000 km/năm, xăng giả định 24.000 đ/L): ví dụ Ford F250 (1970)
+ước tính 22,8 L/100km ≈ 82 triệu đ/năm; VW Pickup (1982) 5,7 L/100km ≈ 20 triệu đ/năm.
+
 ---
 
 ## 7. CẠM BẪY
@@ -152,12 +206,15 @@ bộ nhỏ này — và đó chính là kết luận quan trọng nhất của b
 ## 8. SẢN PHẨM NỘP & MỞ RỘNG
 
 ```
-TT-22-MLPRegressor-<HoTen>/
-├── README.md          ← có bảng so sánh 4 thuật toán + kết luận trung thực
-├── notebooks/mlp_regressor_mpg.ipynb
-├── src/train.py
-├── models/mlp_reg.joblib
-├── reports/{scale_comparison.png, kien_truc_overfit.png, loss_curve.png, alpha_sweep.png}
+TT-22-MLP-Regressor/
+├── README.md          ← có bảng so sánh 5 thuật toán + kết luận trung thực
+├── data/{auto-mpg.data, auto-mpg.names}   ← file gốc UCI
+├── notebooks/mlp_regressor_mpg.ipynb      ← toàn bộ pipeline; mỗi bước có "Logic" + "Giải thích code" + "Đọc kết quả"
+├── src/{features.py, train.py}            ← đọc/làm sạch + tiền xử lý dùng chung; script train độc lập
+├── models/mlp_reg.joblib                  ← TransformedTargetRegressor(tiền xử lý + MLP, scale y)
+├── reports/{eda.png, scale_comparison.png, kien_truc_overfit.png, loss_curve.png, alpha_sweep.png,
+│            so_sanh_models.png, so_sanh_scale.csv, so_sanh_kien_truc.csv, so_sanh_models.csv,
+│            tom_tat.json, train_metrics.json}
 └── requirements.txt
 ```
 

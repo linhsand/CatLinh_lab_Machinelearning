@@ -1,0 +1,14 @@
+{
+  "hidden_layer_sizes": [
+    64
+  ],
+  "alpha": 1.0,
+  "activation": "relu",
+  "rmse_test_mpg": 2.2455620742310387,
+  "r2_test": 0.9062138263659143,
+  "mae_test_mpg": 1.6668856751438994,
+  "mae_test_l100km": 0.8759995260969001,
+  "n_iter": 332,
+  "fit_time_s": 0.1799631118774414,
+  "n_train": 318
+}
