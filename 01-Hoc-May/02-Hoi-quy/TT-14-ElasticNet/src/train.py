@@ -11,10 +11,14 @@ Pipeline day du (theo 10 buoc trong README.md cap de):
  5. Bang so sanh: moi model giu bao nhieu bien, RMSE bao nhieu
  6. Kiem chung HIEU UNG GOM NHOM: Lasso giu bien nao trong nhom tuong quan {X1,X2,X4,X5}?
     ElasticNet giu may bien trong nhom do?
- 7. Ve heatmap RMSE theo luoi (alpha x l1_ratio)
+ 7. Ve heatmap RMSE CROSS-VALIDATION theo luoi (alpha x l1_ratio) - lay tu mse_path_ cua ElasticNetCV,
+    khong dung tap test
  8. Lam ca hai nhan Y1 (tai suoi) va Y2 (tai lam mat) -> so sanh bien nao quan trong cho tung nhan
  9. Kiem tra on dinh: bootstrap 100 lan -> he so ElasticNet dao dong bao nhieu
-10. Xep hang bien theo do quan trong (|he so| chuan hoa) lam co so de xuat thay doi thiet ke
+10. Xep hang bien theo do quan trong (|he so| chuan hoa)
+11. DON BAY THIET KE: du lieu la mo phong giai thua can bang (12 hinh khoi x 4 huong x 16 to hop kinh)
+    -> trung binh theo tung muc la uoc luong sach tac dong cua tung quyet dinh thiet ke
+    -> quy ra kWh/nam va tien dien; doi chieu cho mo hinh tuyen tinh sai lech (phan du theo nhom)
 
 Chay: python src/train.py
 """
@@ -66,6 +70,12 @@ FEATURE_DESC = {
 ALPHA_GRID = np.logspace(-4, 1, 100)
 ALPHA_GRID_HEATMAP = np.logspace(-4, 1, 25)
 L1_RATIO_GRID = [0.1, 0.3, 0.5, 0.7, 0.9, 0.95, 1.0]
+
+# Quy doi nghiep vu (gia dinh - ghi ro trong README)
+VOLUME_M3 = 771.75                    # moi toa nha trong bo du lieu co cung the tich
+FLOOR_AREA_M2 = VOLUME_M3 / 3.5       # = 220,5 m2 san (1 tang 3,5 m hoac 2 tang)
+COP = 3.0                             # he so hieu qua may dieu hoa / bom nhiet: 1 kWh dien -> 3 kWh nhiet
+ELECTRICITY_VND_PER_KWH = 2_500       # gia dien tham khao
 
 
 def log(msg: str) -> None:
@@ -321,41 +331,49 @@ def run_grouping_effect_forced(X_train, y_train, feature_names: list[str], label
 
 
 # ----------------------------------------------------------------------------
-# 7. Heatmap RMSE theo luoi alpha x l1_ratio
+# 7. Heatmap RMSE cross-validation theo luoi alpha x l1_ratio (chi dung TRAIN)
 # ----------------------------------------------------------------------------
-def run_heatmap_alpha_l1ratio(X_train, y_train, X_test, y_test, label: str) -> tuple[np.ndarray, tuple]:
-    l1_ratios = np.array(L1_RATIO_GRID)
-    rmse_grid = np.zeros((len(l1_ratios), len(ALPHA_GRID_HEATMAP)))
-    for i, l1 in enumerate(l1_ratios):
-        for j, a in enumerate(ALPHA_GRID_HEATMAP):
-            pipe = Pipeline([("scale", StandardScaler()),
-                              ("en", ElasticNet(alpha=a, l1_ratio=l1, max_iter=50_000, random_state=RANDOM_STATE))])
-            pipe.fit(X_train, y_train)
-            rmse_grid[i, j] = rmse(y_test, pipe.predict(X_test))
+def run_heatmap_cv(en_pipe: Pipeline, label: str) -> tuple[pd.DataFrame, tuple]:
+    """RMSE 5-fold CV tren train cho moi (l1_ratio, alpha) - lay thang tu mse_path_ cua ElasticNetCV,
+    tuc chinh cac diem CV da dung de chon sieu tham so. Tap test khong duoc dung."""
+    en = en_pipe.named_steps["en"]
+    l1_ratios = np.atleast_1d(en.l1_ratio)
+    alphas = np.atleast_2d(en.alphas_)[0]                      # giam dan, giong nhau cho moi l1_ratio
+    rmse_grid = np.sqrt(en.mse_path_.mean(axis=-1))            # (n_l1, n_alpha)
+    order = np.argsort(alphas)
+    alphas, rmse_grid = alphas[order], rmse_grid[:, order]
 
-    best_flat = int(np.argmin(rmse_grid))
-    bi, bj = np.unravel_index(best_flat, rmse_grid.shape)
-    best = (float(ALPHA_GRID_HEATMAP[bj]), float(l1_ratios[bi]), float(rmse_grid[bi, bj]))
+    bi, bj = np.unravel_index(int(np.argmin(rmse_grid)), rmse_grid.shape)
+    best = (float(alphas[bj]), float(l1_ratios[bi]), float(rmse_grid[bi, bj]))
+    assert np.isclose(best[0], en.alpha_) and np.isclose(best[1], en.l1_ratio_), "o tot nhat phai trung lua chon CV"
+
+    grid_df = pd.DataFrame(rmse_grid, index=[f"l1_ratio={l:.2f}" for l in l1_ratios],
+                           columns=[f"{a:.4g}" for a in alphas])
+    grid_df.to_csv(REPORTS_DIR / f"heatmap_cv_{label}.csv")
 
     fig, ax = plt.subplots(figsize=(11, 5))
     im = ax.imshow(rmse_grid, aspect="auto", origin="lower", cmap="viridis_r")
-    ax.set_xticks(range(0, len(ALPHA_GRID_HEATMAP), 3))
-    ax.set_xticklabels([f"{a:.3g}" for a in ALPHA_GRID_HEATMAP[::3]], rotation=45, ha="right")
+    ticks = list(range(0, len(alphas), 11))
+    ax.set_xticks(ticks)
+    ax.set_xticklabels([f"{alphas[t]:.3g}" for t in ticks], rotation=45, ha="right")
     ax.set_yticks(range(len(l1_ratios)))
     ax.set_yticklabels([f"{l:.2f}" for l in l1_ratios])
     ax.set_xlabel("alpha")
     ax.set_ylabel("l1_ratio")
     ax.plot(bj, bi, marker="*", color="red", markersize=18, markeredgecolor="white")
-    ax.set_title(f"RMSE (test) theo luoi alpha x l1_ratio - nhan {label}\n"
-                 f"Tot nhat: alpha={best[0]:.4g}, l1_ratio={best[1]:.2f}, RMSE={best[2]:.3f} (sao do)")
-    fig.colorbar(im, ax=ax, label="RMSE test")
+    ax.set_title(f"RMSE cross-validation (5 fold, tren train) theo alpha x l1_ratio - nhan {label}\n"
+                 f"Chon: alpha={best[0]:.3g}, l1_ratio={best[1]:.2f}, RMSE-CV={best[2]:.3f} (sao do)")
+    fig.colorbar(im, ax=ax, label="RMSE CV")
     fig.tight_layout()
     fig.savefig(REPORTS_DIR / f"heatmap_alpha_l1ratio_{label}.png", dpi=130)
     plt.close(fig)
 
-    log(f"  [{label}] Diem tot nhat tren luoi: alpha={best[0]:.4g}  l1_ratio={best[1]:.2f}  RMSE={best[2]:.3f}")
-    log(f"  [{label}] Da luu heatmap_alpha_l1ratio_{label}.png")
-    return rmse_grid, best
+    flat_alpha = int(np.searchsorted(alphas, 0.1))
+    log(f"  [{label}] RMSE-CV tot nhat={best[2]:.3f} tai alpha={best[0]:.3g}, l1_ratio={best[1]:.2f}; "
+        f"tai alpha~0.1: {rmse_grid[:, flat_alpha].min():.3f}-{rmse_grid[:, flat_alpha].max():.3f}; "
+        f"tai alpha=10: l1=0.1 -> {rmse_grid[0, -1]:.3f}, l1=1.0 -> {rmse_grid[-1, -1]:.3f}")
+    log(f"  [{label}] Da luu heatmap_alpha_l1ratio_{label}.png, heatmap_cv_{label}.csv")
+    return grid_df, best
 
 
 # ----------------------------------------------------------------------------
@@ -456,6 +474,96 @@ def rank_feature_importance(results: dict, feature_names: list[str], label: str)
     return df
 
 
+# ----------------------------------------------------------------------------
+# 11. Don bay thiet ke: tac dong cua tung quyet dinh, quy ra kWh/nam va tien dien
+# ----------------------------------------------------------------------------
+def _lever_row(name, change, sub_from: pd.DataFrame, sub_to: pd.DataFrame) -> dict:
+    y1a, y2a, y1b, y2b = sub_from["Y1"].mean(), sub_from["Y2"].mean(), sub_to["Y1"].mean(), sub_to["Y2"].mean()
+    d_total = (y1a + y2a) - (y1b + y2b)                       # giam tai (kWh/m2) khi doi tu "from" -> "to"
+    kwh_heat = d_total * FLOOR_AREA_M2
+    return {
+        "don_bay": name, "thay_doi": change,
+        "Y1_truoc": y1a, "Y1_sau": y1b, "giam_Y1_%": (1 - y1b / y1a) * 100,
+        "Y2_truoc": y2a, "Y2_sau": y2b, "giam_Y2_%": (1 - y2b / y2a) * 100,
+        "giam_tong_tai_kwh_m2": d_total,
+        "giam_tai_nhiet_kwh_moi_toa": kwh_heat,
+        "tiet_kiem_dien_kwh_moi_toa": kwh_heat / COP,
+        "tiet_kiem_vnd_moi_toa": kwh_heat / COP * ELECTRICITY_VND_PER_KWH,
+    }
+
+
+def run_design_levers(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Bo du lieu la thi nghiem mo phong GIAI THUA CAN BANG: moi hinh khoi duoc mo phong voi moi huong
+    va moi to hop kinh. Vi vay so sanh trung binh theo tung muc cua 1 quyet dinh (giu nguyen phan bo cac
+    quyet dinh khac) la uoc luong sach tac dong cua quyet dinh do - khong bi da cong tuyen lam nhieu
+    nhu he so hoi quy. Rieng nhom hinh hoc (X1-X5) chi co 12 hinh khoi, nen so sanh o muc HINH KHOI."""
+    glazed = df[df["X7"] > 0]
+    rows = [
+        _lever_row("Chieu cao (X5)", "7 m (2 tang) -> 3,5 m (1 tang), cung the tich",
+                   df[df["X5"] == 7.0], df[df["X5"] == 3.5]),
+        _lever_row("Dien tich kinh (X7)", "40% -> 25% dien tich san", df[df["X7"] == 0.40], df[df["X7"] == 0.25]),
+        _lever_row("Dien tich kinh (X7)", "25% -> 10% dien tich san", df[df["X7"] == 0.25], df[df["X7"] == 0.10]),
+        _lever_row("Dien tich kinh (X7)", "40% -> 10% dien tich san", df[df["X7"] == 0.40], df[df["X7"] == 0.10]),
+    ]
+    for height, ten in [(3.5, "1 tang"), (7.0, "2 tang")]:
+        sub = df[df["X5"] == height]
+        shape_mean = sub.groupby("X1")[["Y1", "Y2"]].mean().sum(axis=1)
+        worst, best = shape_mean.idxmax(), shape_mean.idxmin()
+        rows.append(_lever_row(f"Hinh khoi trong nhom {ten} (X1)", f"X1={worst:.2f} -> X1={best:.2f}",
+                               sub[sub["X1"] == worst], sub[sub["X1"] == best]))
+    dist_mean = glazed.groupby("X8")[["Y1", "Y2"]].mean().sum(axis=1)
+    rows.append(_lever_row("Phan bo kinh (X8, khi da co kinh)",
+                           f"X8={dist_mean.idxmax()} -> X8={dist_mean.idxmin()} (te nhat -> tot nhat)",
+                           glazed[glazed["X8"] == dist_mean.idxmax()], glazed[glazed["X8"] == dist_mean.idxmin()]))
+    ori_mean = df.groupby("X6")[["Y1", "Y2"]].mean().sum(axis=1)
+    rows.append(_lever_row("Huong nha (X6)", f"X6={ori_mean.idxmax()} -> X6={ori_mean.idxmin()} (te nhat -> tot nhat)",
+                           df[df["X6"] == ori_mean.idxmax()], df[df["X6"] == ori_mean.idxmin()]))
+    levers = pd.DataFrame(rows)
+    levers.to_csv(REPORTS_DIR / "don_bay_thiet_ke.csv", index=False)
+
+    # Tuong tac chieu cao x kinh: tac dong cua kinh co phu thuoc chieu cao khong?
+    inter = df.groupby(["X5", "X7"])[["Y1", "Y2"]].mean().unstack("X7")
+    inter.to_csv(REPORTS_DIR / "tuong_tac_chieu_cao_x_kinh.csv")
+
+    # X8 = 0 <=> X7 = 0: cac cot one-hot X8_k thuc chat ma hoa "co kinh"
+    x8_zero_is_no_glass = bool(((df["X8"] == 0) == (df["X7"] == 0)).all())
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    lab = [f"{r.don_bay}\n{r.thay_doi}" for r in levers.itertuples()]
+    ax.barh(lab[::-1], levers["giam_tong_tai_kwh_m2"][::-1], color="#27ae60")
+    for i, v in enumerate(levers["giam_tong_tai_kwh_m2"][::-1]):
+        ax.text(v + 0.2, i, f"{v:.1f}", va="center", fontsize=8)
+    ax.set_xlabel("Giam tong tai suoi + lam mat (kWh/m2)")
+    ax.set_title("Don bay thiet ke: moi quyet dinh giam bao nhieu tai nang luong\n"
+                 "(trung binh theo muc tren thiet ke giai thua can bang)")
+    ax.tick_params(axis="y", labelsize=7)
+    fig.tight_layout()
+    fig.savefig(REPORTS_DIR / "don_bay_thiet_ke.png", dpi=130)
+    plt.close(fig)
+
+    log(f"  X8=0 trung khop X7=0 (khong kinh) tren moi dong: {x8_zero_is_no_glass} "
+        f"-> he so X8_1..X8_5 = tac dong cua viec CO KINH, khong phai cua cach phan bo")
+    for r in levers.itertuples():
+        log(f"    {r.don_bay:34s} {r.thay_doi:48s} Y1 {r.Y1_truoc:5.2f}->{r.Y1_sau:5.2f} "
+            f"Y2 {r.Y2_truoc:5.2f}->{r.Y2_sau:5.2f}  giam {r.giam_tong_tai_kwh_m2:5.2f} kWh/m2  "
+            f"~{r.tiet_kiem_vnd_moi_toa / 1e6:,.2f} trieu VND/toa/nam")
+    log("  Da luu don_bay_thiet_ke.csv/.png, tuong_tac_chieu_cao_x_kinh.csv")
+    return levers, inter
+
+
+def run_model_misfit(en_pipe: Pipeline, X_test: pd.DataFrame, y_test: pd.Series, label: str) -> pd.DataFrame:
+    """Phan du trung binh cua ElasticNet tren TEST theo (chieu cao x dien tich kinh) - chi de chan doan
+    (khong chon gi): mo hinh tuyen tinh co bat duoc tuong tac va phi tuyen cua kinh khong?"""
+    res = pd.DataFrame({"X5": X_test["X5"].values, "X7": X_test["X7"].values,
+                        "phan_du": y_test.values - en_pipe.predict(X_test)})
+    table = res.groupby(["X5", "X7"])["phan_du"].agg(["mean", "count"]).reset_index()
+    table.columns = ["X5", "X7", "phan_du_trung_binh", "so_mau"]
+    table.to_csv(REPORTS_DIR / f"phan_du_theo_nhom_{label}.csv", index=False)
+    log(f"  [{label}] Phan du TB tren test theo (X5, X7): "
+        + ", ".join(f"({r.X5:g},{r.X7:g})={r.phan_du_trung_binh:+.2f}" for r in table.itertuples()))
+    return table
+
+
 def main() -> None:
     log("1. Nap du lieu Energy Efficiency, tinh ma tran tuong quan + VIF...")
     df = load_data()
@@ -467,7 +575,7 @@ def main() -> None:
     log(f"  Sau one-hot: {len(feature_names)} bien -> {feature_names}")
 
     all_results, all_baseline, all_comparison = {}, {}, {}
-    all_grouping, all_heatmap_best, all_bootstrap, all_ranking = {}, {}, {}, {}
+    all_grouping, all_heatmap_best, all_bootstrap, all_ranking, all_misfit = {}, {}, {}, {}, {}
 
     for label, ten_day_du in TARGETS:
         log(f"=== NHAN {label} ({ten_day_du}) ===")
@@ -491,9 +599,12 @@ def main() -> None:
         _, alpha_star = run_grouping_effect_forced(X_train, y_train, feature_names, label)
         all_grouping[f"{label}_alpha_star_forced"] = alpha_star
 
-        log(f"7. [{label}] Heatmap RMSE theo alpha x l1_ratio...")
-        _, best = run_heatmap_alpha_l1ratio(X_train, y_train, X_test, y_test, label)
+        log(f"7. [{label}] Heatmap RMSE cross-validation theo alpha x l1_ratio (chi dung train)...")
+        _, best = run_heatmap_cv(results["ElasticNet"]["pipe"], label)
         all_heatmap_best[label] = best
+
+        log(f"11b. [{label}] Mo hinh tuyen tinh sai lech o dau (phan du tren test theo nhom)...")
+        all_misfit[label] = run_model_misfit(results["ElasticNet"]["pipe"], X_test, y_test, label)
 
         log(f"9. [{label}] Bootstrap 100 lan kiem tra on dinh he so ElasticNet...")
         en = results["ElasticNet"]
@@ -508,6 +619,9 @@ def main() -> None:
     log("8. So sanh bien quan trong giua Y1 va Y2...")
     y1y2_comparison = compare_y1_y2(all_results["Y1"], all_results["Y2"], feature_names)
 
+    log("11. Don bay thiet ke (trung binh tren thiet ke giai thua) + quy doi kWh/tien dien...")
+    levers, interaction = run_design_levers(df)
+
     summary = {
         "n_rows": int(len(df)),
         "n_features_after_onehot": len(feature_names),
@@ -521,14 +635,20 @@ def main() -> None:
             "model_comparison": all_comparison[label].to_dict(orient="records"),
             "grouping_effect": all_grouping[label].to_dict(orient="records"),
             "grouping_effect_alpha_star_forced": all_grouping[f"{label}_alpha_star_forced"],
-            "heatmap_best": {"alpha": all_heatmap_best[label][0], "l1_ratio": all_heatmap_best[label][1],
-                              "rmse": all_heatmap_best[label][2]},
+            "heatmap_cv_best": {"alpha": all_heatmap_best[label][0], "l1_ratio": all_heatmap_best[label][1],
+                                 "rmse_cv": all_heatmap_best[label][2]},
+            "phan_du_test_theo_nhom": all_misfit[label].to_dict(orient="records"),
             "elasticnet_alpha": en["alpha"], "elasticnet_l1_ratio": en["l1_ratio"],
             "elasticnet_metrics": en["metrics"],
             "bootstrap_stability": all_bootstrap[label].to_dict(orient="records"),
             "feature_ranking": all_ranking[label].to_dict(orient="records"),
         }
     summary["y1_vs_y2_importance"] = y1y2_comparison.to_dict(orient="records")
+    summary["don_bay_thiet_ke"] = levers.to_dict(orient="records")
+    summary["tuong_tac_chieu_cao_x_kinh"] = {f"{k[0]}_X7={k[1]}": {f"X5={i}": float(v) for i, v in col.items()}
+                                             for k, col in interaction.items()}
+    summary["gia_dinh_quy_doi"] = {"dien_tich_san_m2": FLOOR_AREA_M2, "COP": COP,
+                                   "gia_dien_vnd_kwh": ELECTRICITY_VND_PER_KWH}
 
     with open(REPORTS_DIR / "tom_tat.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)

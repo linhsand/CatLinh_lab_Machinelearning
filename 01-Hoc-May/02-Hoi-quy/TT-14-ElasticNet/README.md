@@ -1,5 +1,5 @@
 # TT-14 — ELASTICNET
-## Dự báo tiêu thụ năng lượng toà nhà khi các biến thiết kế dính chặt nhau
+## Dự báo tải sưởi / làm mát toà nhà khi các biến thiết kế dính chặt nhau
 
 | | |
 |---|---|
@@ -10,283 +10,217 @@
 | ⏱ **Thời lượng** | 5–7 giờ |
 | 📈 **Độ khó** | ⭐⭐ |
 
----
-
-## 1. THUẬT TOÁN NÀY LÀ GÌ
-
-```
-   ElasticNet = trộn CẢ HAI hình phạt:
-
-        Loss = MSE + λ·[ ρ·Σ|wᵢ|  +  (1−ρ)/2·Σwᵢ² ]
-                        └─ L1 ─┘      └─── L2 ───┘
-
-        ρ (l1_ratio) = 1   → giống hệt LASSO
-        ρ = 0              → giống hệt RIDGE
-        ρ = 0,5            → cân bằng cả hai
-```
-
-**Nó sinh ra để vá đúng điểm yếu của Lasso:** khi 2 biến tương quan 0,95, Lasso chọn
-ngẫu nhiên 1 biến và bỏ hẳn biến kia. ElasticNet **giữ cả nhóm** biến tương quan
-(hiệu ứng gom nhóm — grouping effect) mà vẫn loại được biến vô dụng.
-
-| | Ridge | Lasso | **ElasticNet** |
-|---|---|---|---|
-| Đưa hệ số về 0 | ❌ | ✅ | ✅ |
-| Giữ nhóm biến tương quan | ✅ | ❌ | ✅ |
-| Khi số biến > số mẫu | Kém | Tối đa n biến | ✅ Tốt nhất |
+> **Kết quả chính:**
+> * ElasticNet dự báo tải sưởi Y1 với **R² test 0,921** (RMSE 2,88 kWh/m²) và tải làm mát Y2 với **R² 0,895**
+>   (RMSE 3,12), so với baseline Dummy R² ≈ 0 (RMSE 10,24 / 9,67).
+> * Ridge, Lasso và ElasticNet ngang nhau vì n = 614 ≫ p = 14, nên CV chọn mức phạt gần 0. Hiệu ứng gom nhóm
+>   chỉ lộ ra khi tăng alpha: tại alpha = 0,0104, Lasso bỏ 1/4 biến của nhóm hình học, ElasticNet giữ đủ 4/4.
+> * **Khuyến nghị thiết kế** (mỗi toà 220,5 m² sàn): **1 tầng thay vì 2 tầng** giảm tổng tải **35 kWh/m²**
+>   (Y1 −57%, Y2 −51%, ~6,4 triệu đ/năm). Kế đến là chọn đúng hình khối (10–25 kWh/m²), rồi đến giảm kính
+>   40% → 10% (9 kWh/m²). Hướng nhà và cách phân bố kính **gần như không ảnh hưởng** (< 1 kWh/m²), nên kiến
+>   trúc sư được tự do chọn.
 
 ---
 
-## 2. BÀI TOÁN THỰC TẾ
+## 1. THUẬT TOÁN & BÀI TOÁN
 
 ```
-   Công ty thiết kế cần ước tính TẢI SƯỞI và TẢI LÀM MÁT của toà nhà
-   NGAY TỪ BẢN VẼ, trước khi xây, để chọn công suất điều hoà.
-
-   Chọn thừa công suất → lãng phí đầu tư + tốn điện vận hành
-   Chọn thiếu công suất → toà nhà không đủ mát → phải cải tạo, cực đắt
-
-   ⚠️ Đặc thù dữ liệu: các biến thiết kế DÍNH CHẶT nhau về mặt hình học
-      Diện tích tường ↔ Diện tích mái ↔ Chiều cao ↔ Diện tích sàn
-      (đổi 1 cái là các cái kia đổi theo — ràng buộc vật lý)
-   → Lasso sẽ bỏ oan biến quan trọng. ElasticNet là lựa chọn đúng.
+   Loss = MSE + λ·[ ρ·Σ|wᵢ|  +  (1−ρ)/2·Σwᵢ² ]       ρ = l1_ratio:  1 → Lasso,  0 → Ridge
 ```
 
----
+ElasticNet vá điểm yếu của Lasso: thành phần L2 kéo hệ số các biến tương quan lại gần nhau (**hiệu ứng gom
+nhóm**) thay vì để L1 bỏ hẳn một biến.
 
-## 3. BỘ DỮ LIỆU
+**Bài toán:** công ty thiết kế cần ước tính **tải sưởi (Y1)** và **tải làm mát (Y2)** ngay từ bản vẽ, để
+① chọn công suất điều hoà đúng (thừa thì lãng phí, thiếu thì phải cải tạo) và ② biết **quyết định thiết kế
+nào** đáng tối ưu nhất.
+
+## 2. DỮ LIỆU
 
 | | |
 |---|---|
-| **Tên** | Energy Efficiency (UCI) |
-| **Link** | https://archive.ics.uci.edu/dataset/242/energy+efficiency |
-| **Kích thước** | 768 dòng × 8 đặc trưng |
-| **Nhãn** | `Y1` = tải sưởi · `Y2` = tải làm mát (**2 bài hồi quy**) |
+| **Nguồn** | [Energy Efficiency (UCI)](https://archive.ics.uci.edu/dataset/242/energy+efficiency). `src/train.py` tự tải và cache vào `data/` |
+| **Kích thước** | 768 toà nhà mô phỏng (Ecotect) × 8 đặc trưng, 2 nhãn Y1, Y2 (kWh/m²) |
+| **Chia** | 80/20, `random_state=42` → 614 train / 154 test, làm **riêng cho Y1 và Y2** |
+| **Chọn siêu tham số** | 5-fold CV trên train (RidgeCV / LassoCV / ElasticNetCV với lưới 100 alpha × 7 l1_ratio); test chỉ để báo cáo |
 
-**Đặc trưng:** `X1` độ gọn tương đối, `X2` diện tích bề mặt, `X3` diện tích tường,
-`X4` diện tích mái, `X5` chiều cao tổng, `X6` hướng nhà, `X7` diện tích kính,
-`X8` phân bố kính
+**Đặc điểm cấu trúc, quyết định cách đọc kết quả:**
 
-### ⚠️ Lưu ý dữ liệu
-
-```
-   1. X1, X2, X4, X5 tương quan gần như HOÀN HẢO (|r| > 0,95)
-      → chính là lý do chọn bộ này cho ElasticNet.
-
-   2. X6 (hướng nhà) và X8 (phân bố kính) là biến PHÂN LOẠI mã hoá bằng số
-      → phải one-hot, không để dạng số có thứ tự.
-
-   3. Bộ chỉ có 768 dòng → dùng cross-validation, đừng tin 1 lần chia train/test.
-```
-
----
-
-## 4. HƯỚNG ĐI ĐÚNG
-
-```python
-from sklearn.linear_model import ElasticNetCV
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-import numpy as np
-
-pipe = Pipeline([
-    ('scale', StandardScaler()),                       # ⭐ BẮT BUỘC
-    ('en', ElasticNetCV(
-        l1_ratio=[0.1, 0.3, 0.5, 0.7, 0.9, 0.95, 1.0], # dò cả tỉ lệ trộn
-        alphas=np.logspace(-4, 1, 100),
-        cv=5, max_iter=50000, random_state=42)),
-])
-pipe.fit(X_train, y_train)
-print("alpha:", pipe['en'].alpha_, "| l1_ratio:", pipe['en'].l1_ratio_)
-```
-
-> 💡 `l1_ratio` gần 1 → dữ liệu ưa Lasso (ít biến thật sự quan trọng).
-> `l1_ratio` gần 0 → dữ liệu ưa Ridge (nhiều biến cùng đóng góp).
-> Con số máy chọn ra chính là **câu trả lời về bản chất dữ liệu**.
-
----
-
-## 5. CÁC BƯỚC THỰC HIỆN
-
-```
-   ☐ 1. Nạp dữ liệu, tính ma trận tương quan + VIF → xác nhận đa cộng tuyến nặng
-   ☐ 2. One-hot X6, X8; chuẩn hoá các biến số
-   ☐ 3. Baseline: DummyRegressor + Linear Regression
-   ☐ 4. Chạy 3 model trên CÙNG dữ liệu: Ridge · Lasso · ElasticNet
-   ☐ 5. ⭐ BẢNG SO SÁNH: mỗi model giữ bao nhiêu biến? RMSE bao nhiêu?
-   ☐ 6. ⭐ Kiểm chứng HIỆU ỨNG GOM NHÓM:
-        • Lasso giữ X1 hay X4 hay X5? (nó sẽ chọn 1, bỏ phần còn lại)
-        • ElasticNet giữ mấy biến trong nhóm đó?
-   ☐ 7. Vẽ heatmap RMSE theo lưới (alpha × l1_ratio)
-   ☐ 8. Làm CẢ HAI nhãn Y1 và Y2 → so sánh: biến nào quan trọng cho sưởi,
-        biến nào cho làm mát? (kết quả thường KHÁC NHAU — có ý nghĩa kỹ thuật)
-   ☐ 9. Kiểm tra ổn định: bootstrap 100 lần → hệ số ElasticNet dao động bao nhiêu?
-   ☐ 10. ✍️ Đề xuất 3 thay đổi thiết kế giúp giảm tải năng lượng
-```
-
----
-
-## 6. TIÊU CHÍ HOÀN THÀNH
-
-```
-   ☐ Có bảng VIF chứng minh đa cộng tuyến
-   ☐ Có bảng so sánh Ridge / Lasso / ElasticNet (số biến giữ + RMSE)
-   ☐ ⭐ Chỉ rõ được hiệu ứng gom nhóm: Lasso bỏ biến nào mà ElasticNet giữ
-   ☐ Có heatmap alpha × l1_ratio
-   ☐ Làm đủ cả 2 nhãn Y1 và Y2, có so sánh
-   ☐ Giải thích được ý nghĩa của l1_ratio mà máy chọn
-   ☐ RMSE tốt hơn baseline rõ rệt
-```
-
-**Mức tham chiếu:** R² ~0,90–0,92 cho Y1 (tải sưởi). Đây là bộ dữ liệu mô phỏng
-nên quan hệ rất sạch — đừng kỳ vọng dữ liệu thật cũng đẹp như vậy.
-
----
-
-## 6.1. KẾT QUẢ CHẠY THỰC TẾ
-
-**Toàn bộ số liệu dưới đây là kết quả chạy thật** (`notebooks/elasticnet_energy.ipynb`,
-tái lập bằng `src/train.py`), dữ liệu tải trực tiếp từ UCI (768 dòng), `random_state=42`.
-
-**Bước 1 — Ma trận tương quan + VIF** (`reports/vif_table.csv`), tính trên 6 biến số liên tục:
-
-| Biến | Mô tả | VIF |
+| Phát hiện | Bằng chứng | Hệ quả |
 |---|---|---|
-| X2 | Diện tích bề mặt | **∞** (vô cực) |
-| X3 | Diện tích tường | **∞** (vô cực) |
-| X4 | Diện tích mái | **∞** (vô cực) |
-| X1 | Độ gọn tương đối | 105,52 |
-| X5 | Chiều cao tổng | 31,21 |
-| X7 | Diện tích kính | 1,00 |
+| Đây là **thí nghiệm giai thừa cân bằng** | 12 hình khối × 4 hướng (X6) × 16 tổ hợp kính (X7, X8) = 768 | So sánh trung bình theo mức = ước lượng sạch tác động từng quyết định (mục 4) |
+| Đa cộng tuyến **hoàn hảo** trong nhóm hình học | `X2 = X3 + 2·X4` đúng tuyệt đối → VIF X2, X3, X4 = **∞**; X1 = 105,5; X5 = 31,2; X7 = 1,0. \|r\| > 0,8 giữa mọi cặp trong {X1, X2, X4, X5} | Không đọc riêng hệ số từng biến hình học |
+| **X8 = 0 ⇔ X7 = 0** (không kính) | Kiểm tra trên cả 768 dòng | Cột one-hot `X8_1…X8_5` đo "**có kính**", không phải "phân bố kính" |
+| X6, X8 là biến phân loại | Mã hoá 2–5 / 0–5 | One-hot (`drop_first`) → 14 cột |
 
-VIF = ∞ nghĩa là đa cộng tuyến **hoàn hảo** (X2, X3, X4 là tổ hợp tuyến tính chính xác của các
-biến còn lại) — dữ liệu Energy Efficiency chỉ có **12 hình khối nhà** khác nhau (lặp lại theo
-hướng × kính), và X1–X5 được tính từ đúng các công thức hình học của nhau. Đây là mức đa cộng
-tuyến nặng hơn cả README cảnh báo, xác nhận rõ ràng lý do phải dùng ElasticNet thay vì OLS thường.
-Các cặp |r| > 0,8: `(X1,X2)=-0,992`, `(X4,X5)=-0,973`, `(X2,X4)=0,881`, `(X2,X5)=-0,858`,
-`(X1,X4)=-0,869`, `(X1,X5)=0,828`.
+---
 
-**Sau one-hot X6, X8:** 14 cột (`X1,X2,X3,X4,X5,X7` + `X6_3,X6_4,X6_5` + `X8_1..X8_5`).
+## 3. KẾT QUẢ MÔ HÌNH
 
-**Bảng so sánh 3 model + baseline** (test set, 154 dòng):
+### 3.1. So sánh model (test 154 toà) — `reports/so_sanh_3_model_Y1.csv`, `_Y2.csv`
 
-| Model | Nhãn Y1 (tải sưởi) RMSE / R² | Nhãn Y2 (tải làm mát) RMSE / R² |
-|---|---|---|
-| Dummy (trung bình) | 10,238 / -0,006 | 9,666 / -0,008 |
-| Linear Regression | 2,872 / 0,9209 | 3,120 / 0,8950 |
-| Ridge (alpha≈0,272 / 0,192) | 2,876 / 0,9207 | 3,121 / 0,8949 |
-| Lasso (alpha≈0,00129 / 0,00072) | 2,875 / 0,9207 | 3,120 / 0,8949 |
-| **ElasticNet** (alpha≈0,00045 / 0,00032, l1_ratio=0,10) | **2,876 / 0,9207** | **3,121 / 0,8949** |
+| Model | alpha | l1_ratio | Biến giữ | **Y1** RMSE | **Y1** R² | **Y2** RMSE | **Y2** R² |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Baseline Dummy (mean) | — | — | — | 10,238 | −0,006 | 9,666 | −0,008 |
+| Linear Regression | — | — | 14/14 | 2,872 | 0,9209 | 3,120 | 0,8950 |
+| Ridge (RidgeCV) | 0,272 / 0,192 | — | 14/14 | 2,876 | 0,9207 | 3,121 | 0,8949 |
+| Lasso (LassoCV) | 0,00129 / 0,00072 | 1,0 | 14/14 | 2,875 | 0,9207 | 3,120 | 0,8949 |
+| **ElasticNet (ElasticNetCV)** ✅ | 0,00045 / 0,00032 | 0,1 / 0,1 | 14/14 | 2,876 | 0,9207 | 3,121 | 0,8949 |
 
-Cả 3 model regularization đều giữ **14/14 biến** ở alpha tối ưu theo CV — với chỉ 14 biến và 614
-dòng train (p << n), CV chọn ra alpha rất nhỏ vì mô hình chưa hề overfit, nên gần như không cần
-phạt mạnh. RMSE 4 model gần như giống hệt nhau (đều vượt trội hẳn baseline Dummy), khớp đúng mức
-tham chiếu R² ~0,90–0,92 cho Y1.
+* Mọi model tuyến tính giảm RMSE **72% (Y1) / 68% (Y2)** so với Dummy. Sai số điển hình ~2,9–3,1 kWh/m²
+  trên tải trung bình 22,3 / 24,6 kWh/m².
+* 4 model chênh nhau dưới 0,005 RMSE. Với 614 mẫu và 14 biến, model không overfit, nên CV chọn alpha gần 0
+  và cả ba phương pháp hội tụ về OLS. Y2 khó dự đoán hơn Y1 một chút.
 
-**⭐ Bước 6 — Hiệu ứng gom nhóm.** Ở alpha tối ưu riêng của từng model (rất nhỏ), *cả Lasso lẫn
-ElasticNet đều giữ đủ 4/4 biến* trong nhóm tương quan `{X1, X2, X4, X5}` — chưa thấy khác biệt, vì
-alpha chưa đủ lớn để ép loại biến nào. Để **thực sự bộc lộ** hiệu ứng gom nhóm, cần ép alpha tăng
-dần vượt qua alpha tối ưu (`reports/hieu_ung_gom_nhom_theo_alpha_*.png`):
+### 3.2. Heatmap RMSE **cross-validation** theo alpha × l1_ratio — `reports/heatmap_alpha_l1ratio_Y*.png`, `heatmap_cv_Y*.csv`
 
-| Nhãn | alpha ép (Lasso vừa bắt đầu loại biến trong nhóm) | Lasso giữ trong nhóm | ElasticNet (l1_ratio=0,5) giữ trong nhóm | Biến Lasso loại |
+Lấy thẳng từ `mse_path_` của ElasticNetCV (5 fold trên train). **Không dùng tập test.** Code `assert` ô tốt
+nhất trùng lựa chọn của CV.
+
+| | Ô tốt nhất (RMSE-CV) | alpha ≈ 0,1 | alpha = 10, l1 = 0,1 | alpha = 10, l1 = 1,0 (Lasso) |
 |---|---|---|---|---|
-| Y1 | 0,0104 | 3/4 | **4/4** | `X2` (diện tích bề mặt) |
-| Y2 | 0,0227 | 3/4 | **4/4** | `X2` (diện tích bề mặt) |
+| Y1 | **2,829** (alpha 0,00045, l1 0,1) | 3,01–3,15 | 8,28 | **10,05** (≈ Dummy) |
+| Y2 | **3,232** (alpha 0,00032, l1 0,1) | 3,32–3,51 | 7,83 | 9,47 |
 
-Tại đúng alpha đó, hệ số của `X2` là `lasso=0,0000` nhưng `elasticnet=-1,59` (Y1) / `-1,09` (Y2) —
-ElasticNet vẫn giữ tín hiệu của X2 thay vì loại bỏ hoàn toàn như Lasso. **Xác nhận đúng lý thuyết:**
-Lasso chọn ngẫu nhiên 1 biến trong nhóm tương quan và bỏ hẳn biến còn lại (ở đây luôn là X2, vì X2
-tương quan gần như tuyệt đối với X1: r=-0,992), còn ElasticNet phân bổ hệ số cho cả nhóm nhờ thành
-phần phạt L2.
+Ở mức phạt lớn, Lasso thuần (l1 = 1) tệ nhất vì loại sạch cả nhóm hình học, còn l1 nhỏ (gần Ridge) giữ được
+tín hiệu. Bản trước vẽ heatmap này trên **test** và đánh dấu "ô tốt nhất trên test". Đó là cùng lỗi chọn trên
+test đã sửa ở TT-12/13, nên đã được thay.
 
-**Heatmap alpha × l1_ratio** (`reports/heatmap_alpha_l1ratio_*.png`): RMSE thấp và gần như phẳng
-khi alpha ≲ 0,1 (không phụ thuộc l1_ratio), tăng mạnh khi alpha lớn — và tăng **nhanh nhất** ở
-l1_ratio=1,0 (Lasso thuần) vì lúc đó Lasso loại sạch cả 4 biến trong nhóm tương quan trước (xem
-bảng trên: tại alpha≈10, Lasso còn 0/14 biến), gây underfit nặng hơn hẳn so với l1_ratio nhỏ (gần
-Ridge) vẫn giữ được tín hiệu dù hệ số bị co nhỏ.
+### 3.3. ⭐ Hiệu ứng gom nhóm — `reports/hieu_ung_gom_nhom_theo_alpha_Y*.csv/.png`
 
-**Bước 8 — So sánh Y1 (tải sưởi) vs Y2 (tải làm mát)** (`reports/so_sanh_Y1_Y2_tam_quan_trong.csv`):
+Ở alpha do CV chọn, cả Lasso và ElasticNet đều giữ 4/4 biến {X1, X2, X4, X5}. Khi ép alpha tăng:
 
-| Biến | Hệ số ElasticNet Y1 | Hệ số ElasticNet Y2 | Nhận xét |
-|---|---|---|---|
-| X5 (chiều cao) | **+7,32** | **+7,21** | Quan trọng nhất cho cả hai, gần như bằng nhau |
-| X1 (độ gọn) | -6,22 | -7,18 | Quan trọng hơn ~15% cho làm mát |
-| X3 (diện tích tường) | **+0,87** | +0,22 | Quan trọng hơn **~4 lần** cho tải sưởi (tường truyền nhiệt mùa lạnh) |
-| X8 (phân bố kính, mọi hạng mục) | ~1,4–1,6 | ~0,55–0,71 | Ảnh hưởng gấp ~2 lần lên tải sưởi so với làm mát |
-| X7 (diện tích kính) | +2,31 | +1,81 | Quan trọng hơn ~25% cho tải sưởi |
+| Nhãn | alpha Lasso bắt đầu bỏ biến trong nhóm | Lasso giữ (nhóm / tổng) | ElasticNet (l1 = 0,5) giữ |
+|---|---:|---|---|
+| Y1 | 0,0104 | **3/4** (11/14) | **4/4** (14/14) |
+| Y2 | 0,0227 | **3/4** (12/14) | **4/4** (14/14) |
 
-→ Diện tích tường và cách bố trí kính ảnh hưởng đến **tải sưởi** rõ rệt hơn tải làm mát — hợp lý về
-mặt vật lý xây dựng: tường và kính là đường thất thoát nhiệt chính vào mùa lạnh, trong khi tải làm
-mát mùa nóng chịu ảnh hưởng cân bằng hơn giữa hình khối (X1, X5) và bức xạ mặt trời qua kính.
+Lasso giảm dần xuống 1/4 biến trong nhóm ở alpha ≈ 0,1–0,24, trong khi ElasticNet vẫn giữ 3–4/4. Đây là bằng
+chứng thực nghiệm của hiệu ứng gom nhóm: với X2 tương quan −0,992 với X1, Lasso dồn "trách nhiệm" cho một biến,
+còn ElasticNet chia sẻ.
 
-**Bước 9 — Bootstrap 100 lần (80% dữ liệu mỗi lần), hệ số ElasticNet:**
+### 3.4. Ổn định hệ số: 100 lần lấy mẫu 80% — `reports/bootstrap_elasticnet_Y*.csv/.png`
 
-| Biến | Hệ số trung bình (Y1) | Độ lệch chuẩn | Hệ số biến thiên |
-|---|---|---|---|
-| X5 | 7,37 | 0,28 | **3,8%** (rất ổn định) |
-| X1 | -6,54 | 0,30 | 4,6% |
-| X4 | -3,76 | 0,20 | 5,4% |
-| X2 | -3,65 | 0,21 | 5,7% |
-| X6 (hướng nhà, cả 3 hạng mục) | ±0,01 – 0,04 | ~0,07 | **175% – 593%** (hoàn toàn không ổn định) |
+| | Biến hình học X1, X2, X4, X5 | X7 (kính) | X8_* (có kính) | X3 | X6_* (hướng) |
+|---|---|---|---|---|---|
+| Hệ số biến thiên (Y1) | 3,8–5,7% | 2,5% | 6,7–7,8% | 9,6% | **176–593%** |
+| Hệ số biến thiên (Y2) | 4,4–7,4% | 3,7% | 13,6–19,1% | 63% | **48–190%** |
 
-→ Các biến hình học chính (X1, X2, X4, X5, X7) **ổn định cao** (biến thiên < 10%) — kết luận về
-tầm quan trọng của chúng đáng tin cậy. Ngược lại, hệ số của X6 (hướng nhà) dao động cực mạnh quanh
-0 và đổi dấu giữa các lần lấy mẫu → **hướng nhà không có ảnh hưởng thống kê đáng tin cậy** trong bộ
-dữ liệu này, dù mô hình đôi khi gán cho nó hệ số khác 0.
+Hệ số các biến thiết kế chính rất ổn định. Hệ số hướng nhà dao động quanh 0, nghĩa là hướng nhà **không có ảnh
+hưởng đáng tin cậy**. Điều này khớp với mục 4.
 
-**✍️ Đề xuất 3 thay đổi thiết kế để giảm tải năng lượng** (dựa trên dấu và độ lớn hệ số ElasticNet
-đã chuẩn hoá, `reports/tam_quan_trong_bien_*.csv`):
+### 3.5. Mô hình tuyến tính sai ở đâu? — `reports/phan_du_theo_nhom_Y*.csv`
 
-1. **Giảm chiều cao tầng (X5)** — biến quan trọng nhất cho cả hai nhãn (hệ số +7,3 cho Y1, +7,2
-   cho Y2, đều dương và lớn nhất). Mỗi đơn vị chiều cao tăng thêm kéo theo mức tăng tải lớn nhất
-   trong toàn bộ 14 biến — ưu tiên hàng đầu khi có thể điều chỉnh thiết kế.
-2. **Tăng độ gọn tương đối (X1) bằng hình khối nhà vuông vắn hơn** — hệ số âm lớn (-6,2 cho Y1,
-   -7,2 cho Y2): nhà càng "gọn" (tỉ lệ diện tích bề mặt/thể tích càng nhỏ) thì tải càng giảm, và
-   tác dụng còn rõ hơn cho tải làm mát. Đây là đòn bẩy rẻ nhất vì chỉ cần thay đổi tỉ lệ hình khối,
-   không cần vật liệu đắt tiền.
-3. **Ưu tiên xử lý tường và kính cho công trình có mùa lạnh kéo dài** — X3 (tường) và X8 (phân bố
-   kính) có ảnh hưởng lên tải sưởi (Y1) gấp 2–4 lần so với tải làm mát (Y2). Với công trình cần tối
-   ưu chi phí sưởi, nên đầu tư cách nhiệt tường và chọn phân bố kính hợp lý trước; với công trình
-   ưu tiên làm mát, tác động của 2 biến này thấp hơn nên có thể hạ ưu tiên đầu tư ở đây.
+Phần dư trung bình (thực tế − dự báo) trên test, theo chiều cao × diện tích kính, đơn vị kWh/m²:
+
+| Y1 | Không kính | 10% | 25% | 40% |
+|---|---:|---:|---:|---:|
+| 1 tầng (3,5 m) | +1,80 | +0,89 | −0,17 | −0,80 |
+| 2 tầng (7 m) | **−3,49** | +0,68 | −0,38 | +1,13 |
+
+* Mô hình cộng tính giả định "kính thêm một lượng tải như nhau cho mọi nhà". Thực tế, kính 0 → 40% làm tăng Y1
+  **+14,3** ở nhà 2 tầng nhưng chỉ **+8,0** ở nhà 1 tầng (`reports/tuong_tac_chieu_cao_x_kinh.csv`). Kết quả
+  là model dự báo **thừa 3,5 kWh/m²** cho nhà 2 tầng không kính (Y2: −2,09).
+* R² 0,92 che mất sai lệch có hệ thống này. Khi dùng để **định cỡ điều hoà**, nên thêm tương tác `X5 × X7`
+  (TT-15) hoặc dùng model cây (TT-16/17).
+
+### 3.6. ⚠️ Vì sao KHÔNG dùng bảng |hệ số| để ra quyết định thiết kế
+
+Top hệ số ElasticNet (chuẩn hoá): X5 +7,32 / +7,21 · X1 −6,22 / −7,18 · X4 −3,64 / −3,83 · X2 −3,48 / −3,99 ·
+X7 +2,31 / +1,81 (Y1 / Y2).
+* **X1 âm** đọc ra là "nhà gọn hơn → tải thấp hơn". Nhưng trong dữ liệu, mọi nhà gọn (X1 ≥ 0,76) đều là nhà
+  2 tầng và có tải sưởi trung bình **cao gấp 2,3 lần** (31,3 so với 13,3 kWh/m²). Hệ số X1 chỉ có nghĩa khi "giữ nguyên X2, X4, X5", một điều bất khả
+  thi về mặt hình học. Bản trước của bài khuyến nghị "tăng độ gọn X1", trái với dữ liệu.
+* Nhóm **X8_\*** (≈ 1,6 cho Y1) bị xếp hạng 6–10 và bị đọc thành "phân bố kính quan trọng". Thực ra nó đo
+  **có kính hay không**. Phân bố kính 1–5 chỉ chênh **0,9 kWh/m²**.
+
+→ Căn cứ đúng để ra quyết định là **so sánh trung bình theo mức** trên thiết kế giai thừa (mục 4).
 
 ---
 
-## 7. CẠM BẪY
+## 4. ⭐ ĐÒN BẨY THIẾT KẾ — `reports/don_bay_thiet_ke.csv/.png`
 
-| Cạm bẫy | Hậu quả |
-|---------|---------|
-| Quên chuẩn hoá | Phạt bất công giữa các biến khác đơn vị |
-| Chỉ dò `alpha`, cố định `l1_ratio` | Bỏ lỡ điểm tối ưu thật |
-| Để X6, X8 dạng số | Model hiểu nhầm "hướng 4 > hướng 2" |
-| Tin 1 lần chia train/test với 768 dòng | Phương sai lớn → dùng cross-validation |
-| `max_iter` mặc định | Cảnh báo không hội tụ |
+Vì dữ liệu là thiết kế giai thừa **cân bằng**, ở hai bên của mỗi so sánh các quyết định khác được phân bố như
+nhau. Hiệu số trung bình vì vậy là tác động của riêng quyết định đó. Nhóm hình học chỉ có 12 hình khối nên
+so sánh ở mức **hình khối**.
+
+**Quy đổi (giả định):** mọi toà có cùng thể tích 771,75 m³, tức **220,5 m² sàn**. Coi Y là tải năm. Điều hoà /
+bơm nhiệt **COP = 3**. Giá điện **2.500đ/kWh**. Thứ tự các đòn bẩy **không** phụ thuộc giả định này.
+
+| # | Quyết định | Tải sưởi Y1 | Tải làm mát Y2 | Giảm tổng tải | Điện/toà/năm | ≈ Tiền/toà/năm |
+|---|---|---|---|---:|---:|---:|
+| 1 | **1 tầng (3,5 m) thay vì 2 tầng (7 m)**, cùng thể tích | 31,28 → 13,34 (**−57%**) | 33,10 → 16,07 (**−51%**) | **35,0 kWh/m²** | ~2.570 kWh | **~6,4 triệu đ** |
+| 2a | Hình khối tốt nhất trong nhóm **2 tầng** (X1 0,79 → 0,82) | 38,61 → 25,56 (−34%) | 40,24 → 28,03 (−30%) | 25,3 | ~1.860 kWh | ~4,6 triệu đ |
+| 2b | Hình khối tốt nhất trong nhóm **1 tầng** (X1 0,64 → 0,74) | 16,62 → 11,89 (−28%) | 20,23 → 14,81 (−27%) | 10,2 | ~750 kWh | ~1,9 triệu đ |
+| 3 | **Kính 40% → 10%** diện tích sàn | 25,41 → 20,36 (−20%) | 26,91 → 22,94 (−15%) | 9,0 | ~660 kWh | ~1,7 triệu đ |
+| | (40% → 25%; 25% → 10%) | | | (4,7; 4,4) | | (0,86; 0,80 triệu đ) |
+| 4 | Phân bố kính tốt nhất (X8 1 → 3) | 23,03 → 22,68 | 25,18 → 24,66 | 0,9 | ~60 kWh | ~0,16 triệu đ |
+| 5 | Hướng nhà tốt nhất (X6 5 → 3) | 22,28 → 22,38 | 24,95 → 24,31 | 0,5 | ~40 kWh | ~0,10 triệu đ |
+
+**Khuyến nghị cho công ty thiết kế:**
+1. **Quyết định ở giai đoạn ý tưởng (chiều cao, hình khối) chiếm gần hết đòn bẩy.** Chuyển 2 tầng xuống 1 tầng
+   có tác dụng gấp **~4 lần** so với cắt kính 40% → 10%. Đổi lại, nhà 1 tầng cần gấp đôi diện tích đất (mái
+   220,5 m² so với 110–147 m²). Đây là đánh đổi **năng lượng vs giá đất**, cần đưa cho chủ đầu tư quyết định
+   bằng con số: ~6,4 triệu đ/năm, tức ~130 triệu đ trong vòng đời 20 năm (chưa chiết khấu).
+2. **Đã chốt chiều cao thì mô phỏng từng hình khối**, đừng suy từ X1. Trong nhóm 2 tầng, hai hình khối có X1
+   gần nhau (0,79 và 0,82) mà đã chênh **25 kWh/m²**.
+3. **Kính: giảm bước nào cũng có lợi** (mỗi bước ~4,5 kWh/m²). Tác động của kính ở nhà 2 tầng mạnh **gần gấp
+   đôi** nhà 1 tầng (+14,3 so với +8,0 khi tăng 0 → 40%), nên nhà cao cần hạn chế kính chặt hơn.
+4. **Hướng nhà và cách phân bố kính: tự do.** Chênh lệch dưới 1 kWh/m² (< 2% tổng tải trung bình 46,9). Kiến
+   trúc sư chọn theo view, thẩm mỹ, quy hoạch mà không phải trả giá năng lượng đáng kể.
+5. **Định cỡ điều hoà:** dùng model với sai số ±3 kWh/m² (RMSE). Nhà 2 tầng nhiều kính có thể bị dự báo thiếu
+   ~1 kWh/m², nên cộng biên an toàn ~5% cho nhóm này (mục 3.5).
 
 ---
 
-## 8. SẢN PHẨM NỘP & MỞ RỘNG
+## 5. TIÊU CHÍ HOÀN THÀNH
+
+```
+   ☑ Ma trận tương quan + VIF chứng minh đa cộng tuyến     → mục 2: VIF ∞ (X2, X3, X4), 105,5 (X1)
+   ☑ One-hot X6, X8                                       → 14 cột
+   ☑ Baseline Dummy + Linear                              → 3.1
+   ☑ Ridge / Lasso / ElasticNet trên cùng dữ liệu, CV     → 3.1
+   ☑ Bảng so sánh số biến giữ + RMSE                      → 3.1
+   ☑ ⭐ Kiểm chứng hiệu ứng gom nhóm                       → 3.3: Lasso 3/4 vs ElasticNet 4/4
+   ☑ Heatmap theo lưới alpha × l1_ratio                   → 3.2 (cross-validation, không dùng test)
+   ☑ Làm cả Y1 và Y2                                      → toàn bài
+   ☑ Bootstrap ổn định hệ số                              → 3.4
+   ☑ ✍️ Đề xuất thay đổi thiết kế bằng con số              → mục 4
+```
+
+## 6. HẠN CHẾ
+
+1. **Dữ liệu mô phỏng**: 12 hình khối, một vùng khí hậu (Athens, Hy Lạp), vật liệu cố định. Thứ tự đòn bẩy đáng
+   tin, con số tuyệt đối cần mô phỏng lại cho khí hậu Việt Nam.
+2. **Quy đổi tiền** dựa trên giả định COP 3 và giá điện 2.500đ/kWh, và coi Y là tải năm.
+3. **Mô hình tuyến tính cộng tính** bỏ qua tương tác chiều cao × kính và phi tuyến của kính. R² 0,92 không có
+   nghĩa là đúng đều ở mọi nhóm (3.5).
+4. **Không tách được tác động riêng** của X1, X2, X3, X4, X5 (đa cộng tuyến hoàn hảo). Chỉ so sánh được giữa các
+   hình khối có sẵn.
+5. **Một lần chia train/test**. Siêu tham số chọn bằng CV, nhưng con số test đến từ một lần chia 154 toà.
+
+## 7. SẢN PHẨM & CÁCH CHẠY
 
 ```
 TT-14-ElasticNet/
-├── README.md          ← có mục "HIỆU ỨNG GOM NHÓM" (mục 6.1)
-├── notebooks/elasticnet_energy.ipynb
+├── README.md
+├── data/ENB2012_data.xlsx                 ← tự tải từ UCI khi chạy lần đầu
+├── notebooks/elasticnet_energy.ipynb      ← giải thích từng bước + output thật
 ├── src/train.py
-├── data/ENB2012_data.xlsx             ← cache tải từ UCI, sinh tự động khi chạy train.py
-├── models/{elasticnet_Y1.joblib, elasticnet_Y2.joblib}
+├── models/elasticnet_Y1.joblib, elasticnet_Y2.joblib
 ├── reports/
-│   ├── correlation_matrix.csv, vif_table.csv          ← bước 1: đa cộng tuyến
-│   ├── so_sanh_3_model_Y1/Y2.csv, .png                ← bước 5: so sánh Ridge/Lasso/ElasticNet
-│   ├── hieu_ung_gom_nhom_theo_alpha_Y1/Y2.csv, .png   ← bước 6: hiệu ứng gom nhóm (ép alpha)
-│   ├── heatmap_alpha_l1ratio_Y1/Y2.png                ← bước 7: heatmap alpha x l1_ratio
-│   ├── so_sanh_Y1_Y2_tam_quan_trong.csv, .png         ← bước 8: so sánh Y1 vs Y2
-│   ├── bootstrap_elasticnet_Y1/Y2.csv, .png           ← bước 9: ổn định hệ số
-│   ├── tam_quan_trong_bien_Y1/Y2.csv                  ← bước 10: xếp hạng biến (cơ sở đề xuất)
-│   └── tom_tat.json                                   ← tổng hợp toàn bộ số liệu
+│   ├── vif_table.csv, correlation_matrix.csv
+│   ├── so_sanh_3_model_Y*.csv/.png, heatmap_alpha_l1ratio_Y*.png, heatmap_cv_Y*.csv
+│   ├── hieu_ung_gom_nhom_theo_alpha_Y*.csv/.png, bootstrap_elasticnet_Y*.csv/.png
+│   ├── phan_du_theo_nhom_Y*.csv, tuong_tac_chieu_cao_x_kinh.csv
+│   ├── don_bay_thiet_ke.csv/.png          ← khuyến nghị thiết kế
+│   └── tom_tat.json
 └── requirements.txt
 ```
 
-**Mở rộng:**
-1. Thêm đặc trưng tương tác (`X3 × X7`) → ElasticNet có tự loại bớt không?
-2. So sánh với Gradient Boosting Regressor (TT-18) — mất tính giải thích để đổi lấy bao nhiêu % RMSE?
-3. Dự đoán đồng thời Y1 và Y2 bằng `MultiTaskElasticNet` — có tốt hơn 2 model riêng không?
+```bash
+pip install -r requirements.txt
+python src/train.py
+```
 
 **Tham khảo:** [Buổi 13 — Regularization](https://github.com/TruongTanNghia/Training-Machine-learning/tree/main/Buoi-13-Math-Regression-NangCao/Tai-Lieu)

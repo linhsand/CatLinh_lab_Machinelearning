@@ -122,11 +122,61 @@
       }
     ],
     "grouping_effect_alpha_star_forced": 0.0103979841848149,
-    "heatmap_best": {
-      "alpha": 0.0001,
-      "l1_ratio": 1.0,
-      "rmse": 2.872447364291594
+    "heatmap_cv_best": {
+      "alpha": 0.00045348785081285824,
+      "l1_ratio": 0.1,
+      "rmse_cv": 2.8290251682696756
     },
+    "phan_du_test_theo_nhom": [
+      {
+        "X5": 3.5,
+        "X7": 0.0,
+        "phan_du_trung_binh": 1.7952016351528706,
+        "so_mau": 4
+      },
+      {
+        "X5": 3.5,
+        "X7": 0.1,
+        "phan_du_trung_binh": 0.8886850505802893,
+        "so_mau": 22
+      },
+      {
+        "X5": 3.5,
+        "X7": 0.25,
+        "phan_du_trung_binh": -0.16531095649339142,
+        "so_mau": 26
+      },
+      {
+        "X5": 3.5,
+        "X7": 0.4,
+        "phan_du_trung_binh": -0.8023782480535644,
+        "so_mau": 20
+      },
+      {
+        "X5": 7.0,
+        "X7": 0.0,
+        "phan_du_trung_binh": -3.4912161718330568,
+        "so_mau": 4
+      },
+      {
+        "X5": 7.0,
+        "X7": 0.1,
+        "phan_du_trung_binh": 0.6805609269651653,
+        "so_mau": 29
+      },
+      {
+        "X5": 7.0,
+        "X7": 0.25,
+        "phan_du_trung_binh": -0.3757435531748831,
+        "so_mau": 25
+      },
+      {
+        "X5": 7.0,
+        "X7": 0.4,
+        "phan_du_trung_binh": 1.1258012508645219,
+        "so_mau": 24
+      }
+    ],
     "elasticnet_alpha": 0.00045348785081285824,
     "elasticnet_l1_ratio": 0.1,
     "elasticnet_metrics": {
@@ -392,11 +442,61 @@
       }
     ],
     "grouping_effect_alpha_star_forced": 0.022695105366946685,
-    "heatmap_best": {
-      "alpha": 0.0001,
-      "l1_ratio": 1.0,
-      "rmse": 3.119833120130228
+    "heatmap_cv_best": {
+      "alpha": 0.00031992671377973844,
+      "l1_ratio": 0.1,
+      "rmse_cv": 3.2319198572427745
     },
+    "phan_du_test_theo_nhom": [
+      {
+        "X5": 3.5,
+        "X7": 0.0,
+        "phan_du_trung_binh": 0.7728023920387059,
+        "so_mau": 4
+      },
+      {
+        "X5": 3.5,
+        "X7": 0.1,
+        "phan_du_trung_binh": 0.7746958036869654,
+        "so_mau": 22
+      },
+      {
+        "X5": 3.5,
+        "X7": 0.25,
+        "phan_du_trung_binh": -0.17809870562239782,
+        "so_mau": 26
+      },
+      {
+        "X5": 3.5,
+        "X7": 0.4,
+        "phan_du_trung_binh": -0.3034327093782142,
+        "so_mau": 20
+      },
+      {
+        "X5": 7.0,
+        "X7": 0.0,
+        "phan_du_trung_binh": -2.08690432396107,
+        "so_mau": 4
+      },
+      {
+        "X5": 7.0,
+        "X7": 0.1,
+        "phan_du_trung_binh": 0.6788027107969082,
+        "so_mau": 29
+      },
+      {
+        "X5": 7.0,
+        "X7": 0.25,
+        "phan_du_trung_binh": 0.16169291088165777,
+        "so_mau": 25
+      },
+      {
+        "X5": 7.0,
+        "X7": 0.4,
+        "phan_du_trung_binh": 0.9562463643400073,
+        "so_mau": 24
+      }
+    ],
     "elasticnet_alpha": 0.00031992671377973844,
     "elasticnet_l1_ratio": 0.1,
     "elasticnet_metrics": {
@@ -648,5 +748,158 @@
       "he_so_Y2_tai_lam_mat": 0.017976631865618316,
       "chenh_lech_tuyet_doi": 0.10919021646572685
     }
-  ]
+  ],
+  "don_bay_thiet_ke": [
+    {
+      "don_bay": "Chieu cao (X5)",
+      "thay_doi": "7 m (2 tang) -> 3,5 m (1 tang), cung the tich",
+      "Y1_truoc": 31.275885416666664,
+      "Y1_sau": 13.33850520833333,
+      "giam_Y1_%": 57.35211000221484,
+      "Y2_truoc": 33.10408854166667,
+      "Y2_sau": 16.071432291666667,
+      "giam_Y2_%": 51.45182060687683,
+      "giam_tong_tai_kwh_m2": 34.97003645833334,
+      "giam_tai_nhiet_kwh_moi_toa": 7710.893039062501,
+      "tiet_kiem_dien_kwh_moi_toa": 2570.2976796875005,
+      "tiet_kiem_vnd_moi_toa": 6425744.199218751
+    },
+    {
+      "don_bay": "Dien tich kinh (X7)",
+      "thay_doi": "40% -> 25% dien tich san",
+      "Y1_truoc": 25.411666666666665,
+      "Y1_sau": 22.756916666666665,
+      "giam_Y1_%": 10.446973175050832,
+      "Y2_truoc": 26.911416666666664,
+      "Y2_sau": 24.892625000000002,
+      "giam_Y2_%": 7.501617962636653,
+      "giam_tong_tai_kwh_m2": 4.673541666666665,
+      "giam_tai_nhiet_kwh_moi_toa": 1030.5159374999996,
+      "tiet_kiem_dien_kwh_moi_toa": 343.5053124999999,
+      "tiet_kiem_vnd_moi_toa": 858763.2812499998
+    },
+    {
+      "don_bay": "Dien tich kinh (X7)",
+      "thay_doi": "25% -> 10% dien tich san",
+      "Y1_truoc": 22.756916666666665,
+      "Y1_sau": 20.357166666666668,
+      "giam_Y1_%": 10.545145615069396,
+      "Y2_truoc": 24.892625000000002,
+      "Y2_sau": 22.93554166666667,
+      "giam_Y2_%": 7.86210105737476,
+      "giam_tong_tai_kwh_m2": 4.356833333333327,
+      "giam_tai_nhiet_kwh_moi_toa": 960.6817499999986,
+      "tiet_kiem_dien_kwh_moi_toa": 320.2272499999995,
+      "tiet_kiem_vnd_moi_toa": 800568.1249999988
+    },
+    {
+      "don_bay": "Dien tich kinh (X7)",
+      "thay_doi": "40% -> 10% dien tich san",
+      "Y1_truoc": 25.411666666666665,
+      "Y1_sau": 20.357166666666668,
+      "giam_Y1_%": 19.890470256443884,
+      "Y2_truoc": 26.911416666666664,
+      "Y2_sau": 22.93554166666667,
+      "giam_Y2_%": 14.773934234850739,
+      "giam_tong_tai_kwh_m2": 9.030374999999992,
+      "giam_tai_nhiet_kwh_moi_toa": 1991.1976874999982,
+      "tiet_kiem_dien_kwh_moi_toa": 663.7325624999994,
+      "tiet_kiem_vnd_moi_toa": 1659331.4062499986
+    },
+    {
+      "don_bay": "Hinh khoi trong nhom 1 tang (X1)",
+      "thay_doi": "X1=0.64 -> X1=0.74",
+      "Y1_truoc": 16.615312499999998,
+      "Y1_sau": 11.88671875,
+      "giam_Y1_%": 28.459252571987427,
+      "Y2_truoc": 20.2271875,
+      "Y2_sau": 14.809843749999999,
+      "giam_Y2_%": 26.78248644306086,
+      "giam_tong_tai_kwh_m2": 10.145937500000002,
+      "giam_tai_nhiet_kwh_moi_toa": 2237.1792187500005,
+      "tiet_kiem_dien_kwh_moi_toa": 745.7264062500002,
+      "tiet_kiem_vnd_moi_toa": 1864316.0156250005
+    },
+    {
+      "don_bay": "Hinh khoi trong nhom 2 tang (X1)",
+      "thay_doi": "X1=0.79 -> X1=0.82",
+      "Y1_truoc": 38.60796875,
+      "Y1_sau": 25.555312500000003,
+      "giam_Y1_%": 33.80819212354961,
+      "Y2_truoc": 40.239374999999995,
+      "Y2_sau": 28.028125,
+      "giam_Y2_%": 30.346520044111013,
+      "giam_tong_tai_kwh_m2": 25.26390624999999,
+      "giam_tai_nhiet_kwh_moi_toa": 5570.691328124998,
+      "tiet_kiem_dien_kwh_moi_toa": 1856.8971093749994,
+      "tiet_kiem_vnd_moi_toa": 4642242.773437499
+    },
+    {
+      "don_bay": "Phan bo kinh (X8, khi da co kinh)",
+      "thay_doi": "X8=1 -> X8=3 (te nhat -> tot nhat)",
+      "Y1_truoc": 23.026111111111113,
+      "Y1_sau": 22.681458333333335,
+      "giam_Y1_%": 1.496791082587401,
+      "Y2_truoc": 25.179513888888888,
+      "Y2_sau": 24.659444444444443,
+      "giam_Y2_%": 2.065446722837405,
+      "giam_tong_tai_kwh_m2": 0.8647222222222197,
+      "giam_tai_nhiet_kwh_moi_toa": 190.67124999999945,
+      "tiet_kiem_dien_kwh_moi_toa": 63.557083333333146,
+      "tiet_kiem_vnd_moi_toa": 158892.70833333288
+    },
+    {
+      "don_bay": "Huong nha (X6)",
+      "thay_doi": "X6=5 -> X6=3 (te nhat -> tot nhat)",
+      "Y1_truoc": 22.27536458333334,
+      "Y1_sau": 22.380677083333335,
+      "giam_Y1_%": -0.4727756513524861,
+      "Y2_truoc": 24.95364583333333,
+      "Y2_sau": 24.312552083333333,
+      "giam_Y2_%": 2.5691386111748704,
+      "giam_tong_tai_kwh_m2": 0.5357812499999994,
+      "giam_tai_nhiet_kwh_moi_toa": 118.13976562499988,
+      "tiet_kiem_dien_kwh_moi_toa": 39.37992187499996,
+      "tiet_kiem_vnd_moi_toa": 98449.8046874999
+    }
+  ],
+  "tuong_tac_chieu_cao_x_kinh": {
+    "Y1_X7=0.0": {
+      "X5=3.5": 7.59025,
+      "X5=7.0": 20.982499999999998
+    },
+    "Y1_X7=0.1": {
+      "X5=3.5": 11.998416666666666,
+      "X5=7.0": 28.715916666666665
+    },
+    "Y1_X7=0.25": {
+      "X5=3.5": 13.582666666666666,
+      "X5=7.0": 31.93116666666667
+    },
+    "Y1_X7=0.4": {
+      "X5=3.5": 15.584083333333332,
+      "X5=7.0": 35.23925
+    },
+    "Y2_X7=0.0": {
+      "X5=3.5": 12.590833333333334,
+      "X5=7.0": 26.82166666666667
+    },
+    "Y2_X7=0.1": {
+      "X5=3.5": 14.945,
+      "X5=7.0": 30.926083333333334
+    },
+    "Y2_X7=0.25": {
+      "X5=3.5": 16.185333333333332,
+      "X5=7.0": 33.599916666666665
+    },
+    "Y2_X7=0.4": {
+      "X5=3.5": 17.780083333333334,
+      "X5=7.0": 36.04275
+    }
+  },
+  "gia_dinh_quy_doi": {
+    "dien_tich_san_m2": 220.5,
+    "COP": 3.0,
+    "gia_dien_vnd_kwh": 2500
+  }
 }
