@@ -7,12 +7,14 @@ Pipeline day du (theo 10 buoc trong README.md cap de):
  3. LassoCV do alpha
  4. Cham diem chon bien: bao nhieu/10 bien that duoc giu, bao nhieu bien nhieu bi giu nham
  5. Ve coefficient path cua Lasso -> he so lan luot "roi" ve 0
- 6. Ve RMSE train/test theo alpha
+ 6. Ve RMSE train / CROSS-VALIDATION theo alpha (lay tu mse_path_ cua LassoCV - khong dung tap test)
  7. So sanh Ridge vs Lasso tren cung du lieu (so bien giu + RMSE)
  8. Thi nghiem bien tuong quan: nhan doi 1 cot that (them nhieu nho) -> chay lai voi seed
     khac -> Lasso co doi lua chon khong?
  9. Train lai Linear Regression CHI tren cac bien Lasso chon -> so sanh RMSE (debiased lasso)
 10. De xuat bo xet nghiem cuoi cung + uoc tinh chi phi tiet kiem
+
+Tap test (20%) chi dung de BAO CAO; alpha chon bang 5-fold CV tren train.
 
 Chay: python src/train.py
 """
@@ -207,31 +209,37 @@ def run_coefficient_path(X_train, y_train, feature_names: list[str], real_cols: 
 
 
 # ----------------------------------------------------------------------------
-# 6. RMSE train/test theo alpha
+# 6. RMSE train / cross-validation theo alpha (chi dung TRAIN)
 # ----------------------------------------------------------------------------
-def run_rmse_vs_alpha(X_train, y_train, X_test, y_test) -> float:
-    train_rmse, test_rmse, n_kept_list = [], [], []
-    for a in ALPHA_GRID_PATH:
-        pipe = Pipeline([("scale", StandardScaler()), ("lasso", Lasso(alpha=a, max_iter=50_000))])
-        pipe.fit(X_train, y_train)
-        train_rmse.append(rmse(y_train, pipe.predict(X_train)))
-        test_rmse.append(rmse(y_test, pipe.predict(X_test)))
-        n_kept_list.append(int((pipe.named_steps["lasso"].coef_ != 0).sum()))
+def run_rmse_vs_alpha(X_train, y_train, lasso_pipe: Pipeline) -> pd.DataFrame:
+    """Duong bias-variance tren TRAIN. RMSE-CV lay thang tu mse_path_ cua LassoCV (dung cac fold
+    da dung de chon alpha) -> cuc tieu cua duong CV chinh la alpha da chon. Tap test khong duoc dung."""
+    lasso_cv = lasso_pipe.named_steps["lasso"]
+    alphas = lasso_cv.alphas_                                # giam dan
+    rmse_cv = np.sqrt(lasso_cv.mse_path_.mean(axis=1))
 
-    best_idx = int(np.argmin(test_rmse))
-    best_alpha_by_test = float(ALPHA_GRID_PATH[best_idx])
+    X_scaled = lasso_pipe.named_steps["scale"].transform(X_train)
+    _, coefs_path, _ = lasso_path(X_scaled, y_train, alphas=alphas, max_iter=50_000)
+    intercept = y_train.mean()                               # X da chuan hoa -> he so chan = trung binh y
+    train_rmse = [rmse(y_train, X_scaled @ coefs_path[:, i] + intercept) for i in range(len(alphas))]
+    n_kept = (coefs_path != 0).sum(axis=0)
+
+    curve = pd.DataFrame({"alpha": alphas, "rmse_train": train_rmse, "rmse_cv": rmse_cv,
+                          "so_bien_con_lai": n_kept}).sort_values("alpha").reset_index(drop=True)
+    curve.to_csv(REPORTS_DIR / "rmse_theo_alpha.csv", index=False)
+    best = curve.loc[curve["rmse_cv"].idxmin()]
+    assert np.isclose(best["alpha"], lasso_cv.alpha_), "cuc tieu RMSE-CV phai trung alpha cua LassoCV"
 
     fig, ax1 = plt.subplots(figsize=(9, 6))
-    ax1.plot(ALPHA_GRID_PATH, train_rmse, label="RMSE train", color="#2980b9")
-    ax1.plot(ALPHA_GRID_PATH, test_rmse, label="RMSE test", color="#c0392b")
-    ax1.axvline(best_alpha_by_test, color="#27ae60", ls="--", lw=1,
-                label=f"alpha tot nhat tren test = {best_alpha_by_test:.4g}")
+    ax1.plot(curve["alpha"], curve["rmse_train"], label="RMSE train", color="#2980b9")
+    ax1.plot(curve["alpha"], curve["rmse_cv"], label="RMSE cross-validation (5 fold, tren train)", color="#c0392b")
+    ax1.axvline(lasso_cv.alpha_, color="#27ae60", ls="--", lw=1, label=f"alpha chon bang CV = {lasso_cv.alpha_:.4g}")
     ax1.set_xscale("log")
     ax1.set_xlabel("alpha (thang log)")
     ax1.set_ylabel("RMSE")
-    ax1.set_title("RMSE train/test theo alpha (Lasso)")
+    ax1.set_title("RMSE train / CV theo alpha (Lasso) - khong dung tap test")
     ax2 = ax1.twinx()
-    ax2.plot(ALPHA_GRID_PATH, n_kept_list, color="gray", lw=1, ls=":", label="So bien con lai")
+    ax2.plot(curve["alpha"], curve["so_bien_con_lai"], color="gray", lw=1, ls=":", label="So bien con lai")
     ax2.set_ylabel("So bien co he so khac 0")
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
@@ -239,8 +247,12 @@ def run_rmse_vs_alpha(X_train, y_train, X_test, y_test) -> float:
     fig.tight_layout()
     fig.savefig(REPORTS_DIR / "rmse_theo_alpha.png", dpi=130)
     plt.close(fig)
-    log(f"  Da luu rmse_theo_alpha.png (alpha tot nhat theo test = {best_alpha_by_test:.5f})")
-    return best_alpha_by_test
+    for a in [1e-4, 1e-2, 1.0, float(lasso_cv.alpha_), 10.0]:
+        r = curve.iloc[(curve["alpha"] - a).abs().idxmin()]
+        log(f"    alpha={r['alpha']:<9.4g} RMSE train={r['rmse_train']:.2f}  RMSE CV={r['rmse_cv']:.2f}  "
+            f"so bien={int(r['so_bien_con_lai'])}")
+    log("  Da luu rmse_theo_alpha.png, rmse_theo_alpha.csv")
+    return curve
 
 
 # ----------------------------------------------------------------------------
@@ -369,6 +381,12 @@ def propose_test_panel(real_cols: list[str], noise_cols: list[str], selected_fea
     selected_costs = {f: all_costs[f] for f in selected_features}
     total_cost_selected = sum(selected_costs.values())
     savings_pct = (1 - total_cost_selected / total_cost_full_panel) * 100
+    # So sanh thuc te hon: bo 10 chi so THAT (190 chi so nhieu chi la gia lap, chi phi cua chung
+    # thoi phong con so "tiet kiem") vs cac chi so THAT ma Lasso chon (bo chi so nhieu bi giu nham)
+    cost_real_panel = sum(REAL_FEATURE_COST_VND.values())
+    selected_real = [f for f in selected_features if f in real_cols]
+    cost_selected_real = sum(REAL_FEATURE_COST_VND[f] for f in selected_real)
+    savings_real_pct = (1 - cost_selected_real / cost_real_panel) * 100
 
     panel_df = pd.DataFrame([
         {"chi_so": f, "chi_phi_vnd": all_costs[f], "loai": "that" if f in real_cols else "nhieu"}
@@ -379,12 +397,18 @@ def propose_test_panel(real_cols: list[str], noise_cols: list[str], selected_fea
     log(f"  Bo xet nghiem day du: {len(all_costs)} chi so, tong chi phi = {total_cost_full_panel:,.0f} VND/benh nhan")
     log(f"  Bo xet nghiem de xuat: {len(selected_features)} chi so, tong chi phi = {total_cost_selected:,.0f} VND/benh nhan")
     log(f"  Tiet kiem: {savings_pct:.1f}% ({total_cost_full_panel - total_cost_selected:,.0f} VND/benh nhan)")
+    log(f"  So voi bo 10 chi so THAT ({cost_real_panel:,.0f} VND): {len(selected_real)} chi so that Lasso chon = "
+        f"{cost_selected_real:,.0f} VND -> tiet kiem {savings_real_pct:.1f}%")
     log("  Da luu de_xuat_bo_xet_nghiem.csv")
 
     return {
         "total_cost_full_panel_vnd": total_cost_full_panel,
         "total_cost_selected_vnd": total_cost_selected,
         "savings_pct": savings_pct,
+        "cost_real_10_panel_vnd": cost_real_panel,
+        "selected_real_features": selected_real,
+        "cost_selected_real_vnd": cost_selected_real,
+        "savings_vs_real_panel_pct": savings_real_pct,
         "panel": panel_df.to_dict(orient="records"),
     }
 
@@ -411,8 +435,8 @@ def main() -> None:
     log("5. Coefficient path...")
     run_coefficient_path(X_train, y_train, feature_names, real_cols)
 
-    log("6. RMSE train/test theo alpha...")
-    best_alpha_by_test = run_rmse_vs_alpha(X_train, y_train, X_test, y_test)
+    log("6. RMSE train / cross-validation theo alpha (chi dung train)...")
+    rmse_curve = run_rmse_vs_alpha(X_train, y_train, lasso_pipe)
 
     log("7. So sanh Ridge vs Lasso...")
     ridge_lasso_comp = compare_ridge_vs_lasso(X_train, y_train, X_test, y_test, lasso_alpha)
@@ -435,7 +459,7 @@ def main() -> None:
         "n_noise_features": len(noise_cols),
         "overfit_baseline": overfit_metrics,
         "lasso_alpha_lassocv": lasso_alpha,
-        "lasso_alpha_best_on_test": best_alpha_by_test,
+        "rmse_cv_tai_alpha_chon": float(rmse_curve["rmse_cv"].min()),
         "lasso_metrics_test": lasso_metrics,
         "feature_selection_score": score_df.to_dict(orient="records"),
         "ridge_vs_lasso": ridge_lasso_comp.to_dict(orient="records"),

@@ -15,7 +15,7 @@
     }
   },
   "lasso_alpha_lassocv": 7.92482898353917,
-  "lasso_alpha_best_on_test": 3.9565388658322687,
+  "rmse_cv_tai_alpha_chon": 57.90561461332838,
   "lasso_metrics_test": {
     "RMSE": 53.72801274117708,
     "MAE": 44.25654654725527,
@@ -106,6 +106,15 @@
     "total_cost_full_panel_vnd": 22105930.126042776,
     "total_cost_selected_vnd": 286565.6094422464,
     "savings_pct": 98.70367088012893,
+    "cost_real_10_panel_vnd": 370000,
+    "selected_real_features": [
+      "bmi",
+      "bp",
+      "s3",
+      "s5"
+    ],
+    "cost_selected_real_vnd": 180000,
+    "savings_vs_real_panel_pct": 51.35135135135135,
     "panel": [
       {
         "chi_so": "chi_so_nhieu_009",
