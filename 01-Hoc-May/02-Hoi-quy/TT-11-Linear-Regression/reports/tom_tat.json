@@ -124,11 +124,226 @@
     },
     {
       "model": "Random Forest (TT-17)",
-      "RMSE": 0.4748643615846882,
-      "MAE": 0.3035682995155041,
-      "R2": 0.8279192483815696,
+      "RMSE": 0.47486436158468825,
+      "MAE": 0.3035682995155042,
+      "R2": 0.8279192483815695,
       "MAPE_%": 17.167021598596147
     }
   ],
+  "chan_doan": {
+    "tong_hop": {
+      "LR co ban": {
+        "pct_du_doan_am": 0.0048449612403100775,
+        "pct_du_doan_tren_5": 0.007994186046511628,
+        "du_doan_max": 8.320397708374362,
+        "RMSE_nha_bi_cat_ngon": 1.6401659086745624,
+        "trung_binh_phan_du_nha_bi_cat_ngon": 1.0919267613101657,
+        "RMSE_nha_khong_cat_ngon": 0.6127303184834844,
+        "skew_phan_du": 0.84408914092366,
+        "kurtosis_du_phan_du": 5.152133163700787,
+        "breusch_pagan_pvalue": 1.0537232682116687e-25,
+        "RMSE_sau_khi_cat_du_doan_ve_0_5": 0.6779737387789679,
+        "MAE_sau_khi_cat_du_doan_ve_0_5": 0.4967346302473364
+      },
+      "LR log-target": {
+        "pct_du_doan_am": 0.00024224806201550387,
+        "pct_du_doan_tren_5": 0.015019379844961241,
+        "du_doan_max": 15.919371089972962,
+        "RMSE_nha_bi_cat_ngon": 2.1257900553382862,
+        "trung_binh_phan_du_nha_bi_cat_ngon": 0.6577659916102045,
+        "RMSE_nha_khong_cat_ngon": 0.6287143126074489,
+        "skew_phan_du": -1.6384037990687204,
+        "kurtosis_du_phan_du": 38.367394121069076,
+        "breusch_pagan_pvalue": 7.958112726407928e-142,
+        "RMSE_sau_khi_cat_du_doan_ve_0_5": 0.6667605002706656,
+        "MAE_sau_khi_cat_du_doan_ve_0_5": 0.4638576369747269
+      },
+      "LR + feature engineering": {
+        "pct_du_doan_am": 0.011143410852713179,
+        "pct_du_doan_tren_5": 0.008478682170542635,
+        "du_doan_max": 6.997911619537061,
+        "RMSE_nha_bi_cat_ngon": 1.5912362460263478,
+        "trung_binh_phan_du_nha_bi_cat_ngon": 1.0499842147594902,
+        "RMSE_nha_khong_cat_ngon": 0.5885074755939186,
+        "skew_phan_du": 0.9671627196859249,
+        "kurtosis_du_phan_du": 3.218315726853473,
+        "breusch_pagan_pvalue": 1.0741713896272146e-26,
+        "RMSE_sau_khi_cat_du_doan_ve_0_5": 0.6556951133454344,
+        "MAE_sau_khi_cat_du_doan_ve_0_5": 0.47597727683689234
+      }
+    },
+    "theo_nhom_gia": [
+      {
+        "model": "LR co ban",
+        "nhom_gia_du_doan": 1,
+        "khoang_du_doan": "-0.98-1.23",
+        "so_mau": 789,
+        "trung_binh_phan_du": 0.19114484428735695,
+        "std_phan_du": 0.49761439446946176
+      },
+      {
+        "model": "LR co ban",
+        "nhom_gia_du_doan": 2,
+        "khoang_du_doan": "1.24-1.74",
+        "so_mau": 789,
+        "trung_binh_phan_du": -0.13104704382636612,
+        "std_phan_du": 0.467201393920526
+      },
+      {
+        "model": "LR co ban",
+        "nhom_gia_du_doan": 3,
+        "khoang_du_doan": "1.74-2.20",
+        "so_mau": 788,
+        "trung_binh_phan_du": -0.20064107399409759,
+        "std_phan_du": 0.5546470904747344
+      },
+      {
+        "model": "LR co ban",
+        "nhom_gia_du_doan": 4,
+        "khoang_du_doan": "2.20-2.67",
+        "so_mau": 789,
+        "trung_binh_phan_du": -0.1218600299317368,
+        "std_phan_du": 0.6599068272765231
+      },
+      {
+        "model": "LR co ban",
+        "nhom_gia_du_doan": 5,
+        "khoang_du_doan": "2.67-8.32",
+        "so_mau": 789,
+        "trung_binh_phan_du": 0.030023786310552462,
+        "std_phan_du": 0.7472829734912345
+      },
+      {
+        "model": "LR log-target",
+        "nhom_gia_du_doan": 1,
+        "khoang_du_doan": "-0.05-1.22",
+        "so_mau": 789,
+        "trung_binh_phan_du": 0.05845381270052001,
+        "std_phan_du": 0.45025592206865434
+      },
+      {
+        "model": "LR log-target",
+        "nhom_gia_du_doan": 2,
+        "khoang_du_doan": "1.22-1.62",
+        "so_mau": 789,
+        "trung_binh_phan_du": -0.048462459131288216,
+        "std_phan_du": 0.4466789273981408
+      },
+      {
+        "model": "LR log-target",
+        "nhom_gia_du_doan": 3,
+        "khoang_du_doan": "1.62-2.02",
+        "so_mau": 788,
+        "trung_binh_phan_du": -0.04553000562843262,
+        "std_phan_du": 0.5567065758504343
+      },
+      {
+        "model": "LR log-target",
+        "nhom_gia_du_doan": 4,
+        "khoang_du_doan": "2.02-2.49",
+        "so_mau": 789,
+        "trung_binh_phan_du": 0.073878744116007,
+        "std_phan_du": 0.6573027637106903
+      },
+      {
+        "model": "LR log-target",
+        "nhom_gia_du_doan": 5,
+        "khoang_du_doan": "2.49-15.92",
+        "so_mau": 789,
+        "trung_binh_phan_du": 0.13012692608639065,
+        "std_phan_du": 0.8954617553017269
+      },
+      {
+        "model": "LR + feature engineering",
+        "nhom_gia_du_doan": 1,
+        "khoang_du_doan": "-0.89-1.25",
+        "so_mau": 789,
+        "trung_binh_phan_du": 0.18823702541239812,
+        "std_phan_du": 0.4607651552230433
+      },
+      {
+        "model": "LR + feature engineering",
+        "nhom_gia_du_doan": 2,
+        "khoang_du_doan": "1.25-1.77",
+        "so_mau": 789,
+        "trung_binh_phan_du": -0.14594563858355836,
+        "std_phan_du": 0.43004748401104953
+      },
+      {
+        "model": "LR + feature engineering",
+        "nhom_gia_du_doan": 3,
+        "khoang_du_doan": "1.77-2.22",
+        "so_mau": 788,
+        "trung_binh_phan_du": -0.20475064431455522,
+        "std_phan_du": 0.5231246899968124
+      },
+      {
+        "model": "LR + feature engineering",
+        "nhom_gia_du_doan": 4,
+        "khoang_du_doan": "2.22-2.66",
+        "so_mau": 789,
+        "trung_binh_phan_du": -0.10235524850147305,
+        "std_phan_du": 0.6515969756121456
+      },
+      {
+        "model": "LR + feature engineering",
+        "nhom_gia_du_doan": 5,
+        "khoang_du_doan": "2.66-5.41",
+        "so_mau": 789,
+        "trung_binh_phan_du": 0.05120480520992001,
+        "std_phan_du": 0.7241741299409202
+      }
+    ],
+    "vif_feature_engineering": [
+      {
+        "feature": "Longitude",
+        "VIF": 19.509227188433417
+      },
+      {
+        "feature": "Latitude",
+        "VIF": 15.414438008761168
+      },
+      {
+        "feature": "DistLA_km",
+        "VIF": 12.988429366739888
+      },
+      {
+        "feature": "DistSF_km",
+        "VIF": 12.906267373025129
+      },
+      {
+        "feature": "AveRooms",
+        "VIF": 7.3147139633344604
+      },
+      {
+        "feature": "BedrmsRatio",
+        "VIF": 6.951662905175819
+      },
+      {
+        "feature": "AveBedrms",
+        "VIF": 5.511161179645436
+      },
+      {
+        "feature": "MedInc",
+        "VIF": 2.5847730806275195
+      },
+      {
+        "feature": "DistNearestCity_km",
+        "VIF": 2.5224276480780303
+      },
+      {
+        "feature": "HouseAge",
+        "VIF": 1.3757945186128961
+      },
+      {
+        "feature": "Population",
+        "VIF": 1.1869622569170672
+      },
+      {
+        "feature": "AveOccup",
+        "VIF": 1.1084114691842448
+      }
+    ]
+  },
   "final_model": "LR + feature engineering (clip outlier + ty le phong ngu + khoang cach SF/LA)"
 }

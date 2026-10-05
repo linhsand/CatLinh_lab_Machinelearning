@@ -39,6 +39,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from statsmodels.stats.diagnostic import het_breuschpagan
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tools.tools import add_constant
 
@@ -250,7 +251,7 @@ def run_residual_qq(y_test, pred, title_suffix: str = "", file_suffix: str = "")
 # ----------------------------------------------------------------------------
 # 8. Du doan log(gia) thay vi gia
 # ----------------------------------------------------------------------------
-def run_log_target(X_train, y_train, X_test, y_test) -> dict:
+def run_log_target(X_train, y_train, X_test, y_test) -> tuple[np.ndarray, dict]:
     pipe = Pipeline([
         ("clip", ClipOutliers()),
         ("scale", StandardScaler()),
@@ -262,7 +263,7 @@ def run_log_target(X_train, y_train, X_test, y_test) -> dict:
     metrics = evaluate(y_test, pred)
     log(f"  LR tren log1p(gia): RMSE={metrics['RMSE']:.4f}  MAE={metrics['MAE']:.4f}  R2={metrics['R2']:.4f}")
     run_residual_qq(y_test, pred, title_suffix=" (log-target, quy doi ve gia goc)", file_suffix="_log")
-    return metrics
+    return pred, metrics
 
 
 # ----------------------------------------------------------------------------
@@ -360,6 +361,65 @@ def run_model_comparison(X_train, y_train, X_test, y_test, results_so_far: dict)
     return comp
 
 
+# ----------------------------------------------------------------------------
+# Chan doan bo sung: luong hoa heteroscedasticity, cat ngon, log-target, VIF sau FE
+# ----------------------------------------------------------------------------
+def run_diagnostics(X_test, y_test, preds: dict, fe_pipe: Pipeline, X_train) -> dict:
+    """Dinh luong cac nhan xet tren residual plot (khong dung de chon model)."""
+    y = np.asarray(y_test)
+    capped = y >= 4.999
+    bin_rows, summary = [], {}
+    for name, pred in preds.items():
+        res = y - pred
+        # Do lech chuan phan du theo 5 nhom gia du doan (bo cac can bi cat ngon)
+        bins = pd.qcut(pred[~capped], 5, labels=False)
+        for b in range(5):
+            m = bins == b
+            bin_rows.append({
+                "model": name, "nhom_gia_du_doan": b + 1,
+                "khoang_du_doan": f"{pred[~capped][m].min():.2f}-{pred[~capped][m].max():.2f}",
+                "so_mau": int(m.sum()), "trung_binh_phan_du": float(res[~capped][m].mean()),
+                "std_phan_du": float(res[~capped][m].std()),
+            })
+        exog = add_constant(np.column_stack([pred]))
+        _, bp_pvalue, _, _ = het_breuschpagan(res, exog)
+        summary[name] = {
+            "pct_du_doan_am": float((pred < 0).mean()),
+            "pct_du_doan_tren_5": float((pred > 5).mean()),
+            "du_doan_max": float(pred.max()),
+            "RMSE_nha_bi_cat_ngon": rmse(y[capped], pred[capped]),
+            "trung_binh_phan_du_nha_bi_cat_ngon": float(res[capped].mean()),
+            "RMSE_nha_khong_cat_ngon": rmse(y[~capped], pred[~capped]),
+            "skew_phan_du": float(stats.skew(res)),
+            "kurtosis_du_phan_du": float(stats.kurtosis(res)),
+            "breusch_pagan_pvalue": float(bp_pvalue),
+            # Gia tri nhan khong the ngoai [0,15; 5] -> cat du doan ve khoang hop le (quy tac mien, khong tinh chinh)
+            "RMSE_sau_khi_cat_du_doan_ve_0_5": rmse(y, np.clip(pred, 0, 5)),
+            "MAE_sau_khi_cat_du_doan_ve_0_5": float(mean_absolute_error(y, np.clip(pred, 0, 5))),
+        }
+        s = summary[name]
+        log(f"  [{name}] du doan <0: {s['pct_du_doan_am']:.2%} | >5: {s['pct_du_doan_tren_5']:.2%} | "
+            f"max={s['du_doan_max']:.2f} | RMSE cat ngon={s['RMSE_nha_bi_cat_ngon']:.3f} vs "
+            f"con lai={s['RMSE_nha_khong_cat_ngon']:.3f} | BP p={s['breusch_pagan_pvalue']:.1e} | "
+            f"RMSE clip[0,5]={s['RMSE_sau_khi_cat_du_doan_ve_0_5']:.4f}")
+    bins_df = pd.DataFrame(bin_rows)
+    bins_df.to_csv(REPORTS_DIR / "phan_du_theo_nhom_gia.csv", index=False)
+    pd.DataFrame(summary).T.rename_axis("model").to_csv(REPORTS_DIR / "chan_doan_phan_du.csv")
+
+    # VIF cua bo dac trung SAU feature engineering (chinh la bo he so duoc dien giai)
+    X_fe = fe_pipe.named_steps["fe"].transform(X_train)
+    X_const = add_constant(X_fe)
+    vif_fe = pd.DataFrame([
+        {"feature": col, "VIF": float(variance_inflation_factor(X_const.values, i))}
+        for i, col in enumerate(X_const.columns) if col != "const"
+    ]).sort_values("VIF", ascending=False)
+    vif_fe.to_csv(REPORTS_DIR / "vif_feature_engineering.csv", index=False)
+    log("  VIF sau feature engineering: " + ", ".join(f"{r.feature}={r.VIF:.1f}" for r in vif_fe.itertuples()))
+    log("  Da luu phan_du_theo_nhom_gia.csv, chan_doan_phan_du.csv, vif_feature_engineering.csv")
+    return {"tong_hop": summary, "theo_nhom_gia": bins_df.to_dict(orient="records"),
+            "vif_feature_engineering": vif_fe.to_dict(orient="records")}
+
+
 def main() -> None:
     log("1. Nap du lieu + describe()...")
     df = load_data()
@@ -385,7 +445,7 @@ def main() -> None:
     run_residual_qq(y_test, basic_pred)
 
     log("8. Thu du doan log(gia)...")
-    log_metrics = run_log_target(X_train, y_train, X_test, y_test)
+    log_pred, log_metrics = run_log_target(X_train, y_train, X_test, y_test)
 
     log("9. Kiem tra VIF...")
     X_train_clipped = ClipOutliers().fit(X_train).transform(X_train)
@@ -403,6 +463,13 @@ def main() -> None:
     }
     comparison = run_model_comparison(X_train, y_train, X_test, y_test, results_so_far)
 
+    log("Chan doan bo sung (phan du, cat ngon, VIF sau FE)...")
+    diagnostics = run_diagnostics(
+        X_test, y_test,
+        {"LR co ban": basic_pred, "LR log-target": log_pred, "LR + feature engineering": fe_pipe.predict(X_test)},
+        fe_pipe, X_train,
+    )
+
     joblib.dump(fe_pipe, MODELS_DIR / "lr_pipeline.joblib")
     log("Da luu model -> models/lr_pipeline.joblib")
 
@@ -413,6 +480,7 @@ def main() -> None:
         "vif": vif_df.to_dict(orient="records"),
         "he_so_chuan_hoa": he_so_df.to_dict(orient="records"),
         "model_comparison": comparison.to_dict(orient="records"),
+        "chan_doan": diagnostics,
         "final_model": "LR + feature engineering (clip outlier + ty le phong ngu + khoang cach SF/LA)",
     }
     with open(REPORTS_DIR / "tom_tat.json", "w", encoding="utf-8") as f:
@@ -422,4 +490,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Goi qua module "train" (khong phai __main__) de class ClipOutliers/FeatureEngineer trong Pipeline
+    # duoc pickle la train.FeatureEngineer -> joblib.load duoc o noi khac (chi can src/ tren sys.path).
+    import train
+    train.main()
