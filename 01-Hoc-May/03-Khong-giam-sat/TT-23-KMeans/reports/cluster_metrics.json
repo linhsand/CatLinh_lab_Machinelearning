@@ -1,0 +1,16 @@
+{
+  "so_giao_dich_sach": 1003373,
+  "so_san_pham": 4395,
+  "K": 5,
+  "so_thanh_phan_pca": 3,
+  "phuong_sai_giu_lai": 0.9064009226827484,
+  "inertia": 10509.701271489448,
+  "silhouette": 0.2865919397148772,
+  "kich_thuoc_cum": {
+    "Hàng chủ lực bán chạy": 1062,
+    "Hàng giá khá bán đều": 1206,
+    "Hàng ngách khách quen": 258,
+    "Hàng đuôi dài bán chậm": 899,
+    "Hàng mua sỉ theo lô": 970
+  }
+}

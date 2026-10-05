@@ -1,0 +1,8 @@
+nhom_cap,so_cap,ty_le_cung_cum,doi_chung_cung_do_pho_bien
+Moi cap (ngau nhien hoan toan),,0.22768374963275315,
+lift < 1 (it mua chung),236.0,0.9491525423728814,0.883262711864407
+1 ≤ lift < 3,81301.0,0.8068658442085583,0.7974748158079236
+3 ≤ lift < 10,194878.0,0.6655907798725357,0.6231311384558544
+lift ≥ 10 (rat hay mua chung),56405.0,0.4175161776438259,0.3878680967999292
+Top 100 cap lift cao nhat,100.0,0.79,
+Top 1000 cap lift cao nhat,1000.0,0.744,

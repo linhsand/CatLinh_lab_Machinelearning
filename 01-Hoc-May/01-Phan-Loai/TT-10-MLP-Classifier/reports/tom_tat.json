@@ -1,132 +1,320 @@
 {
-  "train_sample": 12000,
-  "test_sample": 3000,
-  "baseline_logreg_accuracy": 0.908,
-  "normalization_comparison": [
+  "du_lieu": {
+    "train": 50000,
+    "val": 10000,
+    "test": 10000
+  },
+  "warmup_load_digits_accuracy": 0.9805555555555555,
+  "baseline_logreg_accuracy_val": 0.9223,
+  "normalization_comparison_val": [
     {
       "cau_hinh": "KHONG chuan hoa (0-255)",
-      "accuracy": 0.9306666666666666,
-      "so_epoch_thuc_te": 28,
-      "loss_cuoi": 0.05838335011127003,
-      "thoi_gian_s": 44.60997430002317
+      "accuracy_val": 0.9692,
+      "so_epoch": 71,
+      "loss_cuoi": 0.027436197754751063,
+      "thoi_gian_s": 1199.235105300002
     },
     {
       "cau_hinh": "CO chuan hoa (/255)",
-      "accuracy": 0.9603333333333334,
-      "so_epoch_thuc_te": 24,
-      "loss_cuoi": 0.0033970685134114427,
-      "thoi_gian_s": 39.07430169999134
+      "accuracy_val": 0.9756,
+      "so_epoch": 22,
+      "loss_cuoi": 0.006901422048939599,
+      "thoi_gian_s": 235.42554030002793
     }
   ],
-  "architecture_comparison": [
+  "architecture_comparison_val": [
     {
       "kien_truc": "(64)",
       "so_tham_so": 50890,
-      "accuracy": 0.9533333333333334,
-      "so_epoch_thuc_te": 38,
-      "thoi_gian_s": 44.34137830004329
+      "accuracy_val": 0.9714,
+      "so_epoch": 36,
+      "thoi_gian_s": 222.61738300000434
     },
     {
       "kien_truc": "(128)",
       "so_tham_so": 101770,
-      "accuracy": 0.9586666666666667,
-      "so_epoch_thuc_te": 38,
-      "thoi_gian_s": 19.472305200004485
+      "accuracy_val": 0.9781,
+      "so_epoch": 53,
+      "thoi_gian_s": 614.782789000019
     },
     {
       "kien_truc": "(128,64)",
       "so_tham_so": 109386,
-      "accuracy": 0.9603333333333334,
-      "so_epoch_thuc_te": 26,
-      "thoi_gian_s": 7.587742900010198
+      "accuracy_val": 0.9756,
+      "so_epoch": 22,
+      "thoi_gian_s": 235.42554030002793
     },
     {
       "kien_truc": "(256,128,64)",
       "so_tham_so": 242762,
-      "accuracy": 0.964,
-      "so_epoch_thuc_te": 23,
-      "thoi_gian_s": 67.29247079999186
+      "accuracy_val": 0.9794,
+      "so_epoch": 75,
+      "thoi_gian_s": 769.7581802999484
     }
   ],
-  "activation_comparison": [
+  "activation_comparison_val": [
     {
       "activation": "relu",
-      "accuracy": 0.9603333333333334,
-      "so_epoch_thuc_te": 26,
-      "loss_cuoi": 0.0027591038532180766
+      "accuracy_val": 0.9794,
+      "so_epoch": 75,
+      "loss_epoch_1": 0.31677302680810293,
+      "loss_epoch_5": 0.0414190788331959,
+      "loss_cuoi": 0.001515796885598037,
+      "thoi_gian_s": 769.7581802999484
     },
     {
       "activation": "tanh",
-      "accuracy": 0.96,
-      "so_epoch_thuc_te": 59,
-      "loss_cuoi": 0.0007853396422028481
+      "accuracy_val": 0.9808,
+      "so_epoch": 50,
+      "loss_epoch_1": 0.33039980912738376,
+      "loss_epoch_5": 0.05800340215630002,
+      "loss_cuoi": 0.0008985846914350986,
+      "thoi_gian_s": 243.05286919994978
     },
     {
       "activation": "logistic",
-      "accuracy": 0.9596666666666667,
-      "so_epoch_thuc_te": 63,
-      "loss_cuoi": 0.0053889265543310035
+      "accuracy_val": 0.9725,
+      "so_epoch": 25,
+      "loss_epoch_1": 1.1146102937486437,
+      "loss_epoch_5": 0.13205632147259183,
+      "loss_cuoi": 0.006439897215697501,
+      "thoi_gian_s": 1424.51066119998
     }
   ],
-  "learning_rate_comparison": [
+  "learning_rate_comparison_val": [
     {
       "learning_rate_init": 0.01,
-      "accuracy": 0.9633333333333334,
-      "so_epoch_thuc_te": 28
+      "accuracy_val": 0.9457,
+      "so_epoch": 13,
+      "loss_cuoi": 0.2186432260685497,
+      "thoi_gian_s": 91.56859719997738
     },
     {
       "learning_rate_init": 0.001,
-      "accuracy": 0.9603333333333334,
-      "so_epoch_thuc_te": 26
+      "accuracy_val": 0.9808,
+      "so_epoch": 50,
+      "loss_cuoi": 0.0008985846914350986,
+      "thoi_gian_s": 243.05286919994978
     },
     {
       "learning_rate_init": 0.0001,
-      "accuracy": 0.9523333333333334,
-      "so_epoch_thuc_te": 66
+      "accuracy_val": 0.9751,
+      "so_epoch": 60,
+      "loss_cuoi": 0.0018028137239317098,
+      "thoi_gian_s": 237069.2382984
     }
   ],
-  "final_model": {
+  "muc_tieu_accuracy_chu_so_tu_dong": 0.9992841789188744,
+  "lua_chon_theo_val": {
     "hidden_layer_sizes": [
+      256,
       128,
       64
     ],
-    "accuracy_test": 0.9603333333333334
+    "activation": "tanh",
+    "learning_rate_init": 0.001,
+    "nguong_hitl_mlp": 0.99999,
+    "nguong_hitl_cnn": 0.999,
+    "cnn_epoch": 8
   },
-  "error_analysis": {
-    "top5_cap_nham_lan": [
-      {
-        "thuc_te": 7,
-        "du_doan": 9,
-        "so_lan": 6
-      },
-      {
-        "thuc_te": 8,
-        "du_doan": 5,
-        "so_lan": 6
-      },
-      {
-        "thuc_te": 4,
-        "du_doan": 9,
-        "so_lan": 5
-      },
-      {
-        "thuc_te": 5,
-        "du_doan": 3,
-        "so_lan": 4
-      },
-      {
-        "thuc_te": 2,
-        "du_doan": 6,
-        "so_lan": 4
-      }
-    ],
-    "so_mau_sai": 119,
-    "tong_test": 3000
+  "cnn": {
+    "so_tham_so": 225034,
+    "epoch_chon": 8,
+    "accuracy_val": 0.9878,
+    "thoi_gian_s": 318.7649610999506
   },
-  "human_in_the_loop_threshold_99pct": {
-    "nguong_tin_cay": 0.99,
-    "pct_tu_dong": 0.8046666666666666,
-    "pct_chuyen_nguoi": 0.19533333333333336,
-    "accuracy_tren_phan_tu_dong": 0.9979287489643744
-  }
+  "ket_qua_test": [
+    {
+      "model": "Logistic Regression (baseline)",
+      "so_tham_so": 7850,
+      "accuracy_test": 0.9241,
+      "so_loi_tren_10k": 759
+    },
+    {
+      "model": "MLP(256, 128, 64) tanh lr=0.001",
+      "so_tham_so": 242762,
+      "accuracy_test": 0.9821,
+      "so_loi_tren_10k": 179
+    },
+    {
+      "model": "CNN 2 conv + 1 dense",
+      "so_tham_so": 225034,
+      "accuracy_test": 0.9887,
+      "so_loi_tren_10k": 113
+    }
+  ],
+  "top5_cap_nham_lan_test": [
+    {
+      "thuc_te": 9,
+      "du_doan": 4,
+      "so_lan": 12,
+      "pct_cua_lop_thuc_te": 0.011892963330029732
+    },
+    {
+      "thuc_te": 4,
+      "du_doan": 9,
+      "so_lan": 8,
+      "pct_cua_lop_thuc_te": 0.008146639511201629
+    },
+    {
+      "thuc_te": 7,
+      "du_doan": 2,
+      "so_lan": 8,
+      "pct_cua_lop_thuc_te": 0.007782101167315175
+    },
+    {
+      "thuc_te": 7,
+      "du_doan": 9,
+      "so_lan": 6,
+      "pct_cua_lop_thuc_te": 0.005836575875486381
+    },
+    {
+      "thuc_te": 5,
+      "du_doan": 3,
+      "so_lan": 6,
+      "pct_cua_lop_thuc_te": 0.006726457399103139
+    }
+  ],
+  "human_in_the_loop_test": [
+    {
+      "model": "MLP",
+      "nguong": 0.99,
+      "nguong_chon_tren_val": false,
+      "pct_tu_dong": 0.966,
+      "pct_chuyen_nguoi": 0.03400000000000003,
+      "accuracy_phan_tu_dong": 0.9946169772256729,
+      "so_loi_lot_qua": 52
+    },
+    {
+      "model": "MLP",
+      "nguong": 0.99999,
+      "nguong_chon_tren_val": true,
+      "pct_tu_dong": 0.8517,
+      "pct_chuyen_nguoi": 0.1483,
+      "accuracy_phan_tu_dong": 0.9996477632969355,
+      "so_loi_lot_qua": 3
+    },
+    {
+      "model": "CNN",
+      "nguong": 0.99,
+      "nguong_chon_tren_val": false,
+      "pct_tu_dong": 0.9449,
+      "pct_chuyen_nguoi": 0.05510000000000004,
+      "accuracy_phan_tu_dong": 0.9988358556461001,
+      "so_loi_lot_qua": 11
+    },
+    {
+      "model": "CNN",
+      "nguong": 0.999,
+      "nguong_chon_tren_val": true,
+      "pct_tu_dong": 0.8778,
+      "pct_chuyen_nguoi": 0.12219999999999998,
+      "accuracy_phan_tu_dong": 0.9994303941672362,
+      "so_loi_lot_qua": 5
+    }
+  ],
+  "chi_phi_nghiep_vu_test": [
+    {
+      "model": "100% nguoi nhap (hien tai)",
+      "nguong_chon_tren_val": false,
+      "nguong": NaN,
+      "so_chu_so_moi_sec": 7,
+      "pct_chu_so_tu_dong": 0.0,
+      "A_pct_sec_tu_dong": 0.0,
+      "A_sec_chuyen_nguoi_moi_ngay": 8000,
+      "A_nhan_vien_can": 27,
+      "A_ty_le_sai_sec_tu_dong": NaN,
+      "A_sec_sai_moi_ngay": 40.0,
+      "B_nhan_vien_can": 27,
+      "B_sec_sai_moi_ngay": 40.0
+    },
+    {
+      "model": "MLP",
+      "nguong_chon_tren_val": false,
+      "nguong": 0.99,
+      "so_chu_so_moi_sec": 7,
+      "pct_chu_so_tu_dong": 0.9660692857142857,
+      "A_pct_sec_tu_dong": 0.7856,
+      "A_sec_chuyen_nguoi_moi_ngay": 1715,
+      "A_nhan_vien_can": 6,
+      "A_ty_le_sai_sec_tu_dong": 0.036602596741344195,
+      "A_sec_sai_moi_ngay": 238.61599999999996,
+      "B_nhan_vien_can": 1,
+      "B_sec_sai_moi_ngay": 292.816
+    },
+    {
+      "model": "MLP",
+      "nguong_chon_tren_val": true,
+      "nguong": 0.99999,
+      "so_chu_so_moi_sec": 7,
+      "pct_chu_so_tu_dong": 0.851685,
+      "A_pct_sec_tu_dong": 0.32573,
+      "A_sec_chuyen_nguoi_moi_ngay": 5394,
+      "A_nhan_vien_can": 18,
+      "A_ty_le_sai_sec_tu_dong": 0.002532772541675621,
+      "A_sec_sai_moi_ngay": 33.5708,
+      "B_nhan_vien_can": 5,
+      "B_sec_sai_moi_ngay": 44.290800000000004
+    },
+    {
+      "model": "CNN",
+      "nguong_chon_tren_val": false,
+      "nguong": 0.99,
+      "so_chu_so_moi_sec": 7,
+      "pct_chu_so_tu_dong": 0.9448942857142857,
+      "A_pct_sec_tu_dong": 0.67319,
+      "A_sec_chuyen_nguoi_moi_ngay": 2614,
+      "A_nhan_vien_can": 9,
+      "A_ty_le_sai_sec_tu_dong": 0.007835826438301222,
+      "A_sec_sai_moi_ngay": 55.2724,
+      "B_nhan_vien_can": 2,
+      "B_sec_sai_moi_ngay": 72.9124
+    },
+    {
+      "model": "CNN",
+      "nguong_chon_tren_val": true,
+      "nguong": 0.999,
+      "so_chu_so_moi_sec": 7,
+      "pct_chu_so_tu_dong": 0.8780278571428571,
+      "A_pct_sec_tu_dong": 0.403225,
+      "A_sec_chuyen_nguoi_moi_ngay": 4774,
+      "A_nhan_vien_can": 16,
+      "A_ty_le_sai_sec_tu_dong": 0.004216008432016864,
+      "A_sec_sai_moi_ngay": 37.471000000000004,
+      "B_nhan_vien_can": 4,
+      "B_sec_sai_moi_ngay": 51.671
+    }
+  ],
+  "do_ben_test": [
+    {
+      "bien_doi": "goc",
+      "MLP": 0.9821,
+      "CNN": 0.9887
+    },
+    {
+      "bien_doi": "dich phai 2px",
+      "MLP": 0.8499,
+      "CNN": 0.9626
+    },
+    {
+      "bien_doi": "dich phai 3px",
+      "MLP": 0.5773,
+      "CNN": 0.8956
+    },
+    {
+      "bien_doi": "dich cheo 3px (phai+xuong)",
+      "MLP": 0.1905,
+      "CNN": 0.4068
+    },
+    {
+      "bien_doi": "xoay 10 do",
+      "MLP": 0.9708,
+      "CNN": 0.9795
+    },
+    {
+      "bien_doi": "xoay 20 do",
+      "MLP": 0.9191,
+      "CNN": 0.9435
+    }
+  ]
 }

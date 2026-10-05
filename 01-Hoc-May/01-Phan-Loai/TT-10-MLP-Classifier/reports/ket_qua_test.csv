@@ -1,0 +1,4 @@
+model,so_tham_so,accuracy_test,so_loi_tren_10k
+Logistic Regression (baseline),7850,0.9241,759
+"MLP(256, 128, 64) tanh lr=0.001",242762,0.9821,179
+CNN 2 conv + 1 dense,225034,0.9887,113

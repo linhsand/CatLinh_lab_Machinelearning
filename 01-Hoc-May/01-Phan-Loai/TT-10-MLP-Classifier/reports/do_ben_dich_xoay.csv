@@ -1,0 +1,7 @@
+bien_doi,MLP,CNN
+goc,0.9821,0.9887
+dich phai 2px,0.8499,0.9626
+dich phai 3px,0.5773,0.8956
+dich cheo 3px (phai+xuong),0.1905,0.4068
+xoay 10 do,0.9708,0.9795
+xoay 20 do,0.9191,0.9435

@@ -1,0 +1,175 @@
+{
+  "lam_sach": {
+    "Ban dau": 0,
+    "1. Loai hoa don huy (Invoice bat dau 'C')": 19494,
+    "2. Loai Quantity <= 0 va Price <= 0": 6207,
+    "3. Loai StockCode khong phai san pham": 4633,
+    "   Loai dong trung lap hoan toan": 33664
+  },
+  "san_pham_loai_vi_duoi_5_don": 334,
+  "so_san_pham": 4395,
+  "skew_truoc_sau_log": {
+    "tong_so_luong": {
+      "skew_goc": 7.91,
+      "skew_sau_log1p": -0.25
+    },
+    "tong_doanh_thu": {
+      "skew_goc": 11.83,
+      "skew_sau_log1p": -0.17
+    },
+    "gia_trung_binh": {
+      "skew_goc": 14.23,
+      "skew_sau_log1p": 0.94
+    },
+    "so_don_hang": {
+      "skew_goc": 4.08,
+      "skew_sau_log1p": -0.06
+    },
+    "so_khach_mua": {
+      "skew_goc": 2.59,
+      "skew_sau_log1p": -0.34
+    },
+    "do_lech_sl": {
+      "skew_goc": 18.27,
+      "skew_sau_log1p": 0.57
+    },
+    "sl_moi_don": {
+      "skew_goc": 33.99,
+      "skew_sau_log1p": 1.07
+    },
+    "ty_le_mua_lai": {
+      "skew_goc": 9.35,
+      "skew_sau_log1p": 2.5
+    }
+  },
+  "pca_so_thanh_phan": 3,
+  "pca_phuong_sai": 0.906,
+  "silhouette_K_4_5_6_PCA": {
+    "4": 0.278,
+    "5": 0.287,
+    "6": 0.276
+  },
+  "silhouette_K_4_5_6_8D": {
+    "4": 0.241,
+    "5": 0.248,
+    "6": 0.247
+  },
+  "K_chon": 5,
+  "silhouette_cuoi": 0.287,
+  "n_init": [
+    {
+      "init": "k-means++",
+      "n_init": 1,
+      "inertia_min": 10509.691,
+      "inertia_max": 11171.86,
+      "ARI_min": 0.369,
+      "ARI_tb": 0.813,
+      "so_lan_lech": 5
+    },
+    {
+      "init": "k-means++",
+      "n_init": 10,
+      "inertia_min": 10509.689,
+      "inertia_max": 10509.761,
+      "ARI_min": 0.995,
+      "ARI_tb": 0.997,
+      "so_lan_lech": 0
+    },
+    {
+      "init": "random",
+      "n_init": 1,
+      "inertia_min": 10509.751,
+      "inertia_max": 11387.845,
+      "ARI_min": 0.491,
+      "ARI_tb": 0.715,
+      "so_lan_lech": 7
+    },
+    {
+      "init": "random",
+      "n_init": 10,
+      "inertia_min": 10509.684,
+      "inertia_max": 10509.714,
+      "ARI_min": 0.995,
+      "ARI_tb": 0.996,
+      "so_lan_lech": 0
+    }
+  ],
+  "dbscan": {
+    "eps": 0.6,
+    "min_samples": 6,
+    "so_cum": 3,
+    "so_nhieu": 178
+  },
+  "cum": [
+    {
+      "ten_cum": "Hàng chủ lực bán chạy",
+      "so_ma_hang": 1062,
+      "pct_doanh_thu": 71.9
+    },
+    {
+      "ten_cum": "Hàng giá khá bán đều",
+      "so_ma_hang": 1206,
+      "pct_doanh_thu": 21.1
+    },
+    {
+      "ten_cum": "Hàng mua sỉ theo lô",
+      "so_ma_hang": 970,
+      "pct_doanh_thu": 4.9
+    },
+    {
+      "ten_cum": "Hàng đuôi dài bán chậm",
+      "so_ma_hang": 899,
+      "pct_doanh_thu": 1.7
+    },
+    {
+      "ten_cum": "Hàng ngách khách quen",
+      "so_ma_hang": 258,
+      "pct_doanh_thu": 0.4
+    }
+  ],
+  "ward_ARI_vs_kmeans": 0.399,
+  "mua_chung": [
+    {
+      "nhom_cap": "Moi cap (ngau nhien hoan toan)",
+      "so_cap": NaN,
+      "ty_le_cung_cum": 0.228,
+      "doi_chung_cung_do_pho_bien": NaN
+    },
+    {
+      "nhom_cap": "lift < 1 (it mua chung)",
+      "so_cap": 236.0,
+      "ty_le_cung_cum": 0.949,
+      "doi_chung_cung_do_pho_bien": 0.883
+    },
+    {
+      "nhom_cap": "1 ≤ lift < 3",
+      "so_cap": 81301.0,
+      "ty_le_cung_cum": 0.807,
+      "doi_chung_cung_do_pho_bien": 0.797
+    },
+    {
+      "nhom_cap": "3 ≤ lift < 10",
+      "so_cap": 194878.0,
+      "ty_le_cung_cum": 0.666,
+      "doi_chung_cung_do_pho_bien": 0.623
+    },
+    {
+      "nhom_cap": "lift ≥ 10 (rat hay mua chung)",
+      "so_cap": 56405.0,
+      "ty_le_cung_cum": 0.418,
+      "doi_chung_cung_do_pho_bien": 0.388
+    },
+    {
+      "nhom_cap": "Top 100 cap lift cao nhat",
+      "so_cap": 100.0,
+      "ty_le_cung_cum": 0.79,
+      "doi_chung_cung_do_pho_bien": NaN
+    },
+    {
+      "nhom_cap": "Top 1000 cap lift cao nhat",
+      "so_cap": 1000.0,
+      "ty_le_cung_cum": 0.744,
+      "doi_chung_cung_do_pho_bien": NaN
+    }
+  ]
+}

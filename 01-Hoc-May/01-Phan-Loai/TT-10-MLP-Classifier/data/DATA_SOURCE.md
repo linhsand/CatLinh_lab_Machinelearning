@@ -21,13 +21,15 @@ Lần chạy đầu tiên cần internet; `fetch_openml` tự cache vào
 lại. Không commit dữ liệu MNIST vào git (xem `.gitignore` trong thư mục này)
 vì file khá lớn (~55 MB nén) và có thể tải lại bất cứ lúc nào.
 
-## Cỡ mẫu dùng trong `src/train.py` / notebook
+## Cách chia dữ liệu trong `src/train.py` / notebook
 
-Để giữ thời gian chạy toàn bộ 10+ cấu hình MLP (4 kiến trúc × 3 activation ×
-3 learning rate + model cuối) ở mức vài phút thay vì hàng giờ, các thí
-nghiệm so sánh trong bài này lấy mẫu **stratify** từ MNIST gốc:
-`TRAIN_SAMPLE = 12.000`, `TEST_SAMPLE = 3.000` (đặt trong `src/train.py`).
-Đây là lựa chọn thực dụng cho môi trường lab/CI, không phải giới hạn của
-thuật toán — đổi `TRAIN_SAMPLE = None` trong `src/train.py` để chạy trên
-toàn bộ 60.000/10.000 mẫu chuẩn của MNIST (sẽ lâu hơn nhiều, đặc biệt kiến
-trúc `(256,128,64)`).
+Dùng **toàn bộ** MNIST, không lấy mẫu con:
+
+| Tập | Số ảnh | Nguồn | Dùng để |
+|---|---|---|---|
+| Train | 50.000 | 60.000 ảnh train chuẩn, tách stratify (`random_state=42`) | huấn luyện |
+| Validation | 10.000 | phần còn lại của 60.000 ảnh train chuẩn | **mọi lựa chọn**: kiến trúc, activation, learning rate, ngưỡng human-in-the-loop, số epoch CNN |
+| Test | 10.000 | 10.000 ảnh test chuẩn của MNIST | chấm **1 lần** ở cuối, sau khi mọi lựa chọn đã cố định |
+
+`early_stopping=True` của `MLPClassifier` còn tự cắt thêm 10% *bên trong*
+tập train (5.000 ảnh) để quyết định dừng — tách biệt với tập validation ở trên.
