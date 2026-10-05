@@ -25,39 +25,63 @@
     "MAE": 312.9063908217515,
     "R2": 0.6534791865230956
   },
-  "ridge_alpha_ridgecv": 6.25055192527397,
-  "ridge_alpha_best_on_test": 89.02150854450375,
+  "ridge_alpha_ridgecv": 4.714866363457395,
+  "rmse_cv_tai_alpha_chon": 409.3861814776515,
   "ridge_he_so_chuan_hoa": {
-    "TV": 281.6663,
-    "Facebook": 274.2775,
-    "Google": 210.0155
+    "TV": 283.2334,
+    "Facebook": 273.7314,
+    "Google": 210.7545
   },
   "ridge_metrics": {
-    "RMSE": 382.97433576224626,
-    "MAE": 311.8537759618385,
-    "R2": 0.6545470469070935
+    "RMSE": 383.1582303013509,
+    "MAE": 312.0952995854422,
+    "R2": 0.6542152118066094
   },
   "bootstrap_stability": [
     {
       "feature": "TV",
       "std_linear": 200.86214624094163,
-      "std_ridge": 11.122243326087075,
-      "ty_le_giam_do_lech_%": 94.46274794219039
+      "std_ridge": 13.755650589694906,
+      "ty_le_giam_do_lech_%": 93.15169590332142,
+      "pct_lan_am_linear": 0.0,
+      "pct_lan_am_ridge": 0.0,
+      "min_linear": 42.60924822659125,
+      "max_linear": 885.3541157466549,
+      "min_ridge": 259.05950608973836,
+      "max_ridge": 322.451114817724
     },
     {
       "feature": "Facebook",
       "std_linear": 199.73006030810257,
-      "std_ridge": 10.183157237115761,
-      "ty_le_giam_do_lech_%": 94.90153999783143
+      "std_ridge": 12.770370547506486,
+      "ty_le_giam_do_lech_%": 93.6061850039964,
+      "pct_lan_am_linear": 39.0,
+      "pct_lan_am_ridge": 0.0,
+      "min_linear": -331.0429962532655,
+      "max_linear": 513.4003806885926,
+      "min_ridge": 236.42626966043213,
+      "max_ridge": 298.7943698806897
     },
     {
       "feature": "Google",
       "std_linear": 8.16544983291823,
-      "std_ridge": 8.046769546567685,
-      "ty_le_giam_do_lech_%": 1.4534445594423517
+      "std_ridge": 8.074490470004212,
+      "ty_le_giam_do_lech_%": 1.1139540965314998,
+      "pct_lan_am_linear": 0.0,
+      "pct_lan_am_ridge": 0.0,
+      "min_linear": 191.940819717021,
+      "max_linear": 235.12117286516792,
+      "min_ridge": 190.04000480710548,
+      "max_ridge": 232.354046173619
     }
   ],
   "model_comparison": [
+    {
+      "model": "Baseline Dummy (mean)",
+      "RMSE": 651.7787489458611,
+      "MAE": 533.6691481889789,
+      "R2": -0.0005757176126528485
+    },
     {
       "model": "Linear Regression",
       "RMSE": 383.56580206691433,
@@ -65,10 +89,10 @@
       "R2": 0.6534791865230956
     },
     {
-      "model": "Ridge (alpha=6.25)",
-      "RMSE": 382.97433576224626,
-      "MAE": 311.8537759618385,
-      "R2": 0.6545470469070935
+      "model": "Ridge (alpha=4.71)",
+      "RMSE": 383.1582303013509,
+      "MAE": 312.0952995854422,
+      "R2": 0.6542152118066094
     },
     {
       "model": "Lasso (TT-13, LassoCV)",
@@ -83,24 +107,86 @@
       "R2": 0.6546140143850374
     }
   ],
+  "roi_kenh": [
+    {
+      "muc": "TV",
+      "roi_that": 3.2,
+      "roi_linear": 2.753158371083783,
+      "ci95_linear": "[0.67; 6.58]",
+      "roi_ridge": 2.228470367906917,
+      "ci95_ridge": "[2.04; 2.40]",
+      "ridge_ci_chua_gia_tri_that": false
+    },
+    {
+      "muc": "Facebook",
+      "roi_that": 1.8,
+      "roi_linear": 2.758023223648857,
+      "ci95_linear": "[-3.86; 6.19]",
+      "roi_ridge": 3.5914482679663684,
+      "ci95_ridge": "[3.09; 3.73]",
+      "ridge_ci_chua_gia_tri_that": false
+    },
+    {
+      "muc": "Google",
+      "roi_that": 2.5,
+      "roi_linear": 2.58567034681877,
+      "ci95_linear": "[2.45; 2.82]",
+      "roi_ridge": 2.5594615180297975,
+      "ci95_ridge": "[2.43; 2.79]",
+      "ridge_ci_chua_gia_tri_that": true
+    },
+    {
+      "muc": "Goi TV+Facebook (62.5% TV)",
+      "roi_that": 2.6753668848909786,
+      "roi_linear": 2.7549814159093264,
+      "ci95_linear": "[2.61; 2.77]",
+      "roi_ridge": 2.7392298975733045,
+      "ci95_ridge": "[2.59; 2.75]",
+      "ridge_ci_chua_gia_tri_that": true
+    },
+    {
+      "muc": "Chenh lech ROI: goi - Google",
+      "roi_that": 0.17536688489097862,
+      "roi_linear": 0.16931106909055638,
+      "ci95_linear": "",
+      "roi_ridge": 0.179768379543507,
+      "ci95_ridge": "[-0.15; 0.27]",
+      "ridge_ci_chua_gia_tri_that": true
+    }
+  ],
   "de_xuat_ngan_sach": [
     {
-      "kenh": "TV",
-      "he_so_ridge_chuan_hoa": 281.6663333949172,
-      "trong_so_%": 36.77301218051668,
-      "ngan_sach_de_xuat_vnd": 735460243.6103336
+      "phuong_an": "Co cau hien tai (trung binh lich su)",
+      "TV_%": 45.633918644068636,
+      "Facebook_%": 27.34974935206862,
+      "Google_%": 27.016332003862747,
+      "TV_trieu_vnd": 912.6783728813729,
+      "Facebook_trieu_vnd": 546.9949870413724,
+      "Google_trieu_vnd": 540.3266400772549,
+      "doanh_thu_tang_them_theo_ridge": 5381.326150635733,
+      "doanh_thu_tang_them_theo_he_so_that": 5255.978370088001
     },
     {
-      "kenh": "Facebook",
-      "he_so_ridge_chuan_hoa": 274.27750233235815,
-      "trong_so_%": 35.808361661626634,
-      "ngan_sach_de_xuat_vnd": 716167233.2325326
+      "phuong_an": "Cach cu: ty le theo he so Ridge CHUAN HOA",
+      "TV_%": 36.89283360306737,
+      "Facebook_%": 35.655143471024516,
+      "Google_%": 27.452022925908114,
+      "TV_trieu_vnd": 737.8566720613474,
+      "Facebook_trieu_vnd": 713.1028694204903,
+      "Google_trieu_vnd": 549.0404585181623,
+      "doanh_thu_tang_them_theo_ridge": 5610.611720131863,
+      "doanh_thu_tang_them_theo_he_so_that": 5017.3276618486
     },
     {
-      "kenh": "Google",
-      "he_so_ridge_chuan_hoa": 210.01553690239322,
-      "trong_so_%": 27.418626157856675,
-      "ngan_sach_de_xuat_vnd": 548372523.1571335
+      "phuong_an": "De xuat (CI chenh lech ROI chua 0 -> chua du bang chung de dich, giu co cau)",
+      "TV_%": 45.633918644068636,
+      "Facebook_%": 27.34974935206862,
+      "Google_%": 27.016332003862747,
+      "TV_trieu_vnd": 912.6783728813729,
+      "Facebook_trieu_vnd": 546.9949870413724,
+      "Google_trieu_vnd": 540.3266400772549,
+      "doanh_thu_tang_them_theo_ridge": 5381.326150635733,
+      "doanh_thu_tang_them_theo_he_so_that": 5255.978370088001
     }
   ]
 }
