@@ -1,40 +1,661 @@
 {
   "n_rows_raw_sample": 200000,
   "n_rows_clean": 188224,
-  "dispatch_tree_metrics": {
-    "MAE": 2.2008663559628507,
-    "RMSE": 5.043765917860027,
-    "R2": 0.9117912508568918,
-    "trong_15%_%": 64.98605392482402
+  "clean_log": [
+    {
+      "buoc": "0. Sau khi lay mau",
+      "so_dong_con_lai": 200000,
+      "so_dong_bi_loai": 0
+    },
+    {
+      "buoc": "1. Loai fare_amount <= 0 (huy/hoan tien)",
+      "so_dong_con_lai": 198309,
+      "so_dong_bi_loai": 1691
+    },
+    {
+      "buoc": "2. Loai trip_distance <= 0 hoac > 100 miles",
+      "so_dong_con_lai": 195519,
+      "so_dong_bi_loai": 2790
+    },
+    {
+      "buoc": "3. Loai passenger_count == 0 hoac thieu",
+      "so_dong_con_lai": 188228,
+      "so_dong_bi_loai": 7291
+    },
+    {
+      "buoc": "4. Loai pickup ngoai thang 1/2023 (loi nhap lieu)",
+      "so_dong_con_lai": 188224,
+      "so_dong_bi_loai": 4
+    }
+  ],
+  "avg_fare_by_hour": {
+    "0": 19.92793690248566,
+    "1": 17.779026598754953,
+    "2": 16.18642941407786,
+    "3": 17.771903881700553,
+    "4": 20.967734375,
+    "5": 27.156663560111834,
+    "6": 22.213184230477633,
+    "7": 19.16467700765757,
+    "8": 17.742780779073072,
+    "9": 17.29544639521853,
+    "10": 17.8198517488997,
+    "11": 17.17868281283195,
+    "12": 17.857768973747017,
+    "13": 18.75654811715481,
+    "14": 19.621942506514248,
+    "15": 19.075692243186584,
+    "16": 19.497958322996777,
+    "17": 18.461974017987547,
+    "18": 16.785997917131592,
+    "19": 17.596419243407194,
+    "20": 17.852891123573777,
+    "21": 18.557961465508637,
+    "22": 19.41125804691762,
+    "23": 20.742265581134195
+  },
+  "baseline": {
+    "Dummy": {
+      "MAE": 11.084310390475578,
+      "RMSE": 16.98381903973745,
+      "R2": -0.00016701090228909976,
+      "trong_15%_%": 13.55027228051534
+    },
+    "CongThucThuCong": {
+      "MAE": 3.7214121397263913,
+      "RMSE": 6.096779085263294,
+      "R2": 0.8711148931939078,
+      "trong_15%_%": 33.55292867578696
+    }
+  },
+  "overfit_demo": {
+    "n_leaves": 118031,
+    "depth": 47,
+    "MAE_train": 0.006046770576685127,
+    "MAE_test": 2.4267103643688843
+  },
+  "depth_sweep_cv": [
+    {
+      "max_depth": 1,
+      "MAE_train": 6.479798978777223,
+      "MAE_cv": 6.4817124286309,
+      "std_MAE_cv": 0.035466412208639,
+      "trong_15%_cv_%": 21.343614629773896,
+      "so_la": 2
+    },
+    {
+      "max_depth": 2,
+      "MAE_train": 3.8891610012763342,
+      "MAE_cv": 3.8929086381763796,
+      "std_MAE_cv": 0.036765649885090845,
+      "trong_15%_cv_%": 35.94324809750519,
+      "so_la": 4
+    },
+    {
+      "max_depth": 3,
+      "MAE_train": 2.7184236726772135,
+      "MAE_cv": 2.7247295721383233,
+      "std_MAE_cv": 0.021731647607092803,
+      "trong_15%_cv_%": 53.907917444986154,
+      "so_la": 8
+    },
+    {
+      "max_depth": 4,
+      "MAE_train": 2.3817331030582216,
+      "MAE_cv": 2.3972979829790546,
+      "std_MAE_cv": 0.07763801934333245,
+      "trong_15%_cv_%": 58.92388503564071,
+      "so_la": 16
+    },
+    {
+      "max_depth": 5,
+      "MAE_train": 2.163167582942781,
+      "MAE_cv": 2.1845102277956205,
+      "std_MAE_cv": 0.021666478308066475,
+      "trong_15%_cv_%": 63.67621020294388,
+      "so_la": 31
+    },
+    {
+      "max_depth": 6,
+      "MAE_train": 2.0688668787741005,
+      "MAE_cv": 2.1009239146679652,
+      "std_MAE_cv": 0.023980851513797398,
+      "trong_15%_cv_%": 65.86841182383014,
+      "so_la": 60
+    },
+    {
+      "max_depth": 7,
+      "MAE_train": 1.9561481992021434,
+      "MAE_cv": 2.0061729323776682,
+      "std_MAE_cv": 0.029116786284001536,
+      "trong_15%_cv_%": 66.45082476706868,
+      "so_la": 116
+    },
+    {
+      "max_depth": 8,
+      "MAE_train": 1.8817378942975007,
+      "MAE_cv": 1.9547903128193114,
+      "std_MAE_cv": 0.016007804050830837,
+      "trong_15%_cv_%": 69.43332504101083,
+      "so_la": 217
+    },
+    {
+      "max_depth": 9,
+      "MAE_train": 1.8169955366865254,
+      "MAE_cv": 1.9249831116524774,
+      "std_MAE_cv": 0.018621118673295287,
+      "trong_15%_cv_%": 69.63121780022114,
+      "so_la": 395
+    },
+    {
+      "max_depth": 10,
+      "MAE_train": 1.7488495000124362,
+      "MAE_cv": 1.9091487737110238,
+      "std_MAE_cv": 0.02251607779376387,
+      "trong_15%_cv_%": 69.77997732471358,
+      "so_la": 702
+    },
+    {
+      "max_depth": 11,
+      "MAE_train": 1.6809678537974342,
+      "MAE_cv": 1.9003830946693205,
+      "std_MAE_cv": 0.02024156295912812,
+      "trong_15%_cv_%": 70.63932242999877,
+      "so_la": 1223
+    },
+    {
+      "max_depth": 12,
+      "MAE_train": 1.6114575694695592,
+      "MAE_cv": 1.9045836646879195,
+      "std_MAE_cv": 0.02079667778800009,
+      "trong_15%_cv_%": 71.2011609016281,
+      "so_la": 2084
+    },
+    {
+      "max_depth": 13,
+      "MAE_train": 1.5269313857852453,
+      "MAE_cv": 1.9133585354105764,
+      "std_MAE_cv": 0.02020655359853349,
+      "trong_15%_cv_%": 71.48539673933765,
+      "so_la": 3481
+    },
+    {
+      "max_depth": 14,
+      "MAE_train": 1.4332436486966909,
+      "MAE_cv": 1.9453329351917747,
+      "std_MAE_cv": 0.02254846163878126,
+      "trong_15%_cv_%": 70.92489480103576,
+      "so_la": 5662
+    },
+    {
+      "max_depth": 15,
+      "MAE_train": 1.3253566034913962,
+      "MAE_cv": 1.9817502048224938,
+      "std_MAE_cv": 0.02137253647654141,
+      "trong_15%_cv_%": 70.81200104518106,
+      "so_la": 8858
+    },
+    {
+      "max_depth": 16,
+      "MAE_train": 1.211126356542938,
+      "MAE_cv": 2.017562924599511,
+      "std_MAE_cv": 0.022245268765344543,
+      "trong_15%_cv_%": 70.18641484262952,
+      "so_la": 13267
+    },
+    {
+      "max_depth": 17,
+      "MAE_train": 1.0863525327489105,
+      "MAE_cv": 2.0600705188833124,
+      "std_MAE_cv": 0.028428181225478914,
+      "trong_15%_cv_%": 69.47050954693597,
+      "so_la": 19016
+    },
+    {
+      "max_depth": 18,
+      "MAE_train": 0.9589032683458258,
+      "MAE_cv": 2.1032109522436135,
+      "std_MAE_cv": 0.026714398735045164,
+      "trong_15%_cv_%": 68.62709796181976,
+      "so_la": 26026
+    },
+    {
+      "max_depth": 19,
+      "MAE_train": 0.8275035021913805,
+      "MAE_cv": 2.1527567317631657,
+      "std_MAE_cv": 0.024404794999404015,
+      "trong_15%_cv_%": 67.88330210352501,
+      "so_la": 34139
+    },
+    {
+      "max_depth": 20,
+      "MAE_train": 0.6993502499614923,
+      "MAE_cv": 2.1958669442763172,
+      "std_MAE_cv": 0.01596422107533834,
+      "trong_15%_cv_%": 67.06712048847507,
+      "so_la": 43263
+    }
+  ],
+  "depth_best_cv": 11,
+  "rf_chon_depth_oob": [
+    {
+      "max_depth": 8,
+      "MAE_oob": 1.8787715209834612,
+      "trong_15%_oob_%": 69.8125236586775,
+      "tong_so_la": 21911
+    },
+    {
+      "max_depth": 12,
+      "MAE_oob": 1.7843869954283709,
+      "trong_15%_oob_%": 72.9656857861986,
+      "tong_so_la": 200403
+    },
+    {
+      "max_depth": 16,
+      "MAE_oob": 1.764394289522069,
+      "trong_15%_oob_%": 73.80112764728149,
+      "tong_so_la": 1187776
+    },
+    {
+      "max_depth": "None",
+      "MAE_oob": 1.7977217833079735,
+      "trong_15%_oob_%": 73.34754514241693,
+      "tong_so_la": 7516807
+    }
+  ],
+  "dispatch_tree": {
+    "depth": 5,
+    "min_samples_leaf": 500,
+    "n_leaves": 28,
+    "metrics": {
+      "MAE": 2.2008663559628507,
+      "RMSE": 5.043765917860027,
+      "R2": 0.9117912508568918,
+      "trong_15%_%": 64.98605392482402
+    }
   },
   "model_comparison": [
     {
-      "model": "Decision Tree (dispatch, depth=5)",
+      "model": "Cay tong dai (depth=5, leaf>=500)",
+      "MAE": 2.200866356,
+      "RMSE": 5.0437659179,
+      "R2": 0.9117912509,
+      "trong_15%_%": 64.9860539248,
+      "so_la_hoac_quy_tac": 28
+    },
+    {
+      "model": "Cay sau (depth=11, chon bang CV)",
+      "MAE": 1.8915238922,
+      "RMSE": 4.6104649402,
+      "R2": 0.9262959648,
+      "trong_15%_%": 71.1382653739,
+      "so_la_hoac_quy_tac": 1223
+    },
+    {
+      "model": "Random Forest (100 cay, max_depth=16, chon bang OOB)",
+      "MAE": 1.7500009012,
+      "RMSE": 4.0298510084,
+      "R2": 0.9436907429,
+      "trong_15%_%": 74.2409350511,
+      "so_la_hoac_quy_tac": 1187776
+    },
+    {
+      "model": "Linear Regression",
+      "MAE": 2.3705671306,
+      "RMSE": 4.8709649737,
+      "R2": 0.917731831,
+      "trong_15%_%": 60.1089122061,
+      "so_la_hoac_quy_tac": null
+    }
+  ],
+  "criterion_comparison": [
+    {
+      "criterion": "squared_error",
+      "thoi_gian_fit_s": 0.37024736404418945,
       "MAE": 2.2008663559628507,
       "RMSE": 5.043765917860027,
       "R2": 0.9117912508568918,
       "trong_15%_%": 64.98605392482402
     },
     {
-      "model": "Decision Tree (toi uu, depth=12)",
-      "MAE": 1.8900694770758724,
-      "RMSE": 4.7322202336232335,
-      "R2": 0.9223517424540224,
-      "trong_15%_%": 71.50219152609908
+      "criterion": "absolute_error",
+      "thoi_gian_fit_s": 4.178400039672852,
+      "MAE": 2.03472439899057,
+      "RMSE": 5.260579736925226,
+      "R2": 0.9040446853800036,
+      "trong_15%_%": 68.90158055518661
+    }
+  ],
+  "instability_10_cay": [
+    {
+      "cay_so": 1,
+      "gia_tai_1.0mi": 7.272153430009754,
+      "gia_tai_2.0mi": 13.183728505820785,
+      "gia_tai_5.0mi": 26.631364073006722,
+      "gia_tai_10.0mi": 43.781644934804405,
+      "gia_tai_20.0mi": 70.48720798366978,
+      "so_la": 28
     },
     {
-      "model": "Random Forest Regressor",
-      "MAE": 1.774272286605634,
-      "RMSE": 4.0458837013229845,
-      "R2": 0.9432418008016845,
-      "trong_15%_%": 73.26603798645237
+      "cay_so": 2,
+      "gia_tai_1.0mi": 8.976580947911726,
+      "gia_tai_2.0mi": 13.1040160438667,
+      "gia_tai_5.0mi": 26.341263700838194,
+      "gia_tai_10.0mi": 43.67937310414562,
+      "gia_tai_20.0mi": 70.51028148854961,
+      "so_la": 28
     },
     {
-      "model": "Linear Regression",
-      "MAE": 2.370567130620933,
-      "RMSE": 4.870964973745988,
-      "R2": 0.9177318310119482,
-      "trong_15%_%": 60.10891220613628
+      "cay_so": 3,
+      "gia_tai_1.0mi": 7.286332147537869,
+      "gia_tai_2.0mi": 13.168751835535979,
+      "gia_tai_5.0mi": 26.89822507552871,
+      "gia_tai_10.0mi": 43.415859564164634,
+      "gia_tai_20.0mi": 70.49685662596114,
+      "so_la": 28
+    },
+    {
+      "cay_so": 4,
+      "gia_tai_1.0mi": 7.303975415979732,
+      "gia_tai_2.0mi": 13.180935747318731,
+      "gia_tai_5.0mi": 26.888872236792825,
+      "gia_tai_10.0mi": 44.026578947368435,
+      "gia_tai_20.0mi": 70.43367208672097,
+      "so_la": 28
+    },
+    {
+      "cay_so": 5,
+      "gia_tai_1.0mi": 7.292985934460485,
+      "gia_tai_2.0mi": 13.182308369182644,
+      "gia_tai_5.0mi": 25.86250559284113,
+      "gia_tai_10.0mi": 43.68528528528526,
+      "gia_tai_20.0mi": 70.4091899251191,
+      "so_la": 28
+    },
+    {
+      "cay_so": 6,
+      "gia_tai_1.0mi": 8.916091582351047,
+      "gia_tai_2.0mi": 13.124457542249147,
+      "gia_tai_5.0mi": 26.191548295454528,
+      "gia_tai_10.0mi": 42.14500504540858,
+      "gia_tai_20.0mi": 70.48688378318091,
+      "so_la": 28
+    },
+    {
+      "cay_so": 7,
+      "gia_tai_1.0mi": 7.286937108113141,
+      "gia_tai_2.0mi": 13.16943572129538,
+      "gia_tai_5.0mi": 26.585651105651085,
+      "gia_tai_10.0mi": 42.114416243654766,
+      "gia_tai_20.0mi": 70.55752803626815,
+      "so_la": 28
+    },
+    {
+      "cay_so": 8,
+      "gia_tai_1.0mi": 8.94551101072836,
+      "gia_tai_2.0mi": 13.077492080253425,
+      "gia_tai_5.0mi": 25.848934280639405,
+      "gia_tai_10.0mi": 42.90150943396227,
+      "gia_tai_20.0mi": 70.40976702508969,
+      "so_la": 28
+    },
+    {
+      "cay_so": 9,
+      "gia_tai_1.0mi": 7.287247279549699,
+      "gia_tai_2.0mi": 13.178517601464128,
+      "gia_tai_5.0mi": 26.236294503975103,
+      "gia_tai_10.0mi": 43.605705394190934,
+      "gia_tai_20.0mi": 70.52528064660976,
+      "so_la": 28
+    },
+    {
+      "cay_so": 10,
+      "gia_tai_1.0mi": 8.893879448220636,
+      "gia_tai_2.0mi": 13.984314872594913,
+      "gia_tai_5.0mi": 25.75249808429115,
+      "gia_tai_10.0mi": 43.75550098231824,
+      "gia_tai_20.0mi": 70.44218820351203,
+      "so_la": 28
+    }
+  ],
+  "khoang_gia_quantile": [
+    {
+      "quang_duong_mi": 1.0,
+      "gia_10%": 7.062554963805525,
+      "gia_trung_vi_50%": 8.400217973612884,
+      "gia_90%": 10.644068249151976
+    },
+    {
+      "quang_duong_mi": 2.0,
+      "gia_10%": 11.577493824816756,
+      "gia_trung_vi_50%": 13.646780126957404,
+      "gia_90%": 17.13109941258437
+    },
+    {
+      "quang_duong_mi": 5.0,
+      "gia_10%": 22.198047646535944,
+      "gia_trung_vi_50%": 26.093859986203096,
+      "gia_90%": 30.42929410253891
+    },
+    {
+      "quang_duong_mi": 10.0,
+      "gia_10%": 38.919400120082344,
+      "gia_trung_vi_50%": 42.42714864015427,
+      "gia_90%": 49.37489644215501
+    },
+    {
+      "quang_duong_mi": 20.0,
+      "gia_10%": 69.99407139568945,
+      "gia_trung_vi_50%": 69.99998408694606,
+      "gia_90%": 75.23611392682548
+    }
+  ],
+  "extrapolation_demo": [
+    {
+      "quang_duong_mi": 81.45,
+      "trong_dai_du_lieu": true,
+      "gia_cay_quyet_dinh": 111.97019999999995,
+      "gia_linear_regression": 306.15780508857716
+    },
+    {
+      "quang_duong_mi": 60.0,
+      "trong_dai_du_lieu": true,
+      "gia_cay_quyet_dinh": 111.97019999999995,
+      "gia_linear_regression": 227.0221155108669
+    },
+    {
+      "quang_duong_mi": 100.0,
+      "trong_dai_du_lieu": false,
+      "gia_cay_quyet_dinh": 111.97019999999995,
+      "gia_linear_regression": 374.59449700776247
+    },
+    {
+      "quang_duong_mi": 124.0,
+      "trong_dai_du_lieu": false,
+      "gia_cay_quyet_dinh": 111.97019999999995,
+      "gia_linear_regression": 463.1379259058998
+    }
+  ],
+  "duong_bien_so_la_mae_cv": [
+    {
+      "max_depth": 2,
+      "so_la": 4,
+      "MAE_cv": 3.8929086381763796,
+      "trong_15%_cv_%": 35.94324809750519,
+      "MAE_giam_so_voi_depth_truoc": NaN,
+      "MAE_giam_moi_la_them_cent": NaN
+    },
+    {
+      "max_depth": 3,
+      "so_la": 8,
+      "MAE_cv": 2.716066320847304,
+      "trong_15%_cv_%": 53.91787914777565,
+      "MAE_giam_so_voi_depth_truoc": 1.1768423173290756,
+      "MAE_giam_moi_la_them_cent": 29.42105793322689
+    },
+    {
+      "max_depth": 4,
+      "so_la": 15,
+      "MAE_cv": 2.3225519460499133,
+      "trong_15%_cv_%": 62.84342536767512,
+      "MAE_giam_so_voi_depth_truoc": 0.3935143747973906,
+      "MAE_giam_moi_la_them_cent": 5.621633925677009
+    },
+    {
+      "max_depth": 5,
+      "so_la": 28,
+      "MAE_cv": 2.2291772915642936,
+      "trong_15%_cv_%": 64.28785284425817,
+      "MAE_giam_so_voi_depth_truoc": 0.09337465448561977,
+      "MAE_giam_moi_la_them_cent": 0.7182665729663059
+    },
+    {
+      "max_depth": 6,
+      "so_la": 48,
+      "MAE_cv": 2.1456375407120842,
+      "trong_15%_cv_%": 66.99075296148047,
+      "MAE_giam_so_voi_depth_truoc": 0.08353975085220933,
+      "MAE_giam_moi_la_them_cent": 0.41769875426104663
+    },
+    {
+      "max_depth": 7,
+      "so_la": 72,
+      "MAE_cv": 2.0941871256622404,
+      "trong_15%_cv_%": 68.00017749730651,
+      "MAE_giam_so_voi_depth_truoc": 0.05145041504984382,
+      "MAE_giam_moi_la_them_cent": 0.21437672937434926
+    },
+    {
+      "max_depth": 8,
+      "so_la": 101,
+      "MAE_cv": 2.071499333184428,
+      "trong_15%_cv_%": 68.94720124412623,
+      "MAE_giam_so_voi_depth_truoc": 0.022687792477812607,
+      "MAE_giam_moi_la_them_cent": 0.07823376716487106
+    },
+    {
+      "max_depth": 9,
+      "so_la": 136,
+      "MAE_cv": 2.0572291126133,
+      "trong_15%_cv_%": 69.39414120401392,
+      "MAE_giam_so_voi_depth_truoc": 0.014270220571127812,
+      "MAE_giam_moi_la_them_cent": 0.040772058774650885
+    },
+    {
+      "max_depth": 10,
+      "so_la": 172,
+      "MAE_cv": 2.0517398155176747,
+      "trong_15%_cv_%": 69.81982845808207,
+      "MAE_giam_so_voi_depth_truoc": 0.0054892970956252896,
+      "MAE_giam_moi_la_them_cent": 0.015248047487848027
+    },
+    {
+      "max_depth": 11,
+      "so_la": 196,
+      "MAE_cv": 2.047550322632011,
+      "trong_15%_cv_%": 70.26212054217191,
+      "MAE_giam_so_voi_depth_truoc": 0.004189492885663615,
+      "MAE_giam_moi_la_them_cent": 0.01745622035693173
+    },
+    {
+      "max_depth": 12,
+      "so_la": 213,
+      "MAE_cv": 2.045776189346726,
+      "trong_15%_cv_%": 70.08214945379056,
+      "MAE_giam_so_voi_depth_truoc": 0.0017741332852851954,
+      "MAE_giam_moi_la_them_cent": 0.010436078148736445
+    }
+  ],
+  "chenh_lech_theo_quang_duong_test": [
+    {
+      "dai_mi": "0-1",
+      "so_chuyen": 8121,
+      "ty_trong_%": 21.572586000796917,
+      "cuoc_TB": 7.519775889668761,
+      "MAE|Cay tong dai (depth=5, leaf>=500)": 1.856872108786251,
+      "trong15|Cay tong dai (depth=5, leaf>=500)": 48.540820096047284,
+      "MAE|Cay sau (depth=11, chon bang CV)": 1.5731111942142222,
+      "trong15|Cay sau (depth=11, chon bang CV)": 55.25181627878341,
+      "MAE|Random Forest (100 cay, max_depth=16, chon bang OOB)": 1.461120589474047,
+      "trong15|Random Forest (100 cay, max_depth=16, chon bang OOB)": 61.088535894594266,
+      "MAE|Linear Regression": 2.2354242263025927,
+      "trong15|Linear Regression": 26.622337150597218,
+      "dong_gop_chenh_MAE_vs_RF_%": 18.935546281217906
+    },
+    {
+      "dai_mi": "1-2",
+      "so_chuyen": 12548,
+      "ty_trong_%": 33.332447868242795,
+      "cuoc_TB": 11.129324195090852,
+      "MAE|Cay tong dai (depth=5, leaf>=500)": 1.5684821366268316,
+      "trong15|Cay tong dai (depth=5, leaf>=500)": 61.029646158750396,
+      "MAE|Cay sau (depth=11, chon bang CV)": 1.4053365007710743,
+      "trong15|Cay sau (depth=11, chon bang CV)": 67.60439910742748,
+      "MAE|Random Forest (100 cay, max_depth=16, chon bang OOB)": 1.3312360184226604,
+      "trong15|Random Forest (100 cay, max_depth=16, chon bang OOB)": 70.57698437998087,
+      "MAE|Linear Regression": 1.6134225507417643,
+      "trong15|Linear Regression": 57.97736691106152,
+      "dong_gop_chenh_MAE_vs_RF_%": 17.539586995197986
+    },
+    {
+      "dai_mi": "2-5",
+      "so_chuyen": 10548,
+      "ty_trong_%": 28.019657325009963,
+      "cuoc_TB": 18.14789628365567,
+      "MAE|Cay tong dai (depth=5, leaf>=500)": 2.240711529584053,
+      "trong15|Cay tong dai (depth=5, leaf>=500)": 69.05574516496019,
+      "MAE|Cay sau (depth=11, chon bang CV)": 1.9189783567747751,
+      "trong15|Cay sau (depth=11, chon bang CV)": 76.6590822904816,
+      "MAE|Random Forest (100 cay, max_depth=16, chon bang OOB)": 1.8279596983155992,
+      "trong15|Random Forest (100 cay, max_depth=16, chon bang OOB)": 78.53621539628367,
+      "MAE|Linear Regression": 2.2018194685000103,
+      "trong15|Linear Regression": 72.12741751990899,
+      "dong_gop_chenh_MAE_vs_RF_%": 25.651033473912076
+    },
+    {
+      "dai_mi": "5-10",
+      "so_chuyen": 3320,
+      "ty_trong_%": 8.819232301766503,
+      "cuoc_TB": 33.38593373493976,
+      "MAE|Cay tong dai (depth=5, leaf>=500)": 3.114942784785504,
+      "trong15|Cay tong dai (depth=5, leaf>=500)": 84.12650602409639,
+      "MAE|Cay sau (depth=11, chon bang CV)": 2.989487286316555,
+      "trong15|Cay sau (depth=11, chon bang CV)": 85.15060240963855,
+      "MAE|Random Forest (100 cay, max_depth=16, chon bang OOB)": 2.705550342062318,
+      "trong15|Random Forest (100 cay, max_depth=16, chon bang OOB)": 87.34939759036145,
+      "MAE|Linear Regression": 3.0244710477493806,
+      "trong15|Linear Regression": 88.3433734939759,
+      "dong_gop_chenh_MAE_vs_RF_%": 8.007992222078293
+    },
+    {
+      "dai_mi": "10-20",
+      "so_chuyen": 2719,
+      "ty_trong_%": 7.222738743525037,
+      "cuoc_TB": 61.28528870908423,
+      "MAE|Cay tong dai (depth=5, leaf>=500)": 3.2357505166617675,
+      "trong15|Cay tong dai (depth=5, leaf>=500)": 92.3501287237955,
+      "MAE|Cay sau (depth=11, chon bang CV)": 2.7025376567250685,
+      "trong15|Cay sau (depth=11, chon bang CV)": 94.37293122471497,
+      "MAE|Random Forest (100 cay, max_depth=16, chon bang OOB)": 2.37019464849401,
+      "trong15|Random Forest (100 cay, max_depth=16, chon bang OOB)": 95.51305627068776,
+      "MAE|Linear Regression": 4.217972834341791,
+      "trong15|Linear Regression": 92.86502390584775,
+      "dong_gop_chenh_MAE_vs_RF_%": 13.865963421297414
+    },
+    {
+      "dai_mi": "20-100",
+      "so_chuyen": 389,
+      "ty_trong_%": 1.0333377606587861,
+      "cuoc_TB": 86.88071979434447,
+      "MAE|Cay tong dai (depth=5, leaf>=500)": 13.665811850979626,
+      "trong15|Cay tong dai (depth=5, leaf>=500)": 70.95115681233933,
+      "MAE|Cay sau (depth=11, chon bang CV)": 8.437884611848341,
+      "trong15|Cay sau (depth=11, chon bang CV)": 85.08997429305913,
+      "MAE|Random Forest (100 cay, max_depth=16, chon bang OOB)": 6.684752638983832,
+      "trong15|Random Forest (100 cay, max_depth=16, chon bang OOB)": 89.97429305912597,
+      "MAE|Linear Regression": 15.697145385276679,
+      "trong15|Linear Regression": 32.13367609254499,
+      "dong_gop_chenh_MAE_vs_RF_%": 15.999877606296318
     }
   ]
 }
