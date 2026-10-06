@@ -19,6 +19,11 @@ Mo rong (section 8 cua README):
 12. SplineTransformer -> linh hoat hon da thuc, khong "phat dien" khi ngoai suy
 13. Chung minh hien tuong ngoai suy: du doan tai AT=50C (ngoai dai du lieu) bang bac 5
 
+Bo sung (dien giai ket qua):
+14. Kiem tra bien luoi bac: CV bac 1-8 cho Linear thuan va Ridge(alpha=1) -> bac 5 co hop ly?
+15. Danh doi alpha o bac toi uu: RMSE-CV vs do lon he so (alpha RidgeCV chon nam o bien luoi)
+16. Cai thien so voi bac 1 NHO (RMSE 4,50 -> 4,05): phan tich theo dai nhiet do + quy ra MW, MWh/nam
+
 Chay: python src/train.py
 """
 from __future__ import annotations
@@ -36,10 +41,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression, Ridge, RidgeCV
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split, validation_curve
+from sklearn.model_selection import cross_val_score, train_test_split, validation_curve
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures, SplineTransformer, StandardScaler
 
@@ -62,6 +68,9 @@ FEATURE_DESC = {
 }
 DEGREES = [1, 2, 3, 4, 5]
 ALPHA_GRID = np.logspace(-3, 4, 100)
+DEGREES_EXTENDED = [1, 2, 3, 4, 5, 6, 7, 8]
+ALPHA_TRADEOFF = [1e-8, 1e-5, 1e-3, 1e-1, 1.0, 10.0]
+HOURS_PER_YEAR = 8_760
 
 
 def log(msg: str) -> None:
@@ -281,7 +290,8 @@ def compare_linear_ridge_high_degree(X_train, y_train, X_test, y_test) -> pd.Dat
 def compare_with_random_forest(X_train, y_train, X_test, y_test, poly_metrics: dict) -> pd.DataFrame:
     rf = RandomForestRegressor(n_estimators=300, max_depth=None, random_state=RANDOM_STATE, n_jobs=-1)
     rf.fit(X_train, y_train)
-    rf_metrics = evaluate(y_test, rf.predict(X_test))
+    rf_pred = rf.predict(X_test)
+    rf_metrics = evaluate(y_test, rf_pred)
 
     rows = [
         {"model": "Polynomial Ridge (bac toi uu)", **poly_metrics},
@@ -291,7 +301,7 @@ def compare_with_random_forest(X_train, y_train, X_test, y_test, poly_metrics: d
     df.to_csv(REPORTS_DIR / "so_sanh_random_forest.csv", index=False)
     log(f"  Random Forest: RMSE={rf_metrics['RMSE']:.4f}  MAE={rf_metrics['MAE']:.4f}  R2={rf_metrics['R2']:.4f}")
     log("  Da luu so_sanh_random_forest.csv")
-    return df
+    return df, rf_pred
 
 
 # ----------------------------------------------------------------------------
@@ -398,6 +408,125 @@ def demo_extrapolation(df: pd.DataFrame, degree1_pipe: Pipeline, best_pipe: Pipe
     return df_out
 
 
+# ----------------------------------------------------------------------------
+# 14. Kiem tra bien luoi bac (1-8): Linear thuan vs Ridge(alpha=1), chi dung TRAIN (CV)
+# ----------------------------------------------------------------------------
+def run_degree_boundary_check(X_train, y_train) -> pd.DataFrame:
+    rows = []
+    for d in DEGREES_EXTENDED:
+        lin = -cross_val_score(make_pipe(d, LinearRegression()), X_train, y_train, cv=5,
+                               scoring="neg_root_mean_squared_error", n_jobs=-1)
+        rid = -cross_val_score(make_pipe(d, Ridge(alpha=1.0)), X_train, y_train, cv=5,
+                               scoring="neg_root_mean_squared_error", n_jobs=-1)
+        n_cols = PolynomialFeatures(degree=d, include_bias=False).fit(X_train.iloc[:1]).n_output_features_
+        rows.append({"bac": d, "so_cot": n_cols, "RMSE_cv_linear": lin.mean(), "std_cv_linear": lin.std(),
+                     "RMSE_cv_ridge_alpha1": rid.mean(), "std_cv_ridge_alpha1": rid.std()})
+    df = pd.DataFrame(rows)
+    df.to_csv(REPORTS_DIR / "kiem_tra_bac_cao.csv", index=False)
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    ax.errorbar(df["bac"], df["RMSE_cv_linear"], yerr=df["std_cv_linear"], fmt="o-", color="#c0392b",
+                capsize=3, label="Linear thuan (khong phat)")
+    ax.errorbar(df["bac"], df["RMSE_cv_ridge_alpha1"], yerr=df["std_cv_ridge_alpha1"], fmt="o-", color="#2980b9",
+                capsize=3, label="Ridge alpha=1")
+    ax.set_xlabel("Bac da thuc")
+    ax.set_ylabel("RMSE 5-fold CV tren train (MW)")
+    ax.set_title("Mo rong luoi bac 1-8: Linear vo o bac 8, Ridge giu on dinh nhung loi ich rat nho")
+    ax.set_xticks(DEGREES_EXTENDED)
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(REPORTS_DIR / "kiem_tra_bac_cao.png", dpi=130)
+    plt.close(fig)
+    for r in df.itertuples():
+        log(f"    bac {r.bac}: {r.so_cot:3d} cot  Linear CV={r.RMSE_cv_linear:.4f}+-{r.std_cv_linear:.3f}  "
+            f"Ridge(1) CV={r.RMSE_cv_ridge_alpha1:.4f}+-{r.std_cv_ridge_alpha1:.3f}")
+    log("  Da luu kiem_tra_bac_cao.csv/.png")
+    return df
+
+
+# ----------------------------------------------------------------------------
+# 15. Danh doi alpha o bac toi uu: RMSE-CV vs do lon he so (chi dung TRAIN)
+# ----------------------------------------------------------------------------
+def run_alpha_tradeoff(X_train, y_train, degree: int) -> pd.DataFrame:
+    rows = []
+    lin = -cross_val_score(make_pipe(degree, LinearRegression()), X_train, y_train, cv=5,
+                           scoring="neg_root_mean_squared_error", n_jobs=-1)
+    lin_coef = np.abs(make_pipe(degree, LinearRegression()).fit(X_train, y_train).named_steps["model"].coef_).max()
+    rows.append({"model": "Linear (alpha=0)", "alpha": 0.0, "RMSE_cv": lin.mean(), "he_so_max": lin_coef})
+    for a in ALPHA_TRADEOFF:
+        cv = -cross_val_score(make_pipe(degree, Ridge(alpha=a)), X_train, y_train, cv=5,
+                              scoring="neg_root_mean_squared_error", n_jobs=-1)
+        coef = np.abs(make_pipe(degree, Ridge(alpha=a)).fit(X_train, y_train).named_steps["model"].coef_).max()
+        rows.append({"model": f"Ridge alpha={a:g}", "alpha": a, "RMSE_cv": cv.mean(), "he_so_max": coef})
+    df = pd.DataFrame(rows)
+    df["RMSE_cv_hon_linear_%"] = (df["RMSE_cv"] / df.loc[0, "RMSE_cv"] - 1) * 100
+    df.to_csv(REPORTS_DIR / "danh_doi_alpha.csv", index=False)
+    for _, r in df.iterrows():
+        log(f"    {r['model']:18s} RMSE_cv={r['RMSE_cv']:.4f} ({r['RMSE_cv_hon_linear_%']:+.1f}%)  "
+            f"|he_so|_max={r['he_so_max']:.3g}")
+    log(f"  Luu y: luoi alpha cua RidgeCV la [{ALPHA_GRID[0]:g}, {ALPHA_GRID[-1]:g}] -> alpha=0.001 la BIEN DUOI")
+    log("  Da luu danh_doi_alpha.csv")
+    return df
+
+
+# ----------------------------------------------------------------------------
+# 16. Cai thien so voi bac 1: o dau, bao nhieu MW, co dang khong?
+# ----------------------------------------------------------------------------
+def run_improvement_analysis(X_train, y_train, X_test, y_test, preds: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
+    y = np.asarray(y_test)
+    dummy_pred = DummyRegressor(strategy="mean").fit(X_train, y_train).predict(X_test)
+    preds = {"Dummy (trung binh)": dummy_pred, **preds}
+
+    overall = pd.DataFrame([{"model": k, **evaluate(y, v)} for k, v in preds.items()])
+    base = overall.set_index("model").loc["Bac 1 (duong thang)"]
+    overall["RMSE_giam_vs_bac1_%"] = (1 - overall["RMSE"] / base["RMSE"]) * 100
+    overall["MAE_giam_vs_bac1_MW"] = base["MAE"] - overall["MAE"]
+    # Neu sai so du bao lech TB giam bao nhieu MW thi moi nam bot bao nhieu MWh lech (du bao gio)
+    overall["MWh_lech_bot_moi_nam_vs_bac1"] = overall["MAE_giam_vs_bac1_MW"] * HOURS_PER_YEAR
+    overall["RMSE_%_cong_suat_TB"] = overall["RMSE"] / y.mean() * 100
+    overall.to_csv(REPORTS_DIR / "cai_thien_tong_the.csv", index=False)
+
+    # Theo 5 dai nhiet do (ngu phan vi AT tren test)
+    at = X_test["AT"].values
+    bins = pd.qcut(at, 5)
+    rows = []
+    for b in bins.categories:
+        m = bins == b
+        row = {"dai_AT": f"{b.left:.1f}-{b.right:.1f} C", "so_mau": int(m.sum()), "PE_TB": float(y[m].mean())}
+        for k, v in preds.items():
+            row[f"RMSE_{k}"] = rmse(y[m], v[m])
+            row[f"phan_du_TB_{k}"] = float((y[m] - v[m]).mean())
+        rows.append(row)
+    by_at = pd.DataFrame(rows)
+    by_at.to_csv(REPORTS_DIR / "cai_thien_theo_nhiet_do.csv", index=False)
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    x = np.arange(len(by_at))
+    names = [k for k in preds if not k.startswith("Dummy")]
+    width = 0.8 / len(names)
+    colors = ["#c0392b", "#2980b9", "#27ae60"]
+    for i, k in enumerate(names):
+        ax.bar(x + (i - (len(names) - 1) / 2) * width, by_at[f"RMSE_{k}"], width, label=k, color=colors[i % 3])
+    ax.set_xticks(x)
+    ax.set_xticklabels(by_at["dai_AT"])
+    ax.set_xlabel("Dai nhiet do moi truong (ngu phan vi tren test)")
+    ax.set_ylabel("RMSE test (MW)")
+    ax.set_title("Cai thien tap trung o dau? RMSE theo dai nhiet do")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(REPORTS_DIR / "cai_thien_theo_nhiet_do.png", dpi=130)
+    plt.close(fig)
+
+    for _, r in overall.iterrows():
+        log(f"    {r['model']:28s} RMSE={r['RMSE']:.3f} ({r['RMSE_giam_vs_bac1_%']:+.1f}% vs bac1)  "
+            f"MAE={r['MAE']:.3f}  RMSE={r['RMSE_%_cong_suat_TB']:.2f}% cong suat TB")
+    for _, r in by_at.iterrows():
+        vals = "  ".join(f"{k[:12]}={r[f'RMSE_{k}']:.2f}" for k in preds)
+        log(f"    AT {r['dai_AT']:12s} n={r['so_mau']}  RMSE: {vals}")
+    log("  Da luu cai_thien_tong_the.csv, cai_thien_theo_nhiet_do.csv/.png")
+    return overall, by_at
+
+
 def main() -> None:
     log("0. Nap du lieu Combined Cycle Power Plant...")
     df = load_data()
@@ -433,7 +562,7 @@ def main() -> None:
     residual_info = run_residual_before_after(pred1, y_test, pred_best, 1, best_degree)
 
     log("9. So sanh voi Random Forest Regressor...")
-    rf_comparison = compare_with_random_forest(X_train, y_train, X_test, y_test, best_metrics)
+    rf_comparison, rf_pred = compare_with_random_forest(X_train, y_train, X_test, y_test, best_metrics)
 
     log("10. Phan tich do doc cong suat theo nhiet do...")
     slope_table = analyze_temperature_slope(df, best_degree)
@@ -450,6 +579,17 @@ def main() -> None:
 
     log("13. Minh hoa hien tuong ngoai suy tai AT=50C (mo rong)...")
     extrapolation_df = demo_extrapolation(df, pipe1, best_pipe, degree5_pipe, spline_pipe)
+
+    log("14. Kiem tra bien luoi bac 1-8 (CV tren train)...")
+    boundary_df = run_degree_boundary_check(X_train, y_train)
+
+    log(f"15. Danh doi alpha o bac {best_degree} (CV tren train)...")
+    alpha_df = run_alpha_tradeoff(X_train, y_train, best_degree)
+
+    log("16. Phan tich muc cai thien so voi bac 1 (theo dai nhiet do, quy ra MW)...")
+    improvement_df, improvement_by_at = run_improvement_analysis(
+        X_train, y_train, X_test, y_test,
+        {"Bac 1 (duong thang)": pred1, f"Poly bac {best_degree} Ridge": pred_best, "Random Forest": rf_pred})
 
     joblib.dump(best_pipe, MODELS_DIR / "poly_pipeline.joblib")
     log(f"  Da luu model -> models/poly_pipeline.joblib")
@@ -469,6 +609,10 @@ def main() -> None:
         "interaction_only_vs_full": interaction_df.to_dict(orient="records"),
         "spline_vs_polynomial_rmse": spline_metrics,
         "extrapolation_demo": extrapolation_df.to_dict(orient="records"),
+        "kiem_tra_bac_cao_cv": boundary_df.to_dict(orient="records"),
+        "danh_doi_alpha_cv": alpha_df.to_dict(orient="records"),
+        "cai_thien_tong_the_test": improvement_df.to_dict(orient="records"),
+        "cai_thien_theo_nhiet_do_test": improvement_by_at.to_dict(orient="records"),
     }
     with open(REPORTS_DIR / "tom_tat.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)

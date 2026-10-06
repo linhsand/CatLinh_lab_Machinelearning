@@ -1,5 +1,50 @@
 {
   "n_rows": 9568,
+  "features": [
+    "AT",
+    "V",
+    "AP",
+    "RH"
+  ],
+  "target": "PE",
+  "correlation_AT_V": 0.8441067318678712,
+  "baseline_degree1": {
+    "RMSE": 4.5026332295321865,
+    "MAE": 3.595913178273408,
+    "R2": 0.9301046431962188
+  },
+  "validation_curve": [
+    {
+      "bac": 1,
+      "RMSE_train_cv": 4.570536188036778,
+      "RMSE_val_cv": 4.572396523745107,
+      "std_val_cv": 0.11143099136208152
+    },
+    {
+      "bac": 2,
+      "RMSE_train_cv": 4.3044743696320396,
+      "RMSE_val_cv": 4.309426379492587,
+      "std_val_cv": 0.10539764813829629
+    },
+    {
+      "bac": 3,
+      "RMSE_train_cv": 4.247981269278872,
+      "RMSE_val_cv": 4.25582900717181,
+      "std_val_cv": 0.10794107604180281
+    },
+    {
+      "bac": 4,
+      "RMSE_train_cv": 4.209860606824857,
+      "RMSE_val_cv": 4.2196410768084585,
+      "std_val_cv": 0.10726700267390385
+    },
+    {
+      "bac": 5,
+      "RMSE_train_cv": 4.189351817392085,
+      "RMSE_val_cv": 4.20124533719341,
+      "std_val_cv": 0.10550465042043111
+    }
+  ],
   "best_degree": 5,
   "best_alpha": 0.001,
   "best_metrics": {
@@ -7,19 +52,372 @@
     "MAE": 3.1782283390128447,
     "R2": 0.9434090278144208
   },
-  "baseline_degree1_metrics": {
-    "RMSE": 4.5026332295321865,
-    "MAE": 3.595913178273408,
-    "R2": 0.9301046431962188
+  "degree_table_linear": [
+    {
+      "bac": 1,
+      "so_cot": 4,
+      "RMSE_train": 4.570930584824314,
+      "RMSE_test": 4.5026332295321865,
+      "he_so_tuyet_doi_lon_nhat": 14.763927385645434
+    },
+    {
+      "bac": 2,
+      "so_cot": 14,
+      "RMSE_train": 4.261401625218904,
+      "RMSE_test": 4.231200085537431,
+      "he_so_tuyet_doi_lon_nhat": 91.61998683595975
+    },
+    {
+      "bac": 3,
+      "so_cot": 34,
+      "RMSE_train": 4.161327772176089,
+      "RMSE_test": 4.107230477572135,
+      "he_so_tuyet_doi_lon_nhat": 23553.970448675133
+    },
+    {
+      "bac": 4,
+      "so_cot": 69,
+      "RMSE_train": 4.087942810873993,
+      "RMSE_test": 4.062031288395286,
+      "he_so_tuyet_doi_lon_nhat": 1901197.344601877
+    },
+    {
+      "bac": 5,
+      "so_cot": 125,
+      "RMSE_train": 3.98160111375575,
+      "RMSE_test": 3.9368789730434446,
+      "he_so_tuyet_doi_lon_nhat": 1261832124.8948832
+    }
+  ],
+  "linear_vs_ridge_high_degree": [
+    {
+      "bac": 4,
+      "RMSE_linear": 4.062031288395286,
+      "he_so_max_linear": 1901197.344601877,
+      "RMSE_ridge": 4.091374478914043,
+      "ridge_alpha": 0.001,
+      "he_so_max_ridge": 230.5650779558676,
+      "RMSE_giam_%": -0.7223772648572877,
+      "he_so_giam_lan": 8245.816588780131
+    },
+    {
+      "bac": 5,
+      "RMSE_linear": 3.9368789730434446,
+      "he_so_max_linear": 1261832124.8948832,
+      "RMSE_ridge": 4.05150133572336,
+      "ridge_alpha": 0.001,
+      "he_so_max_ridge": 205.5225875670639,
+      "RMSE_giam_%": -2.911503337155058,
+      "he_so_giam_lan": 6139627.4727376895
+    }
+  ],
+  "residual_curvature": {
+    "curvature_before": 0.06325265797438917,
+    "curvature_after": 0.002998550231083863,
+    "std_resid_before": 4.502461249707954,
+    "std_resid_after": 4.051253346808325
   },
-  "random_forest_metrics": {
-    "RMSE": 3.2292423653628073,
-    "MAE": 2.314019470567746,
-    "R2": 0.9640485455444416
-  },
-  "spline_metrics": {
+  "random_forest_comparison": [
+    {
+      "model": "Polynomial Ridge (bac toi uu)",
+      "RMSE": 4.05150133572336,
+      "MAE": 3.1782283390128447,
+      "R2": 0.9434090278144208
+    },
+    {
+      "model": "Random Forest Regressor",
+      "RMSE": 3.2292423653628073,
+      "MAE": 2.3140194705677466,
+      "R2": 0.9640485455444416
+    }
+  ],
+  "interaction_only_vs_full": [
+    {
+      "interaction_only": false,
+      "so_cot": 14,
+      "RMSE": 4.231527950850989,
+      "MAE": 3.351638248152796,
+      "R2": 0.9382681048654271
+    },
+    {
+      "interaction_only": true,
+      "so_cot": 10,
+      "RMSE": 4.284234002222328,
+      "MAE": 3.391522527517279,
+      "R2": 0.9367207170393727
+    }
+  ],
+  "spline_vs_polynomial_rmse": {
     "RMSE": 4.153016388341813,
     "MAE": 3.265887576128674,
     "R2": 0.9405375948384274
-  }
+  },
+  "extrapolation_demo": [
+    {
+      "AT": 1.81,
+      "trong_dai_du_lieu": true,
+      "du_doan_bac1": 489.8037773121965,
+      "du_doan_bac_toi_uu_ridge": 479.0498164930245,
+      "du_doan_bac5_ridge": 479.0498164930245,
+      "du_doan_spline": 486.5533039131094
+    },
+    {
+      "AT": 37.11,
+      "trong_dai_du_lieu": true,
+      "du_doan_bac1": 419.70151808661916,
+      "du_doan_bac_toi_uu_ridge": 424.20231093621044,
+      "du_doan_bac5_ridge": 424.20231093621044,
+      "du_doan_spline": 433.1933163760622
+    },
+    {
+      "AT": 45.0,
+      "trong_dai_du_lieu": false,
+      "du_doan_bac1": 404.03276949483995,
+      "du_doan_bac_toi_uu_ridge": 418.92670351104016,
+      "du_doan_bac5_ridge": 418.92670351104016,
+      "du_doan_spline": 433.1933163760622
+    },
+    {
+      "AT": 50.0,
+      "trong_dai_du_lieu": false,
+      "du_doan_bac1": 394.10327102096215,
+      "du_doan_bac_toi_uu_ridge": 442.2763620063529,
+      "du_doan_bac5_ridge": 442.2763620063529,
+      "du_doan_spline": 433.1933163760622
+    },
+    {
+      "AT": 60.0,
+      "trong_dai_du_lieu": false,
+      "du_doan_bac1": 374.24427407320655,
+      "du_doan_bac_toi_uu_ridge": 682.9534378813951,
+      "du_doan_bac5_ridge": 682.9534378813951,
+      "du_doan_spline": 433.1933163760622
+    }
+  ],
+  "kiem_tra_bac_cao_cv": [
+    {
+      "bac": 1,
+      "so_cot": 4,
+      "RMSE_cv_linear": 4.572397273712407,
+      "std_cv_linear": 0.11144152719080376,
+      "RMSE_cv_ridge_alpha1": 4.572396523745107,
+      "std_cv_ridge_alpha1": 0.11143099136208152
+    },
+    {
+      "bac": 2,
+      "so_cot": 14,
+      "RMSE_cv_linear": 4.2676294538080075,
+      "std_cv_linear": 0.11481897196429965,
+      "RMSE_cv_ridge_alpha1": 4.309426379492587,
+      "std_cv_ridge_alpha1": 0.10539764813829629
+    },
+    {
+      "bac": 3,
+      "so_cot": 34,
+      "RMSE_cv_linear": 4.177754020509813,
+      "std_cv_linear": 0.11331425488057152,
+      "RMSE_cv_ridge_alpha1": 4.25582900717181,
+      "std_cv_ridge_alpha1": 0.10794107604180281
+    },
+    {
+      "bac": 4,
+      "so_cot": 69,
+      "RMSE_cv_linear": 4.1237763172409725,
+      "std_cv_linear": 0.1053785148498789,
+      "RMSE_cv_ridge_alpha1": 4.2196410768084585,
+      "std_cv_ridge_alpha1": 0.10726700267390385
+    },
+    {
+      "bac": 5,
+      "so_cot": 125,
+      "RMSE_cv_linear": 4.053473629158414,
+      "std_cv_linear": 0.08783079880434724,
+      "RMSE_cv_ridge_alpha1": 4.20124533719341,
+      "std_cv_ridge_alpha1": 0.10550465042043111
+    },
+    {
+      "bac": 6,
+      "so_cot": 209,
+      "RMSE_cv_linear": 4.055910747156698,
+      "std_cv_linear": 0.15968991714999906,
+      "RMSE_cv_ridge_alpha1": 4.186685651902538,
+      "std_cv_ridge_alpha1": 0.10491752575351643
+    },
+    {
+      "bac": 7,
+      "so_cot": 329,
+      "RMSE_cv_linear": 4.104284360042472,
+      "std_cv_linear": 0.09108951736951143,
+      "RMSE_cv_ridge_alpha1": 4.173885991284349,
+      "std_cv_ridge_alpha1": 0.1052403317197947
+    },
+    {
+      "bac": 8,
+      "so_cot": 494,
+      "RMSE_cv_linear": 4.788976165952077,
+      "std_cv_linear": 0.4924136832373215,
+      "RMSE_cv_ridge_alpha1": 4.162512590431787,
+      "std_cv_ridge_alpha1": 0.10559523779808318
+    }
+  ],
+  "danh_doi_alpha_cv": [
+    {
+      "model": "Linear (alpha=0)",
+      "alpha": 0.0,
+      "RMSE_cv": 4.053473629158414,
+      "he_so_max": 1261832124.8948832,
+      "RMSE_cv_hon_linear_%": 0.0
+    },
+    {
+      "model": "Ridge alpha=1e-08",
+      "alpha": 1e-08,
+      "RMSE_cv": 4.083086495761556,
+      "he_so_max": 47481.32054618141,
+      "RMSE_cv_hon_linear_%": 0.7305553042241009
+    },
+    {
+      "model": "Ridge alpha=1e-05",
+      "alpha": 1e-05,
+      "RMSE_cv": 4.092615052905622,
+      "he_so_max": 2321.009206841786,
+      "RMSE_cv_hon_linear_%": 0.9656267026297405
+    },
+    {
+      "model": "Ridge alpha=0.001",
+      "alpha": 0.001,
+      "RMSE_cv": 4.132675022242692,
+      "he_so_max": 205.5225875670639,
+      "RMSE_cv_hon_linear_%": 1.9539141075088695
+    },
+    {
+      "model": "Ridge alpha=0.1",
+      "alpha": 0.1,
+      "RMSE_cv": 4.174811834496713,
+      "he_so_max": 23.913848774585073,
+      "RMSE_cv_hon_linear_%": 2.993437639891372
+    },
+    {
+      "model": "Ridge alpha=1",
+      "alpha": 1.0,
+      "RMSE_cv": 4.20124533719341,
+      "he_so_max": 9.505565816769545,
+      "RMSE_cv_hon_linear_%": 3.6455574046913686
+    },
+    {
+      "model": "Ridge alpha=10",
+      "alpha": 10.0,
+      "RMSE_cv": 4.25051931825882,
+      "he_so_max": 4.6475847388807985,
+      "RMSE_cv_hon_linear_%": 4.861156310058856
+    }
+  ],
+  "cai_thien_tong_the_test": [
+    {
+      "model": "Dummy (trung binh)",
+      "RMSE": 17.03428704906955,
+      "MAE": 14.806738347041408,
+      "R2": -0.0003756330330488833,
+      "RMSE_giam_vs_bac1_%": -278.3183346434676,
+      "MAE_giam_vs_bac1_MW": -11.210825168768,
+      "MWh_lech_bot_moi_nam_vs_bac1": -98206.82847840768,
+      "RMSE_%_cong_suat_TB": 3.751211447534634
+    },
+    {
+      "model": "Bac 1 (duong thang)",
+      "RMSE": 4.5026332295321865,
+      "MAE": 3.595913178273408,
+      "R2": 0.9301046431962188,
+      "RMSE_giam_vs_bac1_%": 0.0,
+      "MAE_giam_vs_bac1_MW": 0.0,
+      "MWh_lech_bot_moi_nam_vs_bac1": 0.0,
+      "RMSE_%_cong_suat_TB": 0.9915489427891002
+    },
+    {
+      "model": "Poly bac 5 Ridge",
+      "RMSE": 4.05150133572336,
+      "MAE": 3.1782283390128447,
+      "R2": 0.9434090278144208,
+      "RMSE_giam_vs_bac1_%": 10.019290286624072,
+      "MAE_giam_vs_bac1_MW": 0.4176848392605632,
+      "MWh_lech_bot_moi_nam_vs_bac1": 3658.9191919225336,
+      "RMSE_%_cong_suat_TB": 0.8922027758771082
+    },
+    {
+      "model": "Random Forest",
+      "RMSE": 3.2292423653628073,
+      "MAE": 2.3140194705677466,
+      "R2": 0.9640485455444416,
+      "RMSE_giam_vs_bac1_%": 28.28102577437074,
+      "MAE_giam_vs_bac1_MW": 1.2818937077056614,
+      "MWh_lech_bot_moi_nam_vs_bac1": 11229.388879501594,
+      "RMSE_%_cong_suat_TB": 0.7111287307134142
+    }
+  ],
+  "cai_thien_theo_nhiet_do_test": [
+    {
+      "dai_AT": "2.3-12.2 C",
+      "so_mau": 384,
+      "PE_TB": 478.66697916666664,
+      "RMSE_Dummy (trung binh)": 25.11843705973818,
+      "phan_du_TB_Dummy (trung binh)": 24.235939187570782,
+      "RMSE_Bac 1 (duong thang)": 4.86527607492215,
+      "phan_du_TB_Bac 1 (duong thang)": 0.9756589056972977,
+      "RMSE_Poly bac 5 Ridge": 4.52819137432288,
+      "phan_du_TB_Poly bac 5 Ridge": -0.25828345006510983,
+      "RMSE_Random Forest": 3.8540382311895782,
+      "phan_du_TB_Random Forest": -0.18501406250008978
+    },
+    {
+      "dai_AT": "12.2-17.8 C",
+      "so_mau": 382,
+      "PE_TB": 464.9146858638744,
+      "RMSE_Dummy (trung binh)": 12.031873090873113,
+      "phan_du_TB_Dummy (trung binh)": 10.48364588477846,
+      "RMSE_Bac 1 (duong thang)": 4.568151383433105,
+      "phan_du_TB_Bac 1 (duong thang)": -0.8743930031773437,
+      "RMSE_Poly bac 5 Ridge": 4.279161777091293,
+      "phan_du_TB_Poly bac 5 Ridge": -0.2901792788730602,
+      "RMSE_Random Forest": 3.295353052167012,
+      "phan_du_TB_Random Forest": -0.026574956370028536
+    },
+    {
+      "dai_AT": "17.8-22.9 C",
+      "so_mau": 383,
+      "PE_TB": 450.83041775456917,
+      "RMSE_Dummy (trung binh)": 7.483138108257282,
+      "phan_du_TB_Dummy (trung binh)": -3.6006222245266954,
+      "RMSE_Bac 1 (duong thang)": 3.921420903294183,
+      "phan_du_TB_Bac 1 (duong thang)": -1.1002094621807468,
+      "RMSE_Poly bac 5 Ridge": 3.647783254891505,
+      "phan_du_TB_Poly bac 5 Ridge": 0.37629244033247705,
+      "RMSE_Random Forest": 2.793772903860742,
+      "phan_du_TB_Random Forest": -0.13446405570061498
+    },
+    {
+      "dai_AT": "22.9-27.1 C",
+      "so_mau": 382,
+      "PE_TB": 441.1757853403142,
+      "RMSE_Dummy (trung binh)": 14.547641284342026,
+      "phan_du_TB_Dummy (trung binh)": -13.255254638781748,
+      "RMSE_Bac 1 (duong thang)": 4.329756968678511,
+      "phan_du_TB_Bac 1 (duong thang)": -0.9264396583361224,
+      "RMSE_Poly bac 5 Ridge": 3.9240576874147384,
+      "phan_du_TB_Poly bac 5 Ridge": -0.17118543647021295,
+      "RMSE_Random Forest": 3.1010915835338886,
+      "phan_du_TB_Random Forest": -0.20371937172768387
+    },
+    {
+      "dai_AT": "27.1-37.1 C",
+      "so_mau": 383,
+      "PE_TB": 434.8472584856397,
+      "RMSE_Dummy (trung binh)": 20.150116197104957,
+      "phan_du_TB_Dummy (trung binh)": -19.583781493456197,
+      "RMSE_Bac 1 (duong thang)": 4.7638187773188445,
+      "phan_du_TB_Bac 1 (duong thang)": 1.7214693590658843,
+      "RMSE_Poly bac 5 Ridge": 3.813743677215642,
+      "phan_du_TB_Poly bac 5 Ridge": 0.11881124017761578,
+      "RMSE_Random Forest": 2.998764047088416,
+      "phan_du_TB_Random Forest": -0.09464464751958639
+    }
+  ]
 }
