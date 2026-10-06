@@ -1,0 +1,4 @@
+phuong_phap,thoi_gian_s,acc_5NN_trong_2D,co_transform_cho_du_lieu_moi
+PCA,0.11970000003930181,0.565,True
+t-SNE,19.892779399990104,0.9373333333333334,False
+UMAP,62.704218399943784,0.9066666666666666,False

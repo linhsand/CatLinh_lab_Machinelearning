@@ -1,0 +1,4 @@
+# Du lieu UCI HAR (~270 MB giai nen) + cache parquet: KHONG commit, src/data.py tu tai lai
+*
+!.gitignore
+!DATA_SOURCE.md

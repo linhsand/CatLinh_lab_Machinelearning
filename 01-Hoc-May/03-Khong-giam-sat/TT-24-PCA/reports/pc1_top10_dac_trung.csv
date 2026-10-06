@@ -1,0 +1,11 @@
+,he_so_PC1,nhom_tin_hieu
+fBodyAcc-sma(),0.058571097,fBodyAcc
+fBodyAccJerk-sma(),0.058568083,fBodyAccJerk
+tBodyAccJerk-sma(),0.05853759,tBodyAccJerk
+fBodyGyro-sma(),0.058531325,fBodyGyro
+tBodyAccJerkMag-mean(),0.058492746,tBodyAccJerkMag
+tBodyAccJerkMag-sma(),0.058492746,tBodyAccJerkMag
+fBodyBodyAccJerkMag-mean(),0.0581281,fBodyBodyAccJerkMag
+fBodyBodyAccJerkMag-sma(),0.0581281,fBodyBodyAccJerkMag
+tBodyAccJerkMag-mad(),0.058016893,tBodyAccJerkMag
+tBodyAccJerkMag-std(),0.057984747,tBodyAccJerkMag

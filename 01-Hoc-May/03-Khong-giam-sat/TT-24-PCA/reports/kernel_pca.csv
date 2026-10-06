@@ -1,0 +1,3 @@
+phuong_phap,K,acc_cv,acc_test,thoi_gian_fit_s,thoi_gian_du_doan_ms_moi_mau,phai_luu_toan_bo_train_de_transform
+PCA tuyen tinh,50,0.8958312330242512,0.9117746861214795,1.5786863000830635,0.007716219859279269,False
+"Kernel PCA (RBF, gamma=1/561)",50,0.8830828757816842,0.9178825924669155,4.713790499954484,0.5354292840154258,True

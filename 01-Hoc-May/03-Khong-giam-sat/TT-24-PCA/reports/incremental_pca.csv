@@ -1,0 +1,2 @@
+K,batch_size,so_batch,phuong_sai_PCA_%,phuong_sai_IncrementalPCA_%,cos_goc_chinh_trung_binh,cos_goc_chinh_nho_nhat,acc_test_PCA,acc_test_IncrementalPCA,bo_nho_moi_batch_MB,bo_nho_ca_ma_tran_MB,thoi_gian_IncrementalPCA_s
+200,500,15,99.36361694335938,99.32105640517513,0.9884833889975583,0.01861439742366963,0.9514760773668137,0.9541907024092298,2.244,16.497888,11.994818900013342

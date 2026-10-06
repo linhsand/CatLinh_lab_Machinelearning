@@ -1,0 +1,6 @@
+cau_hinh,so_chieu,dung_luong_du_lieu_MB_float64,truyen_moi_cua_so_bytes,truyen_moi_ngay_MB,tham_so_model,bo_nho_model_KB,vua_64KB_RAM,MAC_moi_lan_suy_luan,MAC_neu_gop_W_P
+Goc 561 chieu,561,46.221912,2244,151.47,4494,17.5546875,True,3927,3927
+PCA K=102 (95% phuong sai),102,8.403984,408,27.54,59523,232.51171875,False,58395,3927
+PCA K=200 (diem ngot),200,16.4784,800,54.0,115089,449.56640625,False,113961,3927
+PCA K=50,50,4.1196,200,13.5,30039,117.33984375,False,28911,3927
+LDA 5 chieu,5,0.41196,20,1.35,4524,17.671875,True,3396,3927
