@@ -7,44 +7,633 @@
     300153,
     10
   ],
-  "baseline": {
-    "dummy": {
-      "MAE": 19768.69424587037,
-      "RMSE": 22704.23535747973,
-      "R2": -5.741993791552602e-08
+  "eda": {
+    "gia_TB_theo_days_left": {
+      "1": 21591.867151011935,
+      "2": 30211.299801291603,
+      "3": 28976.08356873823,
+      "4": 25730.905652944653,
+      "5": 26679.773367952523,
+      "6": 24856.493902439026,
+      "7": 25588.36735051727,
+      "8": 24895.883995144788,
+      "9": 25726.246072374226,
+      "10": 25572.819134318102,
+      "11": 22990.656069814555,
+      "12": 22505.803322363266,
+      "13": 22498.885384134916,
+      "14": 22678.002362576783,
+      "15": 21952.540851735015,
+      "16": 20503.546237244896,
+      "17": 20386.353949213273,
+      "18": 19987.44516813087,
+      "19": 19507.677374942636,
+      "20": 19699.98338972624,
+      "21": 19430.494057724958,
+      "22": 19590.667385278717,
+      "23": 19840.913451023276,
+      "24": 19803.90889636197,
+      "25": 19571.641791044774,
+      "26": 19238.290278411685,
+      "27": 19950.866194968552,
+      "28": 19534.98604722478,
+      "29": 19744.653118649367,
+      "30": 19567.58083371789,
+      "31": 19392.706611570247,
+      "32": 19258.135307517085,
+      "33": 19306.271739130436,
+      "34": 19562.008265751716,
+      "35": 19255.652996343983,
+      "36": 19517.68844375963,
+      "37": 19506.306516368128,
+      "38": 19734.912315724814,
+      "39": 19262.095555892614,
+      "40": 19144.972439136425,
+      "41": 19347.440459770114,
+      "42": 19154.261659227337,
+      "43": 19340.528893695922,
+      "44": 19049.080174021132,
+      "45": 19199.87630662021,
+      "46": 19305.351623376624,
+      "47": 18553.272038227056,
+      "48": 18998.12685093781,
+      "49": 18992.971888202796
     },
-    "linear_regression": {
-      "MAE": 4553.287816782152,
-      "RMSE": 6761.7135222016095,
-      "R2": 0.9113048651706634
+    "gia_TB_theo_class": {
+      "Business": 52540.08112357868,
+      "Economy": 6572.342383362527
     },
-    "single_tree": {
-      "MAE": 1161.6538205260615,
-      "RMSE": 3532.430815199737,
-      "R2": 0.9757934111336507
+    "ty_le_business_economy": 7.994118087423535,
+    "gia_trung_vi_theo_airline": {
+      "Vistara": 15543.0,
+      "Air_India": 11520.0,
+      "SpiceJet": 5654.0,
+      "GO_FIRST": 5336.0,
+      "Indigo": 4453.0,
+      "AirAsia": 3276.0
     }
   },
+  "baseline_train_test": [
+    {
+      "model": "Dummy (trung binh)",
+      "MAE_train": 19757.179504002324,
+      "RMSE_train": 22696.10283293966,
+      "R2_train": 0.0,
+      "MAE": 19768.69424587037,
+      "RMSE": 22704.23535747973,
+      "R2": -5.741993791552602e-08,
+      "fit_s": 0.0016646385192871094
+    },
+    {
+      "model": "Linear Regression",
+      "MAE_train": 4573.984544095734,
+      "RMSE_train": 6752.135295432479,
+      "R2_train": 0.9114925780739281,
+      "MAE": 4553.287816782152,
+      "RMSE": 6761.7135222016095,
+      "R2": 0.9113048651706634,
+      "fit_s": 2.154370069503784
+    },
+    {
+      "model": "1 cay don (khong gioi han)",
+      "MAE_train": 58.314964892846135,
+      "RMSE_train": 606.2042246101415,
+      "R2_train": 0.9992865963348827,
+      "MAE": 1161.6538205260615,
+      "RMSE": 3532.430815199737,
+      "R2": 0.9757934111336507,
+      "fit_s": 4.811654090881348
+    },
+    {
+      "model": "1 cay don (max_depth=20, chon bang CV)",
+      "MAE_train": 802.2948155971661,
+      "RMSE_train": 2077.3424882424915,
+      "R2_train": 0.9916225156200754,
+      "MAE": 1418.8409675422445,
+      "RMSE": 3446.4570792083055,
+      "R2": 0.9769573717509453,
+      "fit_s": 4.424882173538208
+    }
+  ],
+  "cay_don_chon_depth_cv": [
+    {
+      "max_depth": "10",
+      "RMSE_train": 4412.575579639297,
+      "RMSE_cv": 4485.214068455711,
+      "std_RMSE_cv": 23.287291211449258
+    },
+    {
+      "max_depth": "15",
+      "RMSE_train": 3307.43188424923,
+      "RMSE_cv": 3759.9486480571504,
+      "std_RMSE_cv": 40.39783824466768
+    },
+    {
+      "max_depth": "20",
+      "RMSE_train": 2019.3975168592,
+      "RMSE_cv": 3433.552400491602,
+      "std_RMSE_cv": 19.510174921150362
+    },
+    {
+      "max_depth": "25",
+      "RMSE_train": 1061.2894377795437,
+      "RMSE_cv": 3459.37740909852,
+      "std_RMSE_cv": 23.159911776040698
+    },
+    {
+      "max_depth": "None",
+      "RMSE_train": 542.4152730636566,
+      "RMSE_cv": 3512.2857816183523,
+      "std_RMSE_cv": 11.788254742784623
+    }
+  ],
+  "rf_tuning_oob": [
+    {
+      "max_features": 0.3,
+      "min_samples_leaf": 1,
+      "RMSE_oob": 2819.4526166018118,
+      "R2_oob": 0.9845678292646568,
+      "fit_s_100_cay": 20.73538565635681,
+      "so_nut_TB_moi_cay": 140170
+    },
+    {
+      "max_features": 0.3,
+      "min_samples_leaf": 2,
+      "RMSE_oob": 2724.0186583755517,
+      "R2_oob": 0.9855948569654065,
+      "fit_s_100_cay": 20.812459468841553,
+      "so_nut_TB_moi_cay": 78930
+    },
+    {
+      "max_features": 0.3,
+      "min_samples_leaf": 5,
+      "RMSE_oob": 2803.87440642507,
+      "R2_oob": 0.9847378916703919,
+      "fit_s_100_cay": 19.27357316017151,
+      "so_nut_TB_moi_cay": 34858
+    },
+    {
+      "max_features": 0.3,
+      "min_samples_leaf": 10,
+      "RMSE_oob": 2992.1113404464977,
+      "R2_oob": 0.9826198740526537,
+      "fit_s_100_cay": 18.54569983482361,
+      "so_nut_TB_moi_cay": 18693
+    },
+    {
+      "max_features": 0.5,
+      "min_samples_leaf": 1,
+      "RMSE_oob": 2786.5044403062006,
+      "R2_oob": 0.9849264030753875,
+      "fit_s_100_cay": 29.25064730644226,
+      "so_nut_TB_moi_cay": 136571
+    },
+    {
+      "max_features": 0.5,
+      "min_samples_leaf": 2,
+      "RMSE_oob": 2685.5663424788227,
+      "R2_oob": 0.9859986732881976,
+      "fit_s_100_cay": 26.62174940109253,
+      "so_nut_TB_moi_cay": 80052
+    },
+    {
+      "max_features": 0.5,
+      "min_samples_leaf": 5,
+      "RMSE_oob": 2725.9918925880015,
+      "R2_oob": 0.9855739797102648,
+      "fit_s_100_cay": 24.78011155128479,
+      "so_nut_TB_moi_cay": 36826
+    },
+    {
+      "max_features": 0.5,
+      "min_samples_leaf": 10,
+      "RMSE_oob": 2872.050231851516,
+      "R2_oob": 0.9839866763364391,
+      "fit_s_100_cay": 23.72238850593567,
+      "so_nut_TB_moi_cay": 20068
+    },
+    {
+      "max_features": 0.7,
+      "min_samples_leaf": 1,
+      "RMSE_oob": 2759.1882743896995,
+      "R2_oob": 0.9852204881356971,
+      "fit_s_100_cay": 34.05023670196533,
+      "so_nut_TB_moi_cay": 132920
+    },
+    {
+      "max_features": 0.7,
+      "min_samples_leaf": 2,
+      "RMSE_oob": 2663.7709293071234,
+      "R2_oob": 0.9862250139106731,
+      "fit_s_100_cay": 32.646037578582764,
+      "so_nut_TB_moi_cay": 80438
+    },
+    {
+      "max_features": 0.7,
+      "min_samples_leaf": 5,
+      "RMSE_oob": 2685.4342040272404,
+      "R2_oob": 0.9860000510743925,
+      "fit_s_100_cay": 30.546959161758423,
+      "so_nut_TB_moi_cay": 37832
+    },
+    {
+      "max_features": 0.7,
+      "min_samples_leaf": 10,
+      "RMSE_oob": 2799.7489883537896,
+      "R2_oob": 0.9847827697562809,
+      "fit_s_100_cay": 31.216452598571777,
+      "so_nut_TB_moi_cay": 20723
+    },
+    {
+      "max_features": 1.0,
+      "min_samples_leaf": 1,
+      "RMSE_oob": 2742.861688374435,
+      "R2_oob": 0.9853948764298442,
+      "fit_s_100_cay": 43.43391013145447,
+      "so_nut_TB_moi_cay": 128818
+    },
+    {
+      "max_features": 1.0,
+      "min_samples_leaf": 2,
+      "RMSE_oob": 2662.5270319127294,
+      "R2_oob": 0.9862378758789749,
+      "fit_s_100_cay": 435.30808663368225,
+      "so_nut_TB_moi_cay": 81066
+    },
+    {
+      "max_features": 1.0,
+      "min_samples_leaf": 5,
+      "RMSE_oob": 2679.564477523852,
+      "R2_oob": 0.9860611853688647,
+      "fit_s_100_cay": 45.39802074432373,
+      "so_nut_TB_moi_cay": 38829
+    },
+    {
+      "max_features": 1.0,
+      "min_samples_leaf": 10,
+      "RMSE_oob": 2775.695240551776,
+      "R2_oob": 0.9850431209948401,
+      "fit_s_100_cay": 38.9034378528595,
+      "so_nut_TB_moi_cay": 21275
+    }
+  ],
+  "rf_params_chon": {
+    "max_features": 1.0,
+    "min_samples_leaf": 2,
+    "n_estimators": 100
+  },
+  "rmse_oob_theo_so_cay": [
+    {
+      "n_estimators": 10,
+      "RMSE_oob": 4282.939528848394,
+      "R2_oob": 0.9643892349378294
+    },
+    {
+      "n_estimators": 20,
+      "RMSE_oob": 2765.338739074526,
+      "R2_oob": 0.9851545251280293
+    },
+    {
+      "n_estimators": 30,
+      "RMSE_oob": 2708.3199173938874,
+      "R2_oob": 0.9857604145466584
+    },
+    {
+      "n_estimators": 50,
+      "RMSE_oob": 2680.4483968864283,
+      "R2_oob": 0.9860519877396211
+    },
+    {
+      "n_estimators": 75,
+      "RMSE_oob": 2669.2519605811653,
+      "R2_oob": 0.9861682681859696
+    },
+    {
+      "n_estimators": 100,
+      "RMSE_oob": 2662.5270319127294,
+      "R2_oob": 0.9862378758789749
+    },
+    {
+      "n_estimators": 150,
+      "RMSE_oob": 2656.0548384688423,
+      "R2_oob": 0.9863047017698222
+    },
+    {
+      "n_estimators": 200,
+      "RMSE_oob": 2653.00465495392,
+      "R2_oob": 0.9863361387615348
+    },
+    {
+      "n_estimators": 300,
+      "RMSE_oob": 2649.9656306313686,
+      "R2_oob": 0.9863674248153866
+    }
+  ],
   "random_forest": {
-    "MAE": 1089.6847453467142,
-    "RMSE": 2694.420508768525,
-    "R2": 0.9859162918875766,
-    "oob_score_": 0.9863674248153866
+    "test": {
+      "MAE": 1092.8249905332004,
+      "RMSE": 2698.6992413351945,
+      "R2": 0.9858715265905064
+    },
+    "train": {
+      "MAE": 654.8611779826356,
+      "RMSE": 1660.4174161245455,
+      "R2": 0.9946478043706184
+    },
+    "oob_score_": 0.9862378758789749
   },
-  "xgboost": {
-    "MAE": 1485.90771484375,
-    "RMSE": 2760.7288892609504,
-    "R2": 0.9852145910263062
+  "xgb_tuning_val": [
+    {
+      "max_depth": 6,
+      "learning_rate": 0.1,
+      "best_iteration": 3993,
+      "RMSE_val": 2521.2783100416036,
+      "fit_s": 83.31476616859436
+    },
+    {
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "best_iteration": 4000,
+      "RMSE_val": 2648.29915617075,
+      "fit_s": 83.89297199249268
+    },
+    {
+      "max_depth": 8,
+      "learning_rate": 0.1,
+      "best_iteration": 1933,
+      "RMSE_val": 2389.7803697544655,
+      "fit_s": 51.94516158103943
+    },
+    {
+      "max_depth": 8,
+      "learning_rate": 0.05,
+      "best_iteration": 3911,
+      "RMSE_val": 2382.8549281928913,
+      "fit_s": 102.89176964759827
+    },
+    {
+      "max_depth": 10,
+      "learning_rate": 0.1,
+      "best_iteration": 598,
+      "RMSE_val": 2397.078461049629,
+      "fit_s": 22.750206232070923
+    },
+    {
+      "max_depth": 10,
+      "learning_rate": 0.05,
+      "best_iteration": 1345,
+      "RMSE_val": 2372.9742417875473,
+      "fit_s": 47.498079776763916
+    },
+    {
+      "max_depth": 12,
+      "learning_rate": 0.1,
+      "best_iteration": 296,
+      "RMSE_val": 2408.1542932071534,
+      "fit_s": 19.42073345184326
+    },
+    {
+      "max_depth": 12,
+      "learning_rate": 0.05,
+      "best_iteration": 587,
+      "RMSE_val": 2391.0186858630586,
+      "fit_s": 34.639084577560425
+    }
+  ],
+  "xgb_params_chon": {
+    "max_depth": 10,
+    "learning_rate": 0.05,
+    "n_estimators": 1345
   },
-  "permutation_importance": {
-    "class": 1.734309767172153,
-    "duration": 0.15130787550377198,
-    "airline": 0.04923591041159521,
-    "source_city": 0.047598504320281544,
-    "destination_city": 0.04748160486608792,
-    "days_left": 0.030623618966784137,
-    "arrival_time": 0.01603857359957441,
-    "departure_time": 0.012363319434627295,
-    "stops": 0.008211306230398296
+  "so_sanh_models_test": [
+    {
+      "model": "Dummy (trung binh)",
+      "MAE": 19768.69424587037,
+      "RMSE": 22704.23535747973,
+      "R2": -5.741993791552602e-08,
+      "fit_s": 0.0016646385192871094,
+      "kich_thuoc_MB": NaN
+    },
+    {
+      "model": "Linear Regression",
+      "MAE": 4553.287816782152,
+      "RMSE": 6761.7135222016095,
+      "R2": 0.9113048651706634,
+      "fit_s": 2.154370069503784,
+      "kich_thuoc_MB": NaN
+    },
+    {
+      "model": "1 cay don (khong gioi han)",
+      "MAE": 1161.6538205260615,
+      "RMSE": 3532.430815199737,
+      "R2": 0.9757934111336507,
+      "fit_s": 4.811654090881348,
+      "kich_thuoc_MB": NaN
+    },
+    {
+      "model": "1 cay don (max_depth=20, chon bang CV)",
+      "MAE": 1418.8409675422445,
+      "RMSE": 3446.4570792083055,
+      "R2": 0.9769573717509453,
+      "fit_s": 4.424882173538208,
+      "kich_thuoc_MB": NaN
+    },
+    {
+      "model": "Random Forest (100 cay, mf=1.0, leaf=2, chon bang OOB)",
+      "MAE": 1092.8249905332004,
+      "RMSE": 2698.6992413351945,
+      "R2": 0.9858715265905064,
+      "fit_s": 44.44268488883972,
+      "kich_thuoc_MB": 139.992907
+    },
+    {
+      "model": "XGBoost (1345 vong, depth=10, lr=0.05, chon bang validation)",
+      "MAE": 1097.373779296875,
+      "RMSE": 2341.2028959490035,
+      "R2": 0.9893667697906494,
+      "fit_s": 42.202351093292236,
+      "kich_thuoc_MB": 30.891306
+    }
+  ],
+  "permutation_importance": [
+    {
+      "bien": "class",
+      "permutation_giam_R2": 1.7407461106702393,
+      "permutation_std": 0.019528247349923585,
+      "impurity_mac_dinh_gop": 0.8832027690247736,
+      "hang_permutation": 1,
+      "hang_impurity": 1
+    },
+    {
+      "bien": "duration",
+      "permutation_giam_R2": 0.1506970522632105,
+      "permutation_std": 0.0026520853646114185,
+      "impurity_mac_dinh_gop": 0.05704329583668887,
+      "hang_permutation": 2,
+      "hang_impurity": 2
+    },
+    {
+      "bien": "airline",
+      "permutation_giam_R2": 0.048939323010845207,
+      "permutation_std": 0.0009989573315948629,
+      "impurity_mac_dinh_gop": 0.010851740179455657,
+      "hang_permutation": 3,
+      "hang_impurity": 5
+    },
+    {
+      "bien": "destination_city",
+      "permutation_giam_R2": 0.04785586901508201,
+      "permutation_std": 0.0007971123133332939,
+      "impurity_mac_dinh_gop": 0.010630303725484238,
+      "hang_permutation": 4,
+      "hang_impurity": 6
+    },
+    {
+      "bien": "source_city",
+      "permutation_giam_R2": 0.0478037315017102,
+      "permutation_std": 0.001713332154536131,
+      "impurity_mac_dinh_gop": 0.010867411021838863,
+      "hang_permutation": 5,
+      "hang_impurity": 4
+    },
+    {
+      "bien": "days_left",
+      "permutation_giam_R2": 0.030618950140456302,
+      "permutation_std": 0.0006601812598486787,
+      "impurity_mac_dinh_gop": 0.016560087447281893,
+      "hang_permutation": 6,
+      "hang_impurity": 3
+    },
+    {
+      "bien": "arrival_time",
+      "permutation_giam_R2": 0.016170885950552494,
+      "permutation_std": 0.00025168821264486127,
+      "impurity_mac_dinh_gop": 0.004819997291686727,
+      "hang_permutation": 7,
+      "hang_impurity": 7
+    },
+    {
+      "bien": "departure_time",
+      "permutation_giam_R2": 0.012430576905666135,
+      "permutation_std": 0.0003610482971226479,
+      "impurity_mac_dinh_gop": 0.004142029850356999,
+      "hang_permutation": 8,
+      "hang_impurity": 8
+    },
+    {
+      "bien": "stops",
+      "permutation_giam_R2": 0.007962856390359962,
+      "permutation_std": 0.00029295893790216463,
+      "impurity_mac_dinh_gop": 0.001882365622433105,
+      "hang_permutation": 9,
+      "hang_impurity": 9
+    }
+  ],
+  "pdp_tiet_kiem": {
+    "gia_du_doan_trung_binh": {
+      "gia_1": 29926.761980274343,
+      "gia_7": 23929.276162259255,
+      "gia_14": 22781.444514704872,
+      "gia_30": 19759.757666861515,
+      "gia_49": 19281.16687422256,
+      "tiet_kiem_7_vs_1": 5997.485818015088,
+      "tiet_kiem_14_vs_7": 1147.8316475543834,
+      "tiet_kiem_30_vs_7": 4169.5184953977405
+    },
+    "PDP_Economy": {
+      "gia_1": 14887.84700052833,
+      "gia_7": 10359.981742600507,
+      "gia_14": 9566.070666421609,
+      "gia_30": 5282.226381222736,
+      "gia_49": 4889.4026263812075,
+      "tiet_kiem_7_vs_1": 4527.865257927824,
+      "tiet_kiem_14_vs_7": 793.9110761788979,
+      "tiet_kiem_30_vs_7": 5077.755361377771
+    },
+    "PDP_Business": {
+      "gia_1": 63128.15166691489,
+      "gia_7": 53886.186777592506,
+      "gia_14": 51957.00522386592,
+      "gia_30": 51721.78142737761,
+      "gia_49": 51053.8428760728,
+      "tiet_kiem_7_vs_1": 9241.964889322386,
+      "tiet_kiem_14_vs_7": 1929.1815537265866,
+      "tiet_kiem_30_vs_7": 2164.4053502148963
+    }
   },
-  "coverage_10_90_pct": 86.49697656210958
+  "khoang_du_bao_10_90": {
+    "ty_le_phu_%": 86.11384118205594,
+    "do_rong_TB": 2357.2335735145275,
+    "do_rong_trung_vi": 645.6000000000004,
+    "theo_class": {
+      "Economy": {
+        "ty_le_phu_%": 85.03243295575564,
+        "do_rong_TB": 1572.1076653112398,
+        "do_rong_%_gia": 22.6711621490342
+      },
+      "Business": {
+        "ty_le_phu_%": 88.50120224418914,
+        "do_rong_TB": 4090.509663459868,
+        "do_rong_%_gia": 7.382333089197535
+      }
+    }
+  },
+  "ngoai_suy": [
+    {
+      "days_left": 1,
+      "gia_RF": 15578.614547619049,
+      "gia_Linear": 8520.707428750586,
+      "trong_dai_train (<=49)": true
+    },
+    {
+      "days_left": 20,
+      "gia_RF": 7082.895,
+      "gia_Linear": 6042.257139932703,
+      "trong_dai_train (<=49)": true
+    },
+    {
+      "days_left": 49,
+      "gia_RF": 7338.525,
+      "gia_Linear": 2259.359330684354,
+      "trong_dai_train (<=49)": true
+    },
+    {
+      "days_left": 60,
+      "gia_RF": 7338.525,
+      "gia_Linear": 824.4670582108447,
+      "trong_dai_train (<=49)": false
+    },
+    {
+      "days_left": 100,
+      "gia_RF": 7338.525,
+      "gia_Linear": -4393.323023511013,
+      "trong_dai_train (<=49)": false
+    },
+    {
+      "days_left": 365,
+      "gia_RF": 7338.525,
+      "gia_Linear": -38961.18231491833,
+      "trong_dai_train (<=49)": false
+    }
+  ],
+  "mo_rong": [
+    {
+      "model": "RF tach 2 model Economy / Business",
+      "MAE": 1090.3684421822502,
+      "RMSE": 2695.195537272715,
+      "R2": 0.9859081885903799,
+      "fit_s": 31.64102339744568,
+      "RMSE_Economy": 1346.6700013852512,
+      "RMSE_Business": 4392.830053957511
+    },
+    {
+      "model": "ExtraTrees (cung tham so)",
+      "MAE": 1121.7631814998113,
+      "RMSE": 2673.2956181262416,
+      "R2": 0.9861362653415509,
+      "fit_s": 47.16740274429321,
+      "RMSE_Economy": 1427.1723148199396,
+      "RMSE_Business": 4292.652706003005
+    }
+  ]
 }
