@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+# log chay notebook (nbconvert/nbclient)
+*.log
