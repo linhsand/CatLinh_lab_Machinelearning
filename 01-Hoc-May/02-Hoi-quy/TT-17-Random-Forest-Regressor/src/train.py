@@ -411,6 +411,35 @@ def tune_xgb(Xt_train, y_train) -> tuple[pd.DataFrame, dict]:
     return df, params
 
 
+def build_comparison(baseline_df, rf_tune_df, rf_pipe, rf_params, n_trees, rf_fit_s,
+                     xgb_pipe, xgb_params, xgb_fit_s, X_train, y_train, X_test, y_test) -> pd.DataFrame:
+    """Bang so sanh tren test: baseline + RF da chon + RF tot nhat tuyet doi theo OOB (neu khac) + XGBoost."""
+    rows = [{"model": r["model"], "MAE": r["MAE"], "RMSE": r["RMSE"], "R2": r["R2"], "fit_s": r["fit_s"]}
+            for r in baseline_df.to_dict(orient="records")]
+    rows.append({"model": f"Random Forest ({n_trees} cay, mf={rf_params['max_features']}, "
+                          f"leaf={rf_params['min_samples_leaf']}, chon bang OOB)",
+                 **evaluate(y_test, rf_pipe.predict(X_test)), "fit_s": rf_fit_s,
+                 "kich_thuoc_MB": model_size_mb(rf_pipe, "rf")})
+    best_cfg = rf_tune_df.loc[rf_tune_df["RMSE_oob"].idxmin()]
+    best_params = {"max_features": float(best_cfg["max_features"]), "min_samples_leaf": int(best_cfg["min_samples_leaf"])}
+    if best_params != rf_params:
+        t0 = time.time()
+        rf_best_pipe = Pipeline([("pre", make_preprocess()),
+                                 ("rf", RandomForestRegressor(n_estimators=n_trees, n_jobs=-1, random_state=RANDOM_STATE,
+                                                              **best_params))]).fit(X_train, y_train)
+        fit_s = time.time() - t0
+        rows.append({"model": f"Random Forest ({n_trees} cay, mf={best_params['max_features']}, "
+                              f"leaf={best_params['min_samples_leaf']}, RMSE-OOB tot nhat tuyet doi)",
+                     **evaluate(y_test, rf_best_pipe.predict(X_test)), "fit_s": fit_s,
+                     "kich_thuoc_MB": model_size_mb(rf_best_pipe, "rf_best")})
+        del rf_best_pipe
+    rows.append({"model": f"XGBoost ({xgb_params['n_estimators']} vong, depth={xgb_params['max_depth']}, "
+                          f"lr={xgb_params['learning_rate']}, chon bang validation)",
+                 **evaluate(y_test, xgb_pipe.predict(X_test)), "fit_s": xgb_fit_s,
+                 "kich_thuoc_MB": model_size_mb(xgb_pipe, "xgb")})
+    return compare_models(rows)
+
+
 def compare_models(rows: list[dict]) -> pd.DataFrame:
     df = pd.DataFrame(rows)
     df.to_csv(REPORTS_DIR / "so_sanh_models.csv", index=False)
@@ -514,29 +543,8 @@ def main() -> None:
     xgb_fit_s = time.time() - t0
 
     log("   Bang so sanh tren test...")
-    rows = [{"model": r["model"], "MAE": r["MAE"], "RMSE": r["RMSE"], "R2": r["R2"], "fit_s": r["fit_s"]}
-            for r in baseline_df.to_dict(orient="records")]
-    rows.append({"model": f"Random Forest ({n_trees} cay, mf={rf_params['max_features']}, "
-                          f"leaf={rf_params['min_samples_leaf']}, chon bang OOB)",
-                 **rf_test, "fit_s": rf_fit_s, "kich_thuoc_MB": model_size_mb(rf_pipe, "rf")})
-    best_cfg = rf_tune_df.loc[rf_tune_df["RMSE_oob"].idxmin()]
-    best_params = {"max_features": float(best_cfg["max_features"]), "min_samples_leaf": int(best_cfg["min_samples_leaf"])}
-    if best_params != rf_params:
-        t0 = time.time()
-        rf_best_pipe = Pipeline([("pre", make_preprocess()),
-                                 ("rf", RandomForestRegressor(n_estimators=n_trees, n_jobs=-1, random_state=RANDOM_STATE,
-                                                              **best_params))]).fit(X_train, y_train)
-        fit_s = time.time() - t0
-        rows.append({"model": f"Random Forest ({n_trees} cay, mf={best_params['max_features']}, "
-                              f"leaf={best_params['min_samples_leaf']}, RMSE-OOB tot nhat tuyet doi)",
-                     **evaluate(y_test, rf_best_pipe.predict(X_test)), "fit_s": fit_s,
-                     "kich_thuoc_MB": model_size_mb(rf_best_pipe, "rf_best")})
-        del rf_best_pipe
-    rows.append({"model": f"XGBoost ({xgb_params['n_estimators']} vong, depth={xgb_params['max_depth']}, "
-                          f"lr={xgb_params['learning_rate']}, chon bang validation)",
-                 **evaluate(y_test, xgb_pipe.predict(X_test)), "fit_s": xgb_fit_s,
-                 "kich_thuoc_MB": model_size_mb(xgb_pipe, "xgb")})
-    comparison = compare_models(rows)
+    comparison = build_comparison(baseline_df, rf_tune_df, rf_pipe, rf_params, n_trees, rf_fit_s,
+                                  xgb_pipe, xgb_params, xgb_fit_s, X_train, y_train, X_test, y_test)
 
     log("13-14. Mo rong: tach Economy/Business, ExtraTrees...")
     ext_df = run_extensions(X_train, y_train, X_test, y_test, rf_params, n_trees)
