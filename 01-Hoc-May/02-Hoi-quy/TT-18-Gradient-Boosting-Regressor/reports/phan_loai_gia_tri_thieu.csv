@@ -1,0 +1,20 @@
+cot,so_dong_thieu,phan_tram,phan_loai
+PoolQC,1453,99.52054794520548,khong co tien ich -> 'None'
+MiscFeature,1406,96.30136986301369,khong co tien ich -> 'None'
+Alley,1369,93.76712328767123,khong co tien ich -> 'None'
+Fence,1179,80.75342465753424,khong co tien ich -> 'None'
+MasVnrType,872,59.726027397260275,khong co tien ich -> 'None'
+FireplaceQu,690,47.26027397260274,khong co tien ich -> 'None'
+LotFrontage,259,17.73972602739726,thieu that -> median theo Neighborhood (train)
+GarageType,81,5.5479452054794525,khong co tien ich -> 'None'
+GarageYrBlt,81,5.5479452054794525,khong co tien ich -> 0
+GarageFinish,81,5.5479452054794525,khong co tien ich -> 'None'
+GarageQual,81,5.5479452054794525,khong co tien ich -> 'None'
+GarageCond,81,5.5479452054794525,khong co tien ich -> 'None'
+BsmtExposure,38,2.6027397260273974,khong co tien ich -> 'None'
+BsmtFinType2,38,2.6027397260273974,khong co tien ich -> 'None'
+BsmtQual,37,2.5342465753424657,khong co tien ich -> 'None'
+BsmtCond,37,2.5342465753424657,khong co tien ich -> 'None'
+BsmtFinType1,37,2.5342465753424657,khong co tien ich -> 'None'
+MasVnrArea,8,0.547945205479452,khong co tien ich -> 0
+Electrical,1,0.0684931506849315,thieu that -> mode (train)
