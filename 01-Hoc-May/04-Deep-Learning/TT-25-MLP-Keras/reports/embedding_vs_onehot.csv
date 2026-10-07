@@ -1,0 +1,3 @@
+cach_ma_hoa,ten,kien_truc,dropout_bn,class_weight,ma_hoa,so_dau_vao,so_tham_so,so_epoch,epoch_tot_nhat,thoi_gian_train_s,s_moi_epoch,pr_auc_val,pr_auc_test,roc_auc_test,tham_so_cho_2_bien_nhieu_muc
+one-hot,khong_class_weight_128_64,"(128, 64)",True,False,one-hot,216,36865,32,22,113.21366040001158,3.5379268875003618,0.3693581020774208,0.3661954014648036,0.8584521012707957,26368
+embedding,embedding_128_64,"(128, 64)",True,False,embedding,10,14773,36,26,109.41653300006874,3.0393481388907984,0.371088762172956,0.3683269180534017,0.858935820957352,4276

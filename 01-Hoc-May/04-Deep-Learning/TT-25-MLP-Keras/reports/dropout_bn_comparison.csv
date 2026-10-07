@@ -1,0 +1,3 @@
+ten,kien_truc,dropout_bn,class_weight,ma_hoa,so_dau_vao,so_tham_so,so_epoch,epoch_tot_nhat,thoi_gian_train_s,s_moi_epoch,pr_auc_val,pr_auc_test,roc_auc_test
+co_ban_128_64,"(128, 64)",False,True,one-hot,216,36097,21,11,54.06410350010265,2.574481119052507,0.3641780335580959,0.3644234033451342,0.8574392328450768
+dropout_bn_128_64,"(128, 64)",True,True,one-hot,216,36865,45,35,195.76803909998853,4.3504008688886335,0.36846630427124605,0.3661602601335304,0.8588869165125148

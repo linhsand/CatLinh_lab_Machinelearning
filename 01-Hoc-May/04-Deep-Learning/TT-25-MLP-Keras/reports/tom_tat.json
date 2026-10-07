@@ -1,0 +1,262 @@
+{
+  "kien_truc_chon": "(128,64)",
+  "dung_class_weight": false,
+  "dung_embedding": true,
+  "baseline": [
+    {
+      "mo_hinh": "LightGBM (mac dinh)",
+      "so_cay": 100,
+      "thoi_gian_train_s": 4.226781800040044,
+      "pr_auc_val": 0.3706705753637751,
+      "pr_auc_test": 0.3661215373848389,
+      "roc_auc_test": 0.8586009925936446
+    },
+    {
+      "mo_hinh": "LightGBM (tinh chinh + early stopping)",
+      "so_cay": 193,
+      "thoi_gian_train_s": 9.66728970000986,
+      "pr_auc_val": 0.373519782335555,
+      "pr_auc_test": 0.3691906946701707,
+      "roc_auc_test": 0.8594348889888876
+    }
+  ],
+  "dropout_bn": [
+    {
+      "ten": "co_ban_128_64",
+      "kien_truc": "(128, 64)",
+      "dropout_bn": false,
+      "class_weight": true,
+      "ma_hoa": "one-hot",
+      "so_dau_vao": 216,
+      "so_tham_so": 36097,
+      "so_epoch": 21,
+      "epoch_tot_nhat": 11,
+      "thoi_gian_train_s": 54.06410350010265,
+      "s_moi_epoch": 2.574481119052507,
+      "pr_auc_val": 0.3641780335580959,
+      "pr_auc_test": 0.3644234033451342,
+      "roc_auc_test": 0.8574392328450768
+    },
+    {
+      "ten": "dropout_bn_128_64",
+      "kien_truc": "(128, 64)",
+      "dropout_bn": true,
+      "class_weight": true,
+      "ma_hoa": "one-hot",
+      "so_dau_vao": 216,
+      "so_tham_so": 36865,
+      "so_epoch": 45,
+      "epoch_tot_nhat": 35,
+      "thoi_gian_train_s": 195.76803909998853,
+      "s_moi_epoch": 4.3504008688886335,
+      "pr_auc_val": 0.36846630427124605,
+      "pr_auc_test": 0.3661602601335304,
+      "roc_auc_test": 0.8588869165125148
+    }
+  ],
+  "kien_truc": [
+    {
+      "ten_kien_truc": "(64)",
+      "ten": "kien_truc_64",
+      "kien_truc": "(64,)",
+      "dropout_bn": true,
+      "class_weight": true,
+      "ma_hoa": "one-hot",
+      "so_dau_vao": 216,
+      "so_tham_so": 14209,
+      "so_epoch": 30,
+      "epoch_tot_nhat": 20,
+      "thoi_gian_train_s": 71.55471769999713,
+      "s_moi_epoch": 2.385157256666571,
+      "pr_auc_val": 0.3671589302045926,
+      "pr_auc_test": 0.3630266257959061,
+      "roc_auc_test": 0.8585085170013399
+    },
+    {
+      "ten_kien_truc": "(128,64)",
+      "ten": "kien_truc_128_64",
+      "kien_truc": "(128, 64)",
+      "dropout_bn": true,
+      "class_weight": true,
+      "ma_hoa": "one-hot",
+      "so_dau_vao": 216,
+      "so_tham_so": 36865,
+      "so_epoch": 45,
+      "epoch_tot_nhat": 35,
+      "thoi_gian_train_s": 174.82965459988918,
+      "s_moi_epoch": 3.885103435553093,
+      "pr_auc_val": 0.36846630427124605,
+      "pr_auc_test": 0.3661602601335304,
+      "roc_auc_test": 0.8588869165125148
+    },
+    {
+      "ten_kien_truc": "(256,128,64)",
+      "ten": "kien_truc_256_128_64",
+      "kien_truc": "(256, 128, 64)",
+      "dropout_bn": true,
+      "class_weight": true,
+      "ma_hoa": "one-hot",
+      "so_dau_vao": 216,
+      "so_tham_so": 98561,
+      "so_epoch": 54,
+      "epoch_tot_nhat": 44,
+      "thoi_gian_train_s": 259.5189792999299,
+      "s_moi_epoch": 4.805907024072776,
+      "pr_auc_val": 0.3670498221391361,
+      "pr_auc_test": 0.36741610344979353,
+      "roc_auc_test": 0.8588711698417784
+    }
+  ],
+  "class_weight": [
+    {
+      "cau_hinh": "co class_weight",
+      "ten": "kien_truc_128_64",
+      "kien_truc": "(128, 64)",
+      "dropout_bn": true,
+      "class_weight": true,
+      "ma_hoa": "one-hot",
+      "so_dau_vao": 216,
+      "so_tham_so": 36865,
+      "so_epoch": 45,
+      "epoch_tot_nhat": 35,
+      "thoi_gian_train_s": 174.82965459988918,
+      "s_moi_epoch": 3.885103435553093,
+      "pr_auc_val": 0.36846630427124605,
+      "pr_auc_test": 0.3661602601335304,
+      "roc_auc_test": 0.8588869165125148,
+      "xac_suat_tb_test": 0.3336702585220337,
+      "ti_le_thuc_test": 0.1225707158446312,
+      "recall_nguong_0.5": 0.9352076494933638,
+      "ti_le_du_doan_1_nguong_0.5": 0.40367694649010794
+    },
+    {
+      "cau_hinh": "khong class_weight",
+      "ten": "khong_class_weight_128_64",
+      "kien_truc": "(128, 64)",
+      "dropout_bn": true,
+      "class_weight": false,
+      "ma_hoa": "one-hot",
+      "so_dau_vao": 216,
+      "so_tham_so": 36865,
+      "so_epoch": 32,
+      "epoch_tot_nhat": 22,
+      "thoi_gian_train_s": 113.21366040001158,
+      "s_moi_epoch": 3.5379268875003618,
+      "pr_auc_val": 0.3693581020774208,
+      "pr_auc_test": 0.3661954014648036,
+      "roc_auc_test": 0.8584521012707957,
+      "xac_suat_tb_test": 0.1182856336236,
+      "ti_le_thuc_test": 0.1225707158446312,
+      "recall_nguong_0.5": 0.0014271442842871413,
+      "ti_le_du_doan_1_nguong_0.5": 0.000524778281176203
+    }
+  ],
+  "embedding": [
+    {
+      "cach_ma_hoa": "one-hot",
+      "ten": "khong_class_weight_128_64",
+      "kien_truc": "(128, 64)",
+      "dropout_bn": true,
+      "class_weight": false,
+      "ma_hoa": "one-hot",
+      "so_dau_vao": 216,
+      "so_tham_so": 36865,
+      "so_epoch": 32,
+      "epoch_tot_nhat": 22,
+      "thoi_gian_train_s": 113.21366040001158,
+      "s_moi_epoch": 3.5379268875003618,
+      "pr_auc_val": 0.3693581020774208,
+      "pr_auc_test": 0.3661954014648036,
+      "roc_auc_test": 0.8584521012707957,
+      "tham_so_cho_2_bien_nhieu_muc": 26368
+    },
+    {
+      "cach_ma_hoa": "embedding",
+      "ten": "embedding_128_64",
+      "kien_truc": "(128, 64)",
+      "dropout_bn": true,
+      "class_weight": false,
+      "ma_hoa": "embedding",
+      "so_dau_vao": 10,
+      "so_tham_so": 14773,
+      "so_epoch": 36,
+      "epoch_tot_nhat": 26,
+      "thoi_gian_train_s": 109.41653300006874,
+      "s_moi_epoch": 3.0393481388907984,
+      "pr_auc_val": 0.371088762172956,
+      "pr_auc_test": 0.3683269180534017,
+      "roc_auc_test": 0.858935820957352,
+      "tham_so_cho_2_bien_nhieu_muc": 4276
+    }
+  ],
+  "precision_3000": [
+    {
+      "mo_hinh": "MLP cuoi",
+      "nguong_chon_tren_val": 0.43680331110954285,
+      "so_khach_chon_o_test": 471,
+      "precision_tai_nguong_test": 0.47558385133743286,
+      "precision_top451_test (=3000/ngay)": 0.48337027430534363,
+      "precision@3000_test (nghia den)": 0.4073333442211151,
+      "lift_3000/ngay": 3.943603257714971,
+      "khach_quan_tam_moi_ngay_uoc_tinh": 1450.1108229160309,
+      "neu_goi_ngau_nhien": 367.7121475338936
+    },
+    {
+      "mo_hinh": "LightGBM tinh chinh",
+      "nguong_chon_tren_val": 0.4622585486943304,
+      "so_khach_chon_o_test": 492,
+      "precision_tai_nguong_test": 0.4695121943950653,
+      "precision_top451_test (=3000/ngay)": 0.47893568873405457,
+      "precision@3000_test (nghia den)": 0.4169999957084656,
+      "lift_3000/ngay": 3.907423444774087,
+      "khach_quan_tam_moi_ngay_uoc_tinh": 1436.8070662021637,
+      "neu_goi_ngau_nhien": 367.7121475338936
+    },
+    {
+      "mo_hinh": "LightGBM mac dinh",
+      "nguong_chon_tren_val": 0.4583235159102665,
+      "so_khach_chon_o_test": 483,
+      "precision_tai_nguong_test": 0.47826087474823,
+      "precision_top451_test (=3000/ngay)": 0.47228381037712097,
+      "precision@3000_test (nghia den)": 0.41733333468437195,
+      "lift_3000/ngay": 3.85315372536276,
+      "khach_quan_tam_moi_ngay_uoc_tinh": 1416.851431131363,
+      "neu_goi_ngau_nhien": 367.7121475338936
+    }
+  ],
+  "ket_luan": [
+    {
+      "mo_hinh": "LightGBM mac dinh",
+      "pr_auc_val": 0.3706705753637751,
+      "pr_auc_test": 0.3661215373848389,
+      "pr_auc_test_tb_3_seed": NaN,
+      "pr_auc_test_std_3_seed": NaN,
+      "precision_3000_ngay": 0.47228381037712097,
+      "thoi_gian_train_s": 4.226781800040044,
+      "so_lan_train_de_chon": 1,
+      "tien_xu_ly": "khong (giu nguyen ma so, khai bao 2 cot categorical)"
+    },
+    {
+      "mo_hinh": "LightGBM tinh chinh",
+      "pr_auc_val": 0.373519782335555,
+      "pr_auc_test": 0.3691906946701707,
+      "pr_auc_test_tb_3_seed": 0.3690679378970658,
+      "pr_auc_test_std_3_seed": 0.0008455971992508695,
+      "precision_3000_ngay": 0.47893568873405457,
+      "thoi_gian_train_s": 9.66728970000986,
+      "so_lan_train_de_chon": 1,
+      "tien_xu_ly": "khong (+ early stopping tren val)"
+    },
+    {
+      "mo_hinh": "MLP cuoi (128, 64) embedding",
+      "pr_auc_val": 0.371088762172956,
+      "pr_auc_test": 0.3683269180534017,
+      "pr_auc_test_tb_3_seed": 0.3674257888086714,
+      "pr_auc_test_std_3_seed": 0.001332114120001402,
+      "precision_3000_ngay": 0.48337027430534363,
+      "thoi_gian_train_s": 109.41653300006874,
+      "so_lan_train_de_chon": 7,
+      "tien_xu_ly": "log1p + StandardScaler + one-hot/Embedding, class_weight, 3 callback"
+    }
+  ]
+}

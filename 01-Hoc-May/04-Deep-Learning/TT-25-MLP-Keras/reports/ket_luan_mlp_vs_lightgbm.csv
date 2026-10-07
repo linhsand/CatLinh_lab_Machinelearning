@@ -1,0 +1,4 @@
+mo_hinh,pr_auc_val,pr_auc_test,pr_auc_test_tb_3_seed,pr_auc_test_std_3_seed,precision_3000_ngay,thoi_gian_train_s,so_lan_train_de_chon,tien_xu_ly
+LightGBM mac dinh,0.3706705753637751,0.3661215373848389,,,0.47228381037712097,4.226781800040044,1,"khong (giu nguyen ma so, khai bao 2 cot categorical)"
+LightGBM tinh chinh,0.373519782335555,0.3691906946701707,0.3690679378970658,0.0008455971992508695,0.47893568873405457,9.66728970000986,1,khong (+ early stopping tren val)
+"MLP cuoi (128, 64) embedding",0.371088762172956,0.3683269180534017,0.3674257888086714,0.001332114120001402,0.48337027430534363,109.41653300006874,7,"log1p + StandardScaler + one-hot/Embedding, class_weight, 3 callback"

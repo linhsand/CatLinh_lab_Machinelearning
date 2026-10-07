@@ -1,0 +1,11 @@
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+matplotlib>=3.7
+tensorflow>=2.20     # Python 3.13 can TF >= 2.20; ban CPU la du (moi lan train ~1-3 phut)
+lightgbm>=4.0        # baseline cay (buoc 4)
+kagglehub>=0.3       # tai du lieu lan dau, khong can API key
+jupyter
+nbformat
+nbclient
+ipykernel

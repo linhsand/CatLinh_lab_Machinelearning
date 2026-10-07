@@ -1,0 +1,3 @@
+cau_hinh,ten,kien_truc,dropout_bn,class_weight,ma_hoa,so_dau_vao,so_tham_so,so_epoch,epoch_tot_nhat,thoi_gian_train_s,s_moi_epoch,pr_auc_val,pr_auc_test,roc_auc_test,xac_suat_tb_test,ti_le_thuc_test,recall_nguong_0.5,ti_le_du_doan_1_nguong_0.5
+co class_weight,kien_truc_128_64,"(128, 64)",True,True,one-hot,216,36865,45,35,174.82965459988918,3.885103435553093,0.36846630427124605,0.3661602601335304,0.8588869165125148,0.33367026,0.122570716,0.9352076494933638,0.40367694649010794
+khong class_weight,khong_class_weight_128_64,"(128, 64)",True,False,one-hot,216,36865,32,22,113.21366040001158,3.5379268875003618,0.3693581020774208,0.3661954014648036,0.8584521012707957,0.11828563,0.122570716,0.0014271442842871413,0.000524778281176203

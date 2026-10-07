@@ -1,0 +1,4 @@
+# train.csv (~20 MB) tai lai duoc bang kagglehub (src/data.py) -> khong commit
+*
+!.gitignore
+!DATA_SOURCE.md
