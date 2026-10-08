@@ -1,0 +1,3 @@
+model,C,gamma,epsilon,cv_rmse_tb,cv_rmse_std_5_fold,hang_trong_48_cau_hinh,rmse_train,rmse_test,so_support_vector,test_diff_tuned_tru_chua_tune,bootstrap_ci95
+Chua tune (muc 6),100,scale,0.1,5.4275158201868585,1.1995717411446725,13,2.31732688115853,5.332151685962165,472,,
+Tuned (GridSearchCV),1000,0.01,0.1,4.9298122039446834,0.5520345755912845,1,3.86258893872197,5.350867420127149,511,0.018715734164984177,"[-0.63, 0.75]"

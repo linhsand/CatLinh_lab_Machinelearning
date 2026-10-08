@@ -168,9 +168,27 @@ suy ra từ 8 cột nguyên liệu thô. Đo hiệu quả (cùng tham số SVR
 | Baseline Dummy (dự đoán trung bình) | 16,05 | — |
 | Baseline Linear Regression (đã có đặc trưng miền) | 6,57 | 0,832 |
 | SVR **không** chuẩn hoá | 13,10 | 0,334 (⚠️ tệ hơn cả Linear Regression) |
-| SVR có chuẩn hoá cả X và y (tham số mặc định) | 5,33 | 0,890 |
+| SVR có chuẩn hoá cả X và y, **chưa tune** (`C=100, gamma='scale', epsilon=0.1`) | 5,33 | 0,890 |
 | Kernel: linear / **rbf** / poly (deg 2) / poly (deg 3) | 6,74 / **5,33** / 11,48 / 6,79 | 0,823 / **0,890** / 0,488 / 0,821 |
-| **SVR cuối (GridSearchCV: `C=1000, gamma=0.01, epsilon=0.1`)** | **5,35** | **0,889** |
+| **SVR cuối (GridSearchCV: `C=1000, gamma=0.01, epsilon=0.1`)** — CV RMSE 4,93 | **5,35** | **0,889** (⚠️ không hơn bản chưa tune, xem bên dưới) |
+
+**⚠️ Vì sao model sau tuning (5,35) không tốt hơn bản chưa tune (5,33) trên test?** Mục 8b notebook,
+`reports/tuned_vs_chua_tune.csv`:
+
+| | CV RMSE (5 fold, train) | Hạng / 48 cấu hình | RMSE train | RMSE test |
+|---|---:|---:|---:|---:|
+| Chưa tune `C=100, gamma='scale'` | 5,43 ± 1,20 | 13 | 2,32 | 5,33 |
+| Tuned `C=1000, gamma=0.01` | **4,93 ± 0,55** | 1 | 3,86 | 5,35 |
+
+* **Trên CV, tuning có tác dụng thật:** RMSE giảm 0,5 MPa, độ lệch giữa các fold giảm một nửa.
+* **Bản chưa tune overfit hơn:** train 2,32 so với test 5,33. `gamma='scale'` ≈ 0,09, lớn gấp ~9 lần 0,01, nên đường
+  hồi quy bám sát từng điểm train.
+* **Chênh 0,02 MPa trên test là nhiễu:** bootstrap paired 2.000 lần trên 206 mẫu test cho khoảng tin cậy 95% của hiệu
+  RMSE là **[−0,63; +0,75]**, và xác suất tuned tốt hơn là 0,48.
+* **Vẫn giữ model tuned** vì nó được chọn bằng CV. Đổi sang bản chưa tune chỉ vì thắng 0,02 trên test là chọn model
+  bằng tập test (rò rỉ). CV 4,93 hơi lạc quan (là điểm tốt nhất trong 48 cấu hình), nên test cao hơn CV là bình thường.
+  Với 1.030 dòng, một lần chia train/test không đủ để phân biệt hai model chênh vài phần trăm. Muốn chắc cần CV lặp
+  hoặc nested CV.
 
 | Mục | Kết quả |
 |---|---|
