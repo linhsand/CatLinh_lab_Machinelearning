@@ -1,0 +1,13 @@
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3       # baseline TF-IDF + LinearSVC
+matplotlib>=3.7
+pyarrow                 # doc/ghi data/ag_news.parquet
+tensorflow>=2.20        # nhanh A: Transformer tu xay, BiLSTM (Python 3.13 can TF >= 2.20)
+torch>=2.2              # nhanh B: DistilBERT (ban CPU chay duoc, nhung cham: ~6 mau/giay)
+transformers>=4.40
+datasets>=4.0           # tai AG News lan dau (repo "fancyzhx/ag_news")
+jupyter
+nbformat
+nbclient
+ipykernel

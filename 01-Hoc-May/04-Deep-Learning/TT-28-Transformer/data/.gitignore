@@ -1,0 +1,4 @@
+# ag_news.parquet tai lai duoc bang datasets (src/data.py) -> khong commit
+*
+!.gitignore
+!DATA_SOURCE.md

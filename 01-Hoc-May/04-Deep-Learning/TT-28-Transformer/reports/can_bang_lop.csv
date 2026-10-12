@@ -1,0 +1,4 @@
+tap,World,Sports,Business,Sci/Tech
+train,27000,27000,27000,27000
+val,3000,3000,3000,3000
+test,1900,1900,1900,1900
