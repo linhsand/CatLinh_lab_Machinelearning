@@ -1,0 +1,4 @@
+# anh goc (~2,3 GB) nam trong cache kagglehub; cache_224.npz (~300 MB) tao lai duoc -> khong commit
+*
+!.gitignore
+!DATA_SOURCE.md

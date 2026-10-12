@@ -1,0 +1,5 @@
+{
+  "mo_hinh": "CNN tu dau (3 khoi Conv)",
+  "nguong": 0.18787060678005219,
+  "y_nghia": "xac suat PNEUMONIA >= nguong -> gan co uu tien doc phim; nguong chon de recall val >= 0,97"
+}

@@ -1,0 +1,267 @@
+{
+  "so_luong_anh": [
+    {
+      "tap_goc": "train",
+      "NORMAL": 1341,
+      "PNEUMONIA": 3875,
+      "tong": 5216,
+      "ti_le_PNEUMONIA": 0.7429064417177914,
+      "so_benh_nhan": 2846
+    },
+    {
+      "tap_goc": "val",
+      "NORMAL": 8,
+      "PNEUMONIA": 8,
+      "tong": 16,
+      "ti_le_PNEUMONIA": 0.5,
+      "so_benh_nhan": 15
+    },
+    {
+      "tap_goc": "test",
+      "NORMAL": 234,
+      "PNEUMONIA": 390,
+      "tong": 624,
+      "ti_le_PNEUMONIA": 0.625,
+      "so_benh_nhan": 427
+    }
+  ],
+  "chia_du_lieu": [
+    {
+      "tap": "train",
+      "so_anh": 4484,
+      "NORMAL": 1156,
+      "PNEUMONIA": 3328,
+      "so_benh_nhan": 2452,
+      "ti_le_PNEUMONIA": 0.7421944692239072
+    },
+    {
+      "tap": "val",
+      "so_anh": 748,
+      "NORMAL": 193,
+      "PNEUMONIA": 555,
+      "so_benh_nhan": 409,
+      "ti_le_PNEUMONIA": 0.7419786096256684
+    },
+    {
+      "tap": "test",
+      "so_anh": 624,
+      "NORMAL": 234,
+      "PNEUMONIA": 390,
+      "so_benh_nhan": 427,
+      "ti_le_PNEUMONIA": 0.625
+    }
+  ],
+  "so_sanh": [
+    {
+      "mo_hinh": "CNN tu dau (3 khoi Conv)",
+      "tham_so": 288481,
+      "tham_so_train_duoc": 287585,
+      "so_epoch": 20,
+      "thoi_gian_phut": 56.98833333333334,
+      "auc_val": 0.9955281706577044,
+      "nguong_val": 0.18787060678005219,
+      "specificity_val": 0.9585492227979274,
+      "auc_test": 0.958031996493535,
+      "recall_test_0.5": 0.9846153846153847,
+      "accuracy_test_0.5": 0.8814102564102564,
+      "recall_test": 0.9974358974358974,
+      "specificity_test": 0.5042735042735043,
+      "accuracy_test": 0.8125,
+      "bo_sot_test": 1,
+      "bao_dong_gia_test": 116
+    },
+    {
+      "mo_hinh": "EfficientNetB0 dong bang",
+      "tham_so": 4050852,
+      "tham_so_train_duoc": 1281,
+      "so_epoch": 12,
+      "thoi_gian_phut": 28.323333333333334,
+      "auc_val": 0.9870046212015124,
+      "nguong_val": 0.2224196046590805,
+      "specificity_val": 0.8963730569948186,
+      "auc_test": 0.946318211702827,
+      "recall_test_0.5": 0.9692307692307692,
+      "accuracy_test_0.5": 0.8541666666666666,
+      "recall_test": 0.9897435897435898,
+      "specificity_test": 0.4658119658119658,
+      "accuracy_test": 0.7932692307692307,
+      "bo_sot_test": 4,
+      "bao_dong_gia_test": 125
+    },
+    {
+      "mo_hinh": "EfficientNetB0 fine-tune (lr 1e-5)",
+      "tham_so": 4050852,
+      "tham_so_train_duoc": 1484641,
+      "so_epoch": 12,
+      "thoi_gian_phut": 33.74,
+      "auc_val": 0.9901974513373477,
+      "nguong_val": 0.2549510598182678,
+      "specificity_val": 0.927461139896373,
+      "auc_test": 0.956454087223318,
+      "recall_test_0.5": 0.9794871794871794,
+      "accuracy_test_0.5": 0.8573717948717948,
+      "recall_test": 0.9923076923076923,
+      "specificity_test": 0.5470085470085471,
+      "accuracy_test": 0.8253205128205128,
+      "bo_sot_test": 3,
+      "bao_dong_gia_test": 106
+    },
+    {
+      "mo_hinh": "EfficientNetB0 fine-tune lr 1e-3 (doi chung)",
+      "tham_so": 4050852,
+      "tham_so_train_duoc": 1484641,
+      "so_epoch": 4,
+      "thoi_gian_phut": 6.383333333333334,
+      "auc_val": 0.9926434206226953,
+      "nguong_val": 0.021511411294341087,
+      "specificity_val": 0.9222797927461139,
+      "auc_test": 0.9595879903572212,
+      "recall_test_0.5": 0.9461538461538461,
+      "accuracy_test_0.5": 0.8926282051282052,
+      "recall_test": 0.9974358974358974,
+      "specificity_test": 0.4358974358974359,
+      "accuracy_test": 0.7868589743589743,
+      "bo_sot_test": 1,
+      "bao_dong_gia_test": 132
+    }
+  ],
+  "mo_hinh_chon": "cnn_tu_dau",
+  "nguong": 0.18787060678005219,
+  "test": [
+    {
+      "nguong": 0.5,
+      "recall": 0.9846153846153847,
+      "specificity": 0.7094017094017094,
+      "precision": 0.8495575221238938,
+      "accuracy": 0.8814102564102564,
+      "bo_sot_FN": 6,
+      "bao_dong_gia_FP": 68,
+      "TP": 384,
+      "TN": 166
+    },
+    {
+      "nguong": 0.18787060678005219,
+      "recall": 0.9974358974358974,
+      "specificity": 0.5042735042735043,
+      "precision": 0.7702970297029703,
+      "accuracy": 0.8125,
+      "bo_sot_FN": 1,
+      "bao_dong_gia_FP": 116,
+      "TP": 389,
+      "TN": 118
+    }
+  ],
+  "test_theo_tac_nhan": [
+    {
+      "tac_nhan": "bacteria",
+      "so_anh": 242.0,
+      "du_doan_PNEUMONIA": 241.0,
+      "ti_le_du_doan_PNEUMONIA": 0.9958677685950413,
+      "xac_suat_TB": 0.9687077403068542
+    },
+    {
+      "tac_nhan": "normal",
+      "so_anh": 234.0,
+      "du_doan_PNEUMONIA": 116.0,
+      "ti_le_du_doan_PNEUMONIA": 0.49572649572649574,
+      "xac_suat_TB": 0.3217751681804657
+    },
+    {
+      "tac_nhan": "virus",
+      "so_anh": 148.0,
+      "du_doan_PNEUMONIA": 148.0,
+      "ti_le_du_doan_PNEUMONIA": 1.0,
+      "xac_suat_TB": 0.9426030516624451
+    }
+  ],
+  "gradcam": [
+    {
+      "mo_hinh": "CNN tu dau (3 khoi Conv)",
+      "ti_le_o_vien": 0.25396570563316345,
+      "ti_le_4_goc": 0.03493157774209976,
+      "dien_tich_vien": 0.42402742346938777,
+      "dien_tich_4_goc": 0.058115433673469385,
+      "so_anh_dinh_CAM_o_vien": 0.21153846153846154
+    },
+    {
+      "mo_hinh": "EfficientNetB0 fine-tune (lr 1e-5)",
+      "ti_le_o_vien": 0.4953646957874298,
+      "ti_le_4_goc": 0.06269609928131104,
+      "dien_tich_vien": 0.42402742346938777,
+      "dien_tich_4_goc": 0.058115433673469385,
+      "so_anh_dinh_CAM_o_vien": 0.6362179487179487
+    }
+  ],
+  "ca_sai": [
+    {
+      "file": "person154_bacteria_728.jpeg",
+      "lop_that": "PNEUMONIA",
+      "tac_nhan": "bacteria",
+      "xac_suat_PNEUMONIA": 0.02017913945019245,
+      "loai_sai": "FN bo sot"
+    },
+    {
+      "file": "IM-0022-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.9999842643737793,
+      "loai_sai": "FP bao dong gia"
+    },
+    {
+      "file": "NORMAL2-IM-0256-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.999870240688324,
+      "loai_sai": "FP bao dong gia"
+    },
+    {
+      "file": "NORMAL2-IM-0252-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.9996014833450317,
+      "loai_sai": "FP bao dong gia"
+    },
+    {
+      "file": "NORMAL2-IM-0210-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.9976992607116699,
+      "loai_sai": "FP bao dong gia"
+    },
+    {
+      "file": "NORMAL2-IM-0198-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.9953042268753052,
+      "loai_sai": "FP bao dong gia"
+    },
+    {
+      "file": "NORMAL2-IM-0219-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.9948748350143433,
+      "loai_sai": "FP bao dong gia"
+    },
+    {
+      "file": "NORMAL2-IM-0373-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.9943495392799377,
+      "loai_sai": "FP bao dong gia"
+    },
+    {
+      "file": "NORMAL2-IM-0246-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.9886151552200317,
+      "loai_sai": "FP bao dong gia"
+    },
+    {
+      "file": "NORMAL2-IM-0249-0001.jpeg",
+      "lop_that": "NORMAL",
+      "tac_nhan": "normal",
+      "xac_suat_PNEUMONIA": 0.9882799983024597,
+      "loai_sai": "FP bao dong gia"
+    }
+  ]
+}

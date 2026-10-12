@@ -1,0 +1,7 @@
+file,lop,tac_nhan,p
+person109_bacteria_512.jpeg,PNEUMONIA,bacteria,0.99678767
+person78_bacteria_387.jpeg,PNEUMONIA,bacteria,0.74506235
+person1678_virus_2895.jpeg,PNEUMONIA,virus,0.9991575
+NORMAL2-IM-0332-0001.jpeg,NORMAL,normal,0.123059005
+NORMAL2-IM-0041-0001.jpeg,NORMAL,normal,0.07998323
+person154_bacteria_728.jpeg,PNEUMONIA,bacteria,0.02017914
