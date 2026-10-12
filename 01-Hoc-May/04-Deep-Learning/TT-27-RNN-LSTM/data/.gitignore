@@ -1,0 +1,4 @@
+# CSV (~400 KB) tai lai duoc tu UCI (src/data.py) -> khong commit
+*
+!.gitignore
+!DATA_SOURCE.md

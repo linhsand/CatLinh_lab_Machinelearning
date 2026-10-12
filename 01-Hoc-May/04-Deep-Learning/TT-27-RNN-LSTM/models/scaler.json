@@ -1,0 +1,35 @@
+{
+  "mo_hinh": "GRU w=24 h=1",
+  "cot_chuan_hoa": [
+    "traffic_volume",
+    "temp_c",
+    "rain_log",
+    "clouds"
+  ],
+  "mean": [
+    3282.0803506690395,
+    6.693151116164635,
+    0.03987737556191132,
+    0.4594155955441303
+  ],
+  "scale": [
+    1975.7786798952386,
+    12.957007247019076,
+    0.21684295760755742,
+    0.3860951356606695
+  ],
+  "dau_vao": {
+    "cua_so": "(24, so dac trung)",
+    "biet_truoc": [
+      "hour_sin",
+      "hour_cos",
+      "dow_sin",
+      "dow_cos",
+      "weekend",
+      "holiday",
+      "y-24 (chuan hoa)",
+      "y-168 (chuan hoa)"
+    ]
+  },
+  "dau_ra": "y chuan hoa -> xe/gio = y * scale[0] + mean[0]"
+}

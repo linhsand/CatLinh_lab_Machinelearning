@@ -1,0 +1,451 @@
+{
+  "van_de": [
+    {
+      "index": 0,
+      "Unnamed: 0": "temp = 0 K (dong)",
+      "so_luong": 10
+    },
+    {
+      "index": 1,
+      "Unnamed: 0": "rain_1h > 1000 mm (dong)",
+      "so_luong": 1
+    },
+    {
+      "index": 2,
+      "Unnamed: 0": "dong trung date_time",
+      "so_luong": 7629
+    },
+    {
+      "index": 3,
+      "Unnamed: 0": "gio co > 1 gia tri traffic_volume",
+      "so_luong": 0
+    },
+    {
+      "index": 4,
+      "Unnamed: 0": "gio trong khoang 2012-10 -> 2018-09",
+      "so_luong": 52551
+    },
+    {
+      "index": 5,
+      "Unnamed: 0": "gio co du lieu",
+      "so_luong": 40575
+    },
+    {
+      "index": 6,
+      "Unnamed: 0": "gio thieu",
+      "so_luong": 11976
+    },
+    {
+      "index": 7,
+      "Unnamed: 0": "gio thieu trong lo <= 3 gio (noi suy)",
+      "so_luong": 2771
+    },
+    {
+      "index": 8,
+      "Unnamed: 0": "gio thieu trong lo > 3 gio (de NaN)",
+      "so_luong": 9205
+    },
+    {
+      "index": 9,
+      "Unnamed: 0": "so lo > 3 gio",
+      "so_luong": 136
+    },
+    {
+      "index": 10,
+      "Unnamed: 0": "dong ghi ngay le (goc)",
+      "so_luong": 53
+    },
+    {
+      "index": 11,
+      "Unnamed: 0": "gio thuoc ngay le (sau khi lan)",
+      "so_luong": 1272
+    }
+  ],
+  "chia": [
+    {
+      "tap": "train",
+      "tu": "2012-10-02 09:00:00",
+      "den": "2017-04-06 10:00:00",
+      "so_gio": 39530,
+      "gio_co_gia_tri": 30342,
+      "so_mau_danh_gia_h1": 24534,
+      "luu_luong_tb": 3282.0803506690395
+    },
+    {
+      "tap": "val",
+      "tu": "2017-04-06 11:00:00",
+      "den": "2018-01-02 19:00:00",
+      "so_gio": 6513,
+      "gio_co_gia_tri": 6502,
+      "so_mau_danh_gia_h1": 6378,
+      "luu_luong_tb": 3385.1289603199016
+    },
+    {
+      "tap": "test",
+      "tu": "2018-01-02 20:00:00",
+      "den": "2018-09-30 23:00:00",
+      "so_gio": 6508,
+      "gio_co_gia_tri": 6502,
+      "so_mau_danh_gia_h1": 6435,
+      "luu_luong_tb": 3325.9040295293757
+    }
+  ],
+  "rnn_lstm_gru": [
+    {
+      "index": 0,
+      "mo_hinh": "SimpleRNN w=24 h=1",
+      "h": 1,
+      "tham_so": 10017.0,
+      "so_epoch": 58.0,
+      "thoi_gian_train_s": 243.2,
+      "mae_val": 160.41389912338875,
+      "mae_test": 154.1594918659718,
+      "rmse_val": 242.23625941001234,
+      "rmse_test": 232.0825484971232
+    },
+    {
+      "index": 1,
+      "mo_hinh": "LSTM w=24 h=1",
+      "h": 1,
+      "tham_so": 36033.0,
+      "so_epoch": 46.0,
+      "thoi_gian_train_s": 463.9,
+      "mae_val": 164.11334292754742,
+      "mae_test": 161.75909027494075,
+      "rmse_val": 249.1204231546654,
+      "rmse_test": 244.0250725672801
+    },
+    {
+      "index": 2,
+      "mo_hinh": "GRU w=24 h=1",
+      "h": 1,
+      "tham_so": 27649.0,
+      "so_epoch": 60.0,
+      "thoi_gian_train_s": 536.6,
+      "mae_val": 152.0772795679684,
+      "mae_test": 147.3015086956309,
+      "rmse_val": 229.90046603529396,
+      "rmse_test": 220.95843232884187
+    },
+    {
+      "index": 3,
+      "mo_hinh": "LSTM w=24 h=1 (chi cua so)",
+      "h": 1,
+      "tham_so": 34721.0,
+      "so_epoch": 59.0,
+      "thoi_gian_train_s": 440.9,
+      "mae_val": 154.9238115584015,
+      "mae_test": 149.07266003243274,
+      "rmse_val": 238.86728304807718,
+      "rmse_test": 225.62602438586742
+    },
+    {
+      "index": 4,
+      "mo_hinh": "Naive (cung gio hom qua)",
+      "h": 1,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": NaN,
+      "mae_val": 549.3341956726247,
+      "mae_test": 558.4467754467754,
+      "rmse_val": 1009.5334742281578,
+      "rmse_test": 1020.092673433724
+    },
+    {
+      "index": 5,
+      "mo_hinh": "Seasonal naive (cung gio tuan truoc)",
+      "h": 1,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": NaN,
+      "mae_val": 300.5557384760113,
+      "mae_test": 337.64180264180266,
+      "rmse_val": 578.6038427523256,
+      "rmse_test": 647.4221434713457
+    },
+    {
+      "index": 6,
+      "mo_hinh": "XGBoost + lag",
+      "h": 1,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": 28.870120525360107,
+      "mae_val": 147.21570744578761,
+      "mae_test": 142.06411046263037,
+      "rmse_val": 230.21148582705013,
+      "rmse_test": 221.82190084999974
+    }
+  ],
+  "kieu_chon": "gru",
+  "cua_so_chon": 24,
+  "cua_so": [
+    {
+      "index": 0,
+      "cua_so_gio": 6,
+      "mo_hinh": "GRU w=6 h=1",
+      "h": 1,
+      "tham_so": 27649,
+      "so_epoch": 60,
+      "thoi_gian_train_s": 114.2,
+      "mae_val": 157.31300804568568,
+      "mae_test": 152.9092341180949,
+      "rmse_val": 235.0979320281219,
+      "rmse_test": 228.33755134299864
+    },
+    {
+      "index": 1,
+      "cua_so_gio": 12,
+      "mo_hinh": "GRU w=12 h=1",
+      "h": 1,
+      "tham_so": 27649,
+      "so_epoch": 52,
+      "thoi_gian_train_s": 232.0,
+      "mae_val": 155.11637967210268,
+      "mae_test": 149.3034569933292,
+      "rmse_val": 233.70051253896338,
+      "rmse_test": 223.0135914908501
+    },
+    {
+      "index": 2,
+      "cua_so_gio": 24,
+      "mo_hinh": "GRU w=24 h=1",
+      "h": 1,
+      "tham_so": 27649,
+      "so_epoch": 60,
+      "thoi_gian_train_s": 536.6,
+      "mae_val": 152.0772795679684,
+      "mae_test": 147.3015086956309,
+      "rmse_val": 229.90046603529396,
+      "rmse_test": 220.95843232884187
+    },
+    {
+      "index": 3,
+      "cua_so_gio": 48,
+      "mo_hinh": "GRU w=48 h=1",
+      "h": 1,
+      "tham_so": 27649,
+      "so_epoch": 60,
+      "thoi_gian_train_s": 1235.8,
+      "mae_val": 153.4951335538012,
+      "mae_test": 148.57751874721362,
+      "rmse_val": 231.26587663156715,
+      "rmse_test": 222.4578757661703
+    }
+  ],
+  "seed": [
+    {
+      "index": 0,
+      "seed": 42,
+      "mo_hinh": "GRU w=24 h=1",
+      "h": 1,
+      "tham_so": 27649,
+      "so_epoch": 60,
+      "thoi_gian_train_s": 536.6,
+      "mae_val": 152.0772795679684,
+      "mae_test": 147.3015086956309,
+      "rmse_val": 229.90046603529396,
+      "rmse_test": 220.95843232884187
+    },
+    {
+      "index": 1,
+      "seed": 1,
+      "mo_hinh": "GRU w=24 h=1",
+      "h": 1,
+      "tham_so": 27649,
+      "so_epoch": 57,
+      "thoi_gian_train_s": 467.0,
+      "mae_val": 152.55343075876388,
+      "mae_test": 148.1405386224875,
+      "rmse_val": 233.36732681362938,
+      "rmse_test": 226.23041116864871
+    },
+    {
+      "index": 2,
+      "seed": 2,
+      "mo_hinh": "GRU w=24 h=1",
+      "h": 1,
+      "tham_so": 27649,
+      "so_epoch": 55,
+      "thoi_gian_train_s": 385.4,
+      "mae_val": 157.09128672635427,
+      "mae_test": 153.01066849393095,
+      "rmse_val": 235.8422441679039,
+      "rmse_test": 227.63105117243646
+    }
+  ],
+  "nhieu_buoc": [
+    {
+      "index": 0,
+      "mo_hinh": "Naive (cung gio hom qua)",
+      "h": 1,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": NaN,
+      "mae_val": 549.3341956726247,
+      "mae_test": 558.4467754467754,
+      "rmse_val": 1009.5334742281578,
+      "rmse_test": 1020.092673433724,
+      "mo_hinh_goc": "Naive (cung gio hom qua)"
+    },
+    {
+      "index": 1,
+      "mo_hinh": "Seasonal naive (cung gio tuan truoc)",
+      "h": 1,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": NaN,
+      "mae_val": 300.5557384760113,
+      "mae_test": 337.64180264180266,
+      "rmse_val": 578.6038427523256,
+      "rmse_test": 647.4221434713457,
+      "mo_hinh_goc": "Seasonal naive (cung gio tuan truoc)"
+    },
+    {
+      "index": 2,
+      "mo_hinh": "XGBoost + lag",
+      "h": 1,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": 28.870120525360107,
+      "mae_val": 147.21570744578761,
+      "mae_test": 142.06411046263037,
+      "rmse_val": 230.21148582705013,
+      "rmse_test": 221.82190084999974,
+      "mo_hinh_goc": "XGBoost + lag"
+    },
+    {
+      "index": 3,
+      "mo_hinh": "GRU w=24 h=1",
+      "h": 1,
+      "tham_so": 27649.0,
+      "so_epoch": 60.0,
+      "thoi_gian_train_s": 536.6,
+      "mae_val": 152.0772795679684,
+      "mae_test": 147.3015086956309,
+      "rmse_val": 229.90046603529396,
+      "rmse_test": 220.95843232884187,
+      "mo_hinh_goc": "GRU w=24"
+    },
+    {
+      "index": 4,
+      "mo_hinh": "Naive (cung gio hom qua)",
+      "h": 3,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": NaN,
+      "mae_val": 549.0436931283339,
+      "mae_test": 557.7091559148142,
+      "rmse_val": 1009.4994138577156,
+      "rmse_test": 1018.8244020489876,
+      "mo_hinh_goc": "Naive (cung gio hom qua)"
+    },
+    {
+      "index": 5,
+      "mo_hinh": "Seasonal naive (cung gio tuan truoc)",
+      "h": 3,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": NaN,
+      "mae_val": 299.9414025729526,
+      "mae_test": 337.6777553241101,
+      "rmse_val": 577.1408876120221,
+      "rmse_test": 647.5081963137507,
+      "mo_hinh_goc": "Seasonal naive (cung gio tuan truoc)"
+    },
+    {
+      "index": 6,
+      "mo_hinh": "XGBoost + lag",
+      "h": 3,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": 48.086132287979126,
+      "mae_val": 188.26506128182484,
+      "mae_test": 181.67771120336775,
+      "rmse_val": 300.96689958311345,
+      "rmse_test": 293.8527122352759,
+      "mo_hinh_goc": "XGBoost + lag"
+    },
+    {
+      "index": 7,
+      "mo_hinh": "GRU w=24 h=3",
+      "h": 3,
+      "tham_so": 27649.0,
+      "so_epoch": 52.0,
+      "thoi_gian_train_s": 354.3,
+      "mae_val": 200.85183674648002,
+      "mae_test": 201.4500417934771,
+      "rmse_val": 314.1087387323387,
+      "rmse_test": 316.5520400260381,
+      "mo_hinh_goc": "GRU w=24"
+    },
+    {
+      "index": 8,
+      "mo_hinh": "Naive (cung gio hom qua)",
+      "h": 6,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": NaN,
+      "mae_val": 548.6090266875981,
+      "mae_test": 557.8124416796268,
+      "rmse_val": 1009.3678810082804,
+      "rmse_test": 1019.0275364210959,
+      "mo_hinh_goc": "Naive (cung gio hom qua)"
+    },
+    {
+      "index": 9,
+      "mo_hinh": "Seasonal naive (cung gio tuan truoc)",
+      "h": 6,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": NaN,
+      "mae_val": 299.5264521193093,
+      "mae_test": 337.7659409020218,
+      "rmse_val": 576.4213052737289,
+      "rmse_test": 647.6502593807048,
+      "mo_hinh_goc": "Seasonal naive (cung gio tuan truoc)"
+    },
+    {
+      "index": 10,
+      "mo_hinh": "XGBoost + lag",
+      "h": 6,
+      "tham_so": NaN,
+      "so_epoch": NaN,
+      "thoi_gian_train_s": 28.18862819671631,
+      "mae_val": 199.00800089933435,
+      "mae_test": 200.32464858035834,
+      "rmse_val": 317.7267849485843,
+      "rmse_test": 338.06273915583336,
+      "mo_hinh_goc": "XGBoost + lag"
+    },
+    {
+      "index": 11,
+      "mo_hinh": "GRU w=24 h=6",
+      "h": 6,
+      "tham_so": 27649.0,
+      "so_epoch": 60.0,
+      "thoi_gian_train_s": 412.8,
+      "mae_val": 204.67254180226615,
+      "mae_test": 214.96768872578636,
+      "rmse_val": 327.09877677631255,
+      "rmse_test": 353.403034269949,
+      "mo_hinh_goc": "GRU w=24"
+    }
+  ],
+  "xgb_importance": {
+    "cung_gio_tuan_truoc": 0.5957421064376831,
+    "gio_dich": 0.13299353420734406,
+    "lag_0": 0.12174597382545471,
+    "cung_gio_hom_qua": 0.022322367876768112,
+    "le_dich": 0.017535265535116196,
+    "lag_23": 0.014295261353254318,
+    "tb_3_gio": 0.011369767598807812,
+    "lag_20": 0.006528216879814863,
+    "lag_18": 0.00574484933167696,
+    "thu_dich": 0.005294803995639086,
+    "lag_4": 0.0049077547155320644,
+    "lag_3": 0.004729504231363535,
+    "lag_2": 0.0043282704427838326,
+    "lag_1": 0.0040221731178462505,
+    "lag_21": 0.003579618874937296
+  }
+}
