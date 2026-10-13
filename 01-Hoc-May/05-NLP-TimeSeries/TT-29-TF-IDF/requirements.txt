@@ -1,0 +1,9 @@
+scikit-learn>=1.3     # fetch_20newsgroups, TF-IDF, LinearSVC, CalibratedClassifierCV
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+joblib
+jupyter
+nbformat
+nbclient
+ipykernel

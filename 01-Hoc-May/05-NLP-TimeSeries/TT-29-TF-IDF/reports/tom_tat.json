@@ -1,0 +1,450 @@
+{
+  "leakage": [
+    {
+      "index": 0,
+      "bien_the": "Giu nguyen (khong bo gi)",
+      "accuracy_test": 0.8534253850238981,
+      "macro_f1_test": 0.8471621624624973,
+      "so_tu_TB": 287.4701255082199,
+      "van_ban_rong_train": 0
+    },
+    {
+      "index": 1,
+      "bien_the": "Bo headers",
+      "accuracy_test": 0.8178438661710037,
+      "macro_f1_test": 0.8103554249918977,
+      "so_tu_TB": 265.7229096694361,
+      "van_ban_rong_train": 18
+    },
+    {
+      "index": 2,
+      "bien_the": "Bo headers + footers",
+      "accuracy_test": 0.7980616038236856,
+      "macro_f1_test": 0.7900648027164249,
+      "so_tu_TB": 247.22061163160686,
+      "van_ban_rong_train": 18
+    },
+    {
+      "index": 3,
+      "bien_the": "Bo headers + footers + quotes",
+      "accuracy_test": 0.6817578332448221,
+      "macro_f1_test": 0.6694413470534162,
+      "so_tu_TB": 185.82738200459607,
+      "van_ban_rong_train": 300
+    },
+    {
+      "index": 4,
+      "bien_the": "Bo ca 3 nhung GIU Subject",
+      "accuracy_test": 0.8082846521508231,
+      "macro_f1_test": 0.8009216945555012,
+      "so_tu_TB": 190.85389782570266,
+      "van_ban_rong_train": 0
+    }
+  ],
+  "baseline": [
+    {
+      "index": 0,
+      "mo_hinh": "Dummy (doan lop dong nhat)",
+      "acc_val": 0.05302695536897923,
+      "acc_test": 0.05297397769516728,
+      "macro_f1_test": 0.005030891438658429,
+      "thoi_gian_fit_s": 12.90312385559082
+    },
+    {
+      "index": 1,
+      "mo_hinh": "MultinomialNB (alpha=0,01)",
+      "acc_val": 0.7220503756076005,
+      "acc_test": 0.6589219330855018,
+      "macro_f1_test": 0.6428380504042899,
+      "thoi_gian_fit_s": 12.710561752319336
+    },
+    {
+      "index": 2,
+      "mo_hinh": "ComplementNB (alpha=0,3)",
+      "acc_val": 0.7534246575342466,
+      "acc_test": 0.7055231014338821,
+      "macro_f1_test": 0.6855422834536482,
+      "thoi_gian_fit_s": 13.389288902282715
+    }
+  ],
+  "vectorizer_chon": {
+    "ngram_range": [
+      1,
+      1
+    ],
+    "min_df": 1,
+    "sublinear_tf": true,
+    "max_features": null
+  },
+  "bo_phan_loai": [
+    {
+      "index": 0,
+      "mo_hinh": "ComplementNB",
+      "tham_so_chon": 0.3,
+      "acc_val_theo_tham_so": "{\"0.1\": 0.7844, \"0.3\": 0.7883, \"1.0\": 0.7733}",
+      "acc_val": 0.7883340698188246,
+      "acc_test": 0.717870419543282,
+      "macro_f1_test": 0.697906476174253,
+      "thoi_gian_fit_s": 3.8889386653900146
+    },
+    {
+      "index": 1,
+      "mo_hinh": "LogisticRegression",
+      "tham_so_chon": 3.0,
+      "acc_val_theo_tham_so": "{\"3\": 0.7503, \"10\": 0.7468, \"30\": 0.7503}",
+      "acc_val": 0.7503314184710561,
+      "acc_test": 0.6911842804036112,
+      "macro_f1_test": 0.6783396019605992,
+      "thoi_gian_fit_s": 60.29365038871765
+    },
+    {
+      "index": 2,
+      "mo_hinh": "LinearSVC",
+      "tham_so_chon": 1.0,
+      "acc_val_theo_tham_so": "{\"0.1\": 0.7521, \"0.3\": 0.7654, \"1.0\": 0.7676}",
+      "acc_val": 0.7675651789659743,
+      "acc_test": 0.6972915560276155,
+      "macro_f1_test": 0.6854347434696317,
+      "thoi_gian_fit_s": 6.0191521644592285
+    }
+  ],
+  "trien_khai": [
+    {
+      "index": 0,
+      "cach": "ComplementNB, xac suat goc",
+      "acc_val": 0.7883340698188246,
+      "acc_test": 0.717870419543282,
+      "tin_cay_TB": 0.16563721784574276,
+      "ti_le_tu_dong_0.6": 0.030005310674455655,
+      "acc_phan_tu_dong_0.6": 0.9867256637168141,
+      "du_doan_1_ticket_ms": 12.267850004718639,
+      "dat_duoi_5ms": false,
+      "thoi_gian_fit_s": 3.3015377521514893
+    },
+    {
+      "index": 1,
+      "cach": "ComplementNB + Calibrated (cv=3)",
+      "acc_val": 0.7914273088820151,
+      "acc_test": 0.7186670207116304,
+      "tin_cay_TB": 0.572324248235202,
+      "ti_le_tu_dong_0.6": 0.5208443972384493,
+      "acc_phan_tu_dong_0.6": 0.9329594697935254,
+      "du_doan_1_ticket_ms": 41.64584999671206,
+      "dat_duoi_5ms": false,
+      "thoi_gian_fit_s": 4.409235954284668
+    },
+    {
+      "index": 2,
+      "cach": "ComplementNB + Calibrated (cv=3, ensemble=False)",
+      "acc_val": 0.7936367653557225,
+      "acc_test": 0.717206585236325,
+      "tin_cay_TB": 0.605583957153968,
+      "ti_le_tu_dong_0.6": 0.5752788104089219,
+      "acc_phan_tu_dong_0.6": 0.9136856681283175,
+      "du_doan_1_ticket_ms": 14.029750003828667,
+      "dat_duoi_5ms": false,
+      "thoi_gian_fit_s": 4.320608377456665
+    },
+    {
+      "index": 3,
+      "cach": "LinearSVC + Calibrated (cv=3)",
+      "acc_val": 0.764471939902784,
+      "acc_test": 0.7002124269782263,
+      "tin_cay_TB": 0.5843496696450159,
+      "ti_le_tu_dong_0.6": 0.5326606479022836,
+      "acc_phan_tu_dong_0.6": 0.910518444666002,
+      "du_doan_1_ticket_ms": 6.717399992339779,
+      "dat_duoi_5ms": false,
+      "thoi_gian_fit_s": 8.8710298538208
+    },
+    {
+      "index": 4,
+      "cach": "LinearSVC + Calibrated (cv=3, ensemble=False)",
+      "acc_val": 0.7635881573133009,
+      "acc_test": 0.6982209240573553,
+      "tin_cay_TB": 0.6349607882376102,
+      "ti_le_tu_dong_0.6": 0.6062134891131173,
+      "acc_phan_tu_dong_0.6": 0.885676741130092,
+      "du_doan_1_ticket_ms": 3.1773000009707175,
+      "dat_duoi_5ms": true,
+      "thoi_gian_fit_s": 11.50683069229126
+    }
+  ],
+  "nguong": [
+    {
+      "index": 0,
+      "nguong": 0.1,
+      "ti_le_tu_dong": 0.9699946893255443,
+      "acc_phan_tu_dong": 0.7166712291267452,
+      "ti_le_can_nguoi": 0.030005310674455665,
+      "acc_phan_can_nguoi_neu_de_model": 0.10176991150442478
+    },
+    {
+      "index": 1,
+      "nguong": 0.15,
+      "ti_le_tu_dong": 0.9660116834838024,
+      "acc_phan_tu_dong": 0.7193512919186366,
+      "ti_le_can_nguoi": 0.0339883165161976,
+      "acc_phan_can_nguoi_neu_de_model": 0.09765625
+    },
+    {
+      "index": 2,
+      "nguong": 0.2,
+      "ti_le_tu_dong": 0.9522039298990972,
+      "acc_phan_tu_dong": 0.7272727272727273,
+      "ti_le_can_nguoi": 0.04779607010090281,
+      "acc_phan_can_nguoi_neu_de_model": 0.11944444444444445
+    },
+    {
+      "index": 3,
+      "nguong": 0.25,
+      "ti_le_tu_dong": 0.9249867233138609,
+      "acc_phan_tu_dong": 0.7422132912300847,
+      "ti_le_can_nguoi": 0.07501327668613911,
+      "acc_phan_can_nguoi_neu_de_model": 0.15575221238938053
+    },
+    {
+      "index": 4,
+      "nguong": 0.3,
+      "ti_le_tu_dong": 0.8916622411046203,
+      "acc_phan_tu_dong": 0.7628052412150089,
+      "ti_le_can_nguoi": 0.10833775889537967,
+      "acc_phan_can_nguoi_neu_de_model": 0.16666666666666666
+    },
+    {
+      "index": 5,
+      "nguong": 0.35,
+      "ti_le_tu_dong": 0.8555496548061604,
+      "acc_phan_tu_dong": 0.7815021725636251,
+      "ti_le_can_nguoi": 0.1444503451938396,
+      "acc_phan_can_nguoi_neu_de_model": 0.20496323529411764
+    },
+    {
+      "index": 6,
+      "nguong": 0.4,
+      "ti_le_tu_dong": 0.8201009028146574,
+      "acc_phan_tu_dong": 0.8002266472397604,
+      "ti_le_can_nguoi": 0.17989909718534258,
+      "acc_phan_can_nguoi_neu_de_model": 0.23321033210332104
+    },
+    {
+      "index": 7,
+      "nguong": 0.45,
+      "ti_le_tu_dong": 0.7738980350504514,
+      "acc_phan_tu_dong": 0.8232973065705953,
+      "ti_le_can_nguoi": 0.2261019649495486,
+      "acc_phan_can_nguoi_neu_de_model": 0.2701115678214915
+    },
+    {
+      "index": 8,
+      "nguong": 0.5,
+      "ti_le_tu_dong": 0.7225172596919809,
+      "acc_phan_tu_dong": 0.8434399117971334,
+      "ti_le_can_nguoi": 0.2774827403080191,
+      "acc_phan_can_nguoi_neu_de_model": 0.3200956937799043
+    },
+    {
+      "index": 9,
+      "nguong": 0.55,
+      "ti_le_tu_dong": 0.6659585767392459,
+      "acc_phan_tu_dong": 0.8680223285486444,
+      "ti_le_can_nguoi": 0.33404142326075414,
+      "acc_phan_can_nguoi_neu_de_model": 0.359697933227345
+    },
+    {
+      "index": 10,
+      "nguong": 0.6,
+      "ti_le_tu_dong": 0.6062134891131173,
+      "acc_phan_tu_dong": 0.885676741130092,
+      "ti_le_can_nguoi": 0.39378651088688266,
+      "acc_phan_can_nguoi_neu_de_model": 0.40964261631827376
+    },
+    {
+      "index": 11,
+      "nguong": 0.65,
+      "ti_le_tu_dong": 0.5467339352097716,
+      "acc_phan_tu_dong": 0.9043224866440019,
+      "ti_le_can_nguoi": 0.45326606479022835,
+      "acc_phan_can_nguoi_neu_de_model": 0.44961921499707086
+    },
+    {
+      "index": 12,
+      "nguong": 0.7,
+      "ti_le_tu_dong": 0.48552841210833775,
+      "acc_phan_tu_dong": 0.9185124418922614,
+      "ti_le_can_nguoi": 0.5144715878916623,
+      "acc_phan_can_nguoi_neu_de_model": 0.49032258064516127
+    },
+    {
+      "index": 13,
+      "nguong": 0.75,
+      "ti_le_tu_dong": 0.4086563993627191,
+      "acc_phan_tu_dong": 0.9340480831708902,
+      "ti_le_can_nguoi": 0.591343600637281,
+      "acc_phan_can_nguoi_neu_de_model": 0.5352492141894926
+    },
+    {
+      "index": 14,
+      "nguong": 0.8,
+      "ti_le_tu_dong": 0.31279872543813064,
+      "acc_phan_tu_dong": 0.9448217317487266,
+      "ti_le_can_nguoi": 0.6872012745618694,
+      "acc_phan_can_nguoi_neu_de_model": 0.5859737248840804
+    },
+    {
+      "index": 15,
+      "nguong": 0.85,
+      "ti_le_tu_dong": 0.20034519383961763,
+      "acc_phan_tu_dong": 0.9595758780649437,
+      "ti_le_can_nguoi": 0.7996548061603823,
+      "acc_phan_can_nguoi_neu_de_model": 0.6327411588909182
+    },
+    {
+      "index": 16,
+      "nguong": 0.9,
+      "ti_le_tu_dong": 0.07647371216144451,
+      "acc_phan_tu_dong": 0.9722222222222222,
+      "ti_le_can_nguoi": 0.9235262878385555,
+      "acc_phan_can_nguoi_neu_de_model": 0.675531914893617
+    },
+    {
+      "index": 17,
+      "nguong": 0.95,
+      "ti_le_tu_dong": 0.009028146574614976,
+      "acc_phan_tu_dong": 1.0,
+      "ti_le_can_nguoi": 0.9909718534253851,
+      "acc_phan_can_nguoi_neu_de_model": 0.6954715969989282
+    }
+  ],
+  "thoi_gian": {
+    "du_doan_1_van_ban_ms_trung_vi": 2.9293499974301085,
+    "du_doan_1_van_ban_ms_p95": 5.643169998074882,
+    "du_doan_1_van_ban_ms_max": 38.67300000274554,
+    "du_doan_ca_test_s": 1.5936973094940186,
+    "van_ban_moi_giay_batch": 4726.11703309666,
+    "nap_model_s": 0.31069421768188477,
+    "kich_thuoc_model_MB": 17.785763
+  },
+  "lsa": [
+    {
+      "index": 0,
+      "so_chieu_LSA": 100,
+      "acc_test": 0.5851035581518853,
+      "thoi_gian_fit_s": 15.55429196357727,
+      "phuong_sai_giu_lai": 0.10938971453003085
+    },
+    {
+      "index": 1,
+      "so_chieu_LSA": 300,
+      "acc_test": 0.648964418481147,
+      "thoi_gian_fit_s": 87.68643808364868,
+      "phuong_sai_giu_lai": 0.21570680770024064
+    },
+    {
+      "index": 2,
+      "so_chieu_LSA": 1000,
+      "acc_test": 0.6739245884227297,
+      "thoi_gian_fit_s": 417.5148911476135,
+      "phuong_sai_giu_lai": 0.42289933061534046
+    }
+  ],
+  "nham": [
+    {
+      "index": 358,
+      "that": "talk.politics.misc",
+      "du_doan": "talk.politics.guns",
+      "so_van_ban": 87,
+      "ti_le_cua_lop_that": 0.2806451612903226
+    },
+    {
+      "index": 376,
+      "that": "talk.religion.misc",
+      "du_doan": "soc.religion.christian",
+      "so_van_ban": 52,
+      "ti_le_cua_lop_that": 0.20717131474103587
+    },
+    {
+      "index": 96,
+      "that": "comp.windows.x",
+      "du_doan": "comp.graphics",
+      "so_van_ban": 45,
+      "ti_le_cua_lop_that": 0.11392405063291139
+    },
+    {
+      "index": 361,
+      "that": "talk.religion.misc",
+      "du_doan": "alt.atheism",
+      "so_van_ban": 35,
+      "ti_le_cua_lop_that": 0.1394422310756972
+    },
+    {
+      "index": 68,
+      "that": "comp.sys.ibm.pc.hardware",
+      "du_doan": "sci.electronics",
+      "so_van_ban": 34,
+      "ti_le_cua_lop_that": 0.08673469387755102
+    },
+    {
+      "index": 14,
+      "that": "alt.atheism",
+      "du_doan": "soc.religion.christian",
+      "so_van_ban": 34,
+      "ti_le_cua_lop_that": 0.10658307210031348
+    },
+    {
+      "index": 59,
+      "that": "comp.sys.ibm.pc.hardware",
+      "du_doan": "comp.os.ms-windows.misc",
+      "so_van_ban": 34,
+      "ti_le_cua_lop_that": 0.08673469387755102
+    },
+    {
+      "index": 60,
+      "that": "comp.sys.ibm.pc.hardware",
+      "du_doan": "comp.sys.mac.hardware",
+      "so_van_ban": 32,
+      "ti_le_cua_lop_that": 0.08163265306122448
+    },
+    {
+      "index": 40,
+      "that": "comp.os.ms-windows.misc",
+      "du_doan": "comp.sys.ibm.pc.hardware",
+      "so_van_ban": 30,
+      "ti_le_cua_lop_that": 0.07614213197969544
+    },
+    {
+      "index": 18,
+      "that": "alt.atheism",
+      "du_doan": "talk.religion.misc",
+      "so_van_ban": 28,
+      "ti_le_cua_lop_that": 0.0877742946708464
+    }
+  ],
+  "theo_do_dai": [
+    {
+      "nhom_do_dai": "rong",
+      "so_van_ban": 215,
+      "accuracy": 0.09767441860465116
+    },
+    {
+      "nhom_do_dai": "1-10",
+      "so_van_ban": 263,
+      "accuracy": 0.35361216730038025
+    },
+    {
+      "nhom_do_dai": "11-50",
+      "so_van_ban": 1946,
+      "accuracy": 0.6007194244604317
+    },
+    {
+      "nhom_do_dai": "51-200",
+      "so_van_ban": 3623,
+      "accuracy": 0.7601435274634281
+    },
+    {
+      "nhom_do_dai": ">200",
+      "so_van_ban": 1485,
+      "accuracy": 0.8228956228956229
+    }
+  ]
+}
