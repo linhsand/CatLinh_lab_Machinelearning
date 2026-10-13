@@ -1,0 +1,5 @@
+mo_hinh,MAPE_%,phu_95_%,phu_80_%
+SARIMA,6.238619001020998,98.95833333333334,91.66666666666667
+Naive (thang truoc),18.675924104995232,,
+Seasonal naive (cung thang nam ngoai),13.584967804448262,,
+Seasonal naive + drift (them),6.140013779611062,,

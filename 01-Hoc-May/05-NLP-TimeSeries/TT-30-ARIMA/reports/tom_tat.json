@@ -1,0 +1,571 @@
+{
+  "adf": [
+    {
+      "index": 0,
+      "phien_ban": "goc",
+      "so_diem": 144,
+      "ADF_p": 0.991880243437641,
+      "ADF_ket_luan": "KHONG DUNG",
+      "so_lag_ADF": 13,
+      "KPSS_p": 0.01,
+      "KPSS_ket_luan": "KHONG DUNG"
+    },
+    {
+      "index": 1,
+      "phien_ban": "log",
+      "so_diem": 144,
+      "ADF_p": 0.42236677477039125,
+      "ADF_ket_luan": "KHONG DUNG",
+      "so_lag_ADF": 13,
+      "KPSS_p": 0.01,
+      "KPSS_ket_luan": "KHONG DUNG"
+    },
+    {
+      "index": 2,
+      "phien_ban": "log + diff(1)",
+      "so_diem": 143,
+      "ADF_p": 0.07112054815085875,
+      "ADF_ket_luan": "KHONG DUNG",
+      "so_lag_ADF": 14,
+      "KPSS_p": 0.1,
+      "KPSS_ket_luan": "DUNG"
+    },
+    {
+      "index": 3,
+      "phien_ban": "log + diff(12)",
+      "so_diem": 132,
+      "ADF_p": 0.07239567181769484,
+      "ADF_ket_luan": "KHONG DUNG",
+      "so_lag_ADF": 12,
+      "KPSS_p": 0.1,
+      "KPSS_ket_luan": "DUNG"
+    },
+    {
+      "index": 4,
+      "phien_ban": "log + diff(1) + diff(12)",
+      "so_diem": 131,
+      "ADF_p": 0.0002485912311384093,
+      "ADF_ket_luan": "DUNG",
+      "so_lag_ADF": 12,
+      "KPSS_p": 0.1,
+      "KPSS_ket_luan": "DUNG"
+    },
+    {
+      "index": 5,
+      "phien_ban": "goc + diff(1) + diff(12)",
+      "so_diem": 131,
+      "ADF_p": 1.8565116001234708e-28,
+      "ADF_ket_luan": "DUNG",
+      "so_lag_ADF": 0,
+      "KPSS_p": 0.1,
+      "KPSS_ket_luan": "DUNG"
+    }
+  ],
+  "decompose": [
+    {
+      "index": 0,
+      "kieu": "additive",
+      "tuong_quan_do_lech_phan_du_vs_muc": 0.160077116033812,
+      "do_lech_phan_du_nam_dau": 30.526439776128022,
+      "do_lech_phan_du_nam_cuoi": 25.430491966530642
+    },
+    {
+      "index": 1,
+      "kieu": "multiplicative",
+      "tuong_quan_do_lech_phan_du_vs_muc": -0.07182114584786296,
+      "do_lech_phan_du_nam_dau": 0.02784570164854261,
+      "do_lech_phan_du_nam_cuoi": 0.047937310039667926
+    }
+  ],
+  "bay_aic": [
+    {
+      "index": 0,
+      "mo_hinh": "(1, 1, 0)(0, 1, 0, 12)",
+      "enforce": false,
+      "so_diem_bo_dau": 14,
+      "so_diem_tinh_likelihood": 106,
+      "loglik": 181.98865939673615,
+      "AIC": -359.9773187934723,
+      "MAPE_test_%": 14.73456566840581,
+      "hang_AIC_trong_nhom": 1
+    },
+    {
+      "index": 1,
+      "mo_hinh": "(1, 1, 0)(0, 1, 0, 12)",
+      "enforce": true,
+      "so_diem_bo_dau": 13,
+      "so_diem_tinh_likelihood": 107,
+      "loglik": 183.78649635055032,
+      "AIC": -363.57299270110065,
+      "MAPE_test_%": 14.734566068718905,
+      "hang_AIC_trong_nhom": 4
+    },
+    {
+      "index": 2,
+      "mo_hinh": "(2, 1, 2)(0, 1, 0, 12)",
+      "enforce": false,
+      "so_diem_bo_dau": 16,
+      "so_diem_tinh_likelihood": 104,
+      "loglik": 180.3521632075016,
+      "AIC": -350.7043264150032,
+      "MAPE_test_%": 8.536774127540196,
+      "hang_AIC_trong_nhom": 2
+    },
+    {
+      "index": 3,
+      "mo_hinh": "(2, 1, 2)(0, 1, 0, 12)",
+      "enforce": true,
+      "so_diem_bo_dau": 13,
+      "so_diem_tinh_likelihood": 107,
+      "loglik": 185.59602492880757,
+      "AIC": -361.19204985761513,
+      "MAPE_test_%": 13.764015904079418,
+      "hang_AIC_trong_nhom": 5
+    },
+    {
+      "index": 4,
+      "mo_hinh": "(0, 1, 1)(0, 1, 1, 12)",
+      "enforce": false,
+      "so_diem_bo_dau": 27,
+      "so_diem_tinh_likelihood": 93,
+      "loglik": 173.34632885306988,
+      "AIC": -340.69265770613976,
+      "MAPE_test_%": 8.49828580749729,
+      "hang_AIC_trong_nhom": 3
+    },
+    {
+      "index": 5,
+      "mo_hinh": "(0, 1, 1)(0, 1, 1, 12)",
+      "enforce": true,
+      "so_diem_bo_dau": 13,
+      "so_diem_tinh_likelihood": 107,
+      "loglik": 197.504873378586,
+      "AIC": -389.009746757172,
+      "MAPE_test_%": 8.51536486550181,
+      "hang_AIC_trong_nhom": 1
+    },
+    {
+      "index": 6,
+      "mo_hinh": "(1, 1, 1)(1, 1, 1, 12)",
+      "enforce": false,
+      "so_diem_bo_dau": 27,
+      "so_diem_tinh_likelihood": 93,
+      "loglik": 171.31086559533907,
+      "AIC": -332.62173119067813,
+      "MAPE_test_%": 9.484057578696826,
+      "hang_AIC_trong_nhom": 5
+    },
+    {
+      "index": 7,
+      "mo_hinh": "(1, 1, 1)(1, 1, 1, 12)",
+      "enforce": true,
+      "so_diem_bo_dau": 13,
+      "so_diem_tinh_likelihood": 107,
+      "loglik": 197.72025746511787,
+      "AIC": -385.44051493023574,
+      "MAPE_test_%": 7.825298058194736,
+      "hang_AIC_trong_nhom": 3
+    },
+    {
+      "index": 8,
+      "mo_hinh": "(0, 1, 1)(1, 1, 1, 12)",
+      "enforce": false,
+      "so_diem_bo_dau": 27,
+      "so_diem_tinh_likelihood": 93,
+      "loglik": 171.30433620816729,
+      "AIC": -334.60867241633457,
+      "MAPE_test_%": 9.66981480509048,
+      "hang_AIC_trong_nhom": 4
+    },
+    {
+      "index": 9,
+      "mo_hinh": "(0, 1, 1)(1, 1, 1, 12)",
+      "enforce": true,
+      "so_diem_bo_dau": 13,
+      "so_diem_tinh_likelihood": 107,
+      "loglik": 197.610054845986,
+      "AIC": -387.220109691972,
+      "MAPE_test_%": 8.412861545424226,
+      "hang_AIC_trong_nhom": 2
+    }
+  ],
+  "thu_cong": [
+    {
+      "index": 0,
+      "mo_hinh": "SARIMA thu cong (0,1,1)(0,1,1,12) - log",
+      "order": "(0, 1, 1)",
+      "seasonal_order": "(0, 1, 1, 12)",
+      "log": true,
+      "AIC": -389.009746757172,
+      "BIC": -380.9912602537863,
+      "MAPE_%": 8.51536486550181,
+      "MAE": 39.44305747539997,
+      "RMSE": 43.179345159680935,
+      "sai_lech_TB_%": -8.51536486550181,
+      "phu_95_%": 100.0,
+      "phu_80_%": 95.83333333333334,
+      "LjungBox_p_lag12": 0.9123818889277235,
+      "LjungBox_p_lag24": 0.8036193309748587,
+      "thoi_gian_fit_s": 1.8325190544128418
+    },
+    {
+      "index": 1,
+      "mo_hinh": "SARIMA cua de (1,1,1)(1,1,1,12) - log",
+      "order": "(1, 1, 1)",
+      "seasonal_order": "(1, 1, 1, 12)",
+      "log": true,
+      "AIC": -385.44051493023574,
+      "BIC": -372.0763707579262,
+      "MAPE_%": 7.825298058194736,
+      "MAE": 36.2534066571098,
+      "RMSE": 40.00124417585284,
+      "sai_lech_TB_%": -7.825298058194736,
+      "phu_95_%": 100.0,
+      "phu_80_%": 91.66666666666666,
+      "LjungBox_p_lag12": 0.95518411531848,
+      "LjungBox_p_lag24": 0.8645791704272661,
+      "thoi_gian_fit_s": 2.3711297512054443
+    },
+    {
+      "index": 2,
+      "mo_hinh": "SARIMA (0,1,1)(0,1,1,12) - KHONG log",
+      "order": "(0, 1, 1)",
+      "seasonal_order": "(0, 1, 1, 12)",
+      "log": false,
+      "AIC": NaN,
+      "BIC": NaN,
+      "MAPE_%": 14.437397350902243,
+      "MAE": 66.40248456842967,
+      "RMSE": 71.95997082039968,
+      "sai_lech_TB_%": -14.437397350902243,
+      "phu_95_%": 50.0,
+      "phu_80_%": 8.333333333333332,
+      "LjungBox_p_lag12": 0.8074910755102368,
+      "LjungBox_p_lag24": 0.1584413010536556,
+      "thoi_gian_fit_s": 0.23769545555114746
+    }
+  ],
+  "luoi_top10": [
+    {
+      "index": 0,
+      "order": [
+        0,
+        1,
+        1
+      ],
+      "seasonal_order": [
+        0,
+        1,
+        1,
+        12
+      ],
+      "AIC": -389.009746757172,
+      "BIC": -380.9912602537863,
+      "MAPE_test_%": 8.51536486550181,
+      "hang_AIC": 1,
+      "hang_MAPE_test": 30
+    },
+    {
+      "index": 1,
+      "order": [
+        1,
+        1,
+        0
+      ],
+      "seasonal_order": [
+        0,
+        1,
+        1,
+        12
+      ],
+      "AIC": -388.64315188783684,
+      "BIC": -380.62466538445113,
+      "MAPE_test_%": 9.022842527573623,
+      "hang_AIC": 2,
+      "hang_MAPE_test": 50
+    },
+    {
+      "index": 2,
+      "order": [
+        1,
+        1,
+        1
+      ],
+      "seasonal_order": [
+        0,
+        1,
+        1,
+        12
+      ],
+      "AIC": -387.27877966794125,
+      "BIC": -376.5874643300936,
+      "MAPE_test_%": 7.785895866544538,
+      "hang_AIC": 3,
+      "hang_MAPE_test": 13
+    },
+    {
+      "index": 3,
+      "order": [
+        0,
+        1,
+        1
+      ],
+      "seasonal_order": [
+        0,
+        1,
+        2,
+        12
+      ],
+      "AIC": -387.25394547770986,
+      "BIC": -376.5626301398622,
+      "MAPE_test_%": 8.384849137249455,
+      "hang_AIC": 4,
+      "hang_MAPE_test": 26
+    },
+    {
+      "index": 4,
+      "order": [
+        0,
+        1,
+        1
+      ],
+      "seasonal_order": [
+        1,
+        1,
+        1,
+        12
+      ],
+      "AIC": -387.220109691972,
+      "BIC": -376.5287943541244,
+      "MAPE_test_%": 8.412861545424226,
+      "hang_AIC": 5,
+      "hang_MAPE_test": 27
+    },
+    {
+      "index": 5,
+      "order": [
+        0,
+        1,
+        2
+      ],
+      "seasonal_order": [
+        0,
+        1,
+        1,
+        12
+      ],
+      "AIC": -387.06540672951394,
+      "BIC": -376.3740913916663,
+      "MAPE_test_%": 8.358729904453698,
+      "hang_AIC": 6,
+      "hang_MAPE_test": 23
+    },
+    {
+      "index": 6,
+      "order": [
+        1,
+        1,
+        0
+      ],
+      "seasonal_order": [
+        0,
+        1,
+        2,
+        12
+      ],
+      "AIC": -386.7916258522767,
+      "BIC": -376.10031051442905,
+      "MAPE_test_%": 8.946787936436634,
+      "hang_AIC": 7,
+      "hang_MAPE_test": 46
+    },
+    {
+      "index": 7,
+      "order": [
+        1,
+        1,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        1,
+        1,
+        12
+      ],
+      "AIC": -386.77477867141084,
+      "BIC": -376.0834633335632,
+      "MAPE_test_%": 8.964983083860183,
+      "hang_AIC": 8,
+      "hang_MAPE_test": 47
+    },
+    {
+      "index": 8,
+      "order": [
+        2,
+        1,
+        0
+      ],
+      "seasonal_order": [
+        0,
+        1,
+        1,
+        12
+      ],
+      "AIC": -386.6579488065667,
+      "BIC": -375.96663346871907,
+      "MAPE_test_%": 8.987093524884932,
+      "hang_AIC": 9,
+      "hang_MAPE_test": 49
+    },
+    {
+      "index": 9,
+      "order": [
+        2,
+        1,
+        1
+      ],
+      "seasonal_order": [
+        0,
+        1,
+        1,
+        12
+      ],
+      "AIC": -386.6122980491681,
+      "BIC": -373.24815387685857,
+      "MAPE_test_%": 6.916433615710561,
+      "hang_AIC": 10,
+      "hang_MAPE_test": 2
+    }
+  ],
+  "chon": "SARIMA thu cong (0,1,1)(0,1,1,12) - log",
+  "ljung_box": [
+    {
+      "index": 0,
+      "lag": 6,
+      "lb_stat": 4.882559440504664,
+      "lb_pvalue": 0.5589617532431383,
+      "ket_luan": "nhieu trang (khong bac bo H0)"
+    },
+    {
+      "index": 1,
+      "lag": 12,
+      "lb_stat": 6.072527476710121,
+      "lb_pvalue": 0.9123818889277235,
+      "ket_luan": "nhieu trang (khong bac bo H0)"
+    },
+    {
+      "index": 2,
+      "lag": 18,
+      "lb_stat": 10.50566254535984,
+      "lb_pvalue": 0.9141457463829576,
+      "ket_luan": "nhieu trang (khong bac bo H0)"
+    },
+    {
+      "index": 3,
+      "lag": 24,
+      "lb_stat": 17.98739689812095,
+      "lb_pvalue": 0.8036193309748587,
+      "ket_luan": "nhieu trang (khong bac bo H0)"
+    }
+  ],
+  "ljung_box_attrs": {
+    "JarqueBera_p": 0.5784477909727623,
+    "skew": 0.17248152493395638,
+    "kurtosis": 3.3557614997159817,
+    "do_lech_chuan_phan_du_log": 0.03856529037904884
+  },
+  "so_sanh_test": [
+    {
+      "index": 0,
+      "mo_hinh": "Naive (thang truoc)",
+      "MAPE_%": 23.577467413678153,
+      "MAE": 115.25,
+      "RMSE": 137.32898455897794,
+      "sai_lech_TB_%": -23.577467413678153,
+      "phu_95_%": NaN,
+      "phu_80_%": NaN
+    },
+    {
+      "index": 1,
+      "mo_hinh": "Seasonal naive (cung thang nam ngoai)",
+      "MAPE_%": 15.523355162420376,
+      "MAE": 71.25,
+      "RMSE": 76.99458855443457,
+      "sai_lech_TB_%": -15.523355162420376,
+      "phu_95_%": NaN,
+      "phu_80_%": NaN
+    },
+    {
+      "index": 2,
+      "mo_hinh": "Seasonal naive + drift (them)",
+      "MAPE_%": 3.0056212845447168,
+      "MAE": 13.278784381970665,
+      "RMSE": 17.015941223129488,
+      "sai_lech_TB_%": 1.241406994737405,
+      "phu_95_%": NaN,
+      "phu_80_%": NaN
+    },
+    {
+      "index": 3,
+      "mo_hinh": "SARIMA thu cong (0,1,1)(0,1,1,12) - log",
+      "MAPE_%": 8.51536486550181,
+      "MAE": 39.44305747539997,
+      "RMSE": 43.179345159680935,
+      "sai_lech_TB_%": -8.51536486550181,
+      "phu_95_%": 100.0,
+      "phu_80_%": 95.83333333333334
+    }
+  ],
+  "mot_buoc": [
+    {
+      "index": 0,
+      "mo_hinh": "SARIMA 1 buoc (tham so tu train)",
+      "MAPE_%": 2.552507605949884,
+      "MAE": 11.528131814770802,
+      "RMSE": 15.277151730089937,
+      "sai_lech_TB_%": -0.3305669239278901
+    },
+    {
+      "index": 1,
+      "mo_hinh": "Naive 1 buoc (thang truoc that)",
+      "MAPE_%": 9.729930052564972,
+      "MAE": 44.208333333333336,
+      "RMSE": 51.781994940326506,
+      "sai_lech_TB_%": -0.4220567520113557
+    },
+    {
+      "index": 2,
+      "mo_hinh": "Seasonal naive 1 buoc (nam ngoai that)",
+      "MAPE_%": 10.522728354862307,
+      "MAE": 47.583333333333336,
+      "RMSE": 49.98666488841466,
+      "sai_lech_TB_%": -10.522728354862307
+    }
+  ],
+  "backtest": [
+    {
+      "mo_hinh": "SARIMA",
+      "MAPE_%": 6.238619001020998,
+      "phu_95_%": 98.95833333333334,
+      "phu_80_%": 91.66666666666667
+    },
+    {
+      "mo_hinh": "Naive (thang truoc)",
+      "MAPE_%": 18.675924104995232,
+      "phu_95_%": NaN,
+      "phu_80_%": NaN
+    },
+    {
+      "mo_hinh": "Seasonal naive (cung thang nam ngoai)",
+      "MAPE_%": 13.584967804448262,
+      "phu_95_%": NaN,
+      "phu_80_%": NaN
+    },
+    {
+      "mo_hinh": "Seasonal naive + drift (them)",
+      "MAPE_%": 6.140013779611062,
+      "phu_95_%": NaN,
+      "phu_80_%": NaN
+    }
+  ]
+}
